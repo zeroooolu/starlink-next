@@ -3,104 +3,70 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>内部曲库工作台 · STARLINK Next</title>
-  <style>
-    :root{--blue:#2f49ff;--blue2:#eef1ff;--ink:#17191f;--muted:#747986;--line:#e8eaf0;--bg:#f7f8fb;--sidebar:#fff}
-    *{box-sizing:border-box} body{margin:0;font-family:Inter,"PingFang SC","Microsoft YaHei",Arial,sans-serif;color:var(--ink);background:var(--bg);font-size:14px}
-    button,input{font:inherit}.app{min-height:100vh;display:grid;grid-template-columns:232px 1fr}.sidebar{background:var(--sidebar);border-right:1px solid var(--line);padding:18px 14px;position:sticky;top:0;height:100vh;display:flex;flex-direction:column}
-    .logo{display:flex;align-items:center;gap:10px;padding:7px 10px 22px;font-size:18px;font-weight:800;color:var(--blue)}.logo small{font-size:10px;color:#9aa0aa;font-weight:700;letter-spacing:.08em}
-    .section-label{font-size:11px;color:#a0a5af;padding:18px 12px 8px;font-weight:700}.nav{display:flex;flex-direction:column;gap:4px}.nav-item,.nav-parent{width:100%;border:0;background:transparent;text-align:left;padding:10px 12px;border-radius:9px;color:#444a55;cursor:pointer;display:flex;align-items:center;gap:10px}.nav-item:hover,.nav-parent:hover{background:#f4f5f8}.nav-item.active{background:var(--blue2);color:var(--blue);font-weight:700}.ico{width:18px;text-align:center;color:#7b818d}.nav-item.active .ico{color:var(--blue)}
-    .nav-parent{font-weight:700;color:#2e3239;cursor:default}.subnav{padding-left:28px;display:flex;flex-direction:column;gap:3px}.subnav .nav-item{font-size:13px;padding:8px 10px}.agent-item{margin-top:8px;border:1px solid #dce1ff;background:linear-gradient(180deg,#fafbff,#f3f5ff);color:var(--blue);font-weight:800}.sidebar-foot{margin-top:auto;border-top:1px solid var(--line);padding-top:12px}.switch{display:flex;gap:8px;align-items:center;padding:10px 12px;color:var(--muted);font-size:12px}.switch a{color:var(--blue);text-decoration:none;font-weight:700}
-    .main{min-width:0}.topbar{height:64px;background:#fff;border-bottom:1px solid var(--line);display:flex;align-items:center;padding:0 28px;gap:18px;position:sticky;top:0;z-index:5}.crumb{font-weight:700;white-space:nowrap}.agent-search{margin-left:auto;width:min(540px,55vw);display:flex;align-items:center;background:#f5f6f9;border:1px solid #eceef3;border-radius:10px;padding:7px 8px 7px 12px}.agent-search input{flex:1;border:0;outline:none;background:transparent;color:#333}.agent-search button{border:0;background:var(--blue);color:#fff;border-radius:8px;padding:7px 12px;cursor:pointer;font-weight:700}.user{width:32px;height:32px;border-radius:50%;background:var(--blue);color:white;display:grid;place-items:center;font-weight:800}
-    .content{padding:28px;max-width:1500px;margin:0 auto}.head{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;margin-bottom:22px}.head h1{font-size:28px;margin:0 0 7px}.desc{color:var(--muted);line-height:1.6}.primary{border:0;background:var(--blue);color:white;padding:10px 15px;border-radius:9px;font-weight:700;cursor:pointer}.ghost{border:1px solid var(--line);background:#fff;padding:10px 14px;border-radius:9px;cursor:pointer}
-    .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:18px}.card{background:#fff;border:1px solid var(--line);border-radius:14px;padding:18px}.stat-label{color:var(--muted);font-size:12px}.stat-num{font-size:25px;font-weight:800;margin-top:9px}.stat-foot{font-size:12px;color:#969ba6;margin-top:8px}.grid{display:grid;grid-template-columns:1.35fr .65fr;gap:16px}.card h3{margin:0 0 14px;font-size:15px}.ready-row{display:grid;grid-template-columns:115px 1fr 48px;gap:12px;align-items:center;margin:14px 0}.bar{height:7px;background:#edf0f4;border-radius:999px;overflow:hidden}.bar span{display:block;height:100%;background:var(--blue);border-radius:999px}.activity{display:flex;flex-direction:column;gap:12px}.activity-row{display:flex;gap:10px;border-bottom:1px solid #f0f1f4;padding-bottom:11px}.dot{width:8px;height:8px;background:var(--blue);border-radius:50%;margin-top:6px}.activity-row strong{display:block;font-size:13px}.activity-row small{color:var(--muted)}
-    .placeholder{background:#fff;border:1px solid var(--line);border-radius:14px;padding:28px;min-height:420px}.placeholder h2{margin-top:0}.chips{display:flex;flex-wrap:wrap;gap:8px;margin:18px 0}.chip{padding:7px 10px;border:1px solid #dde1e8;border-radius:999px;color:#555d69;background:#fafbfc;font-size:12px}.mock-table{margin-top:22px;border-top:1px solid var(--line)}.row{display:grid;grid-template-columns:1.2fr .8fr .8fr .8fr 90px;gap:12px;padding:14px 6px;border-bottom:1px solid var(--line);align-items:center}.row.header{font-size:12px;color:#8b919c;font-weight:700}.badge{display:inline-flex;padding:4px 7px;border-radius:999px;background:#eef8f0;color:#2d8d46;font-size:11px;width:max-content}
-    @media(max-width:980px){.app{grid-template-columns:190px 1fr}.stats{grid-template-columns:repeat(2,1fr)}.grid{grid-template-columns:1fr}.agent-search{display:none}.content{padding:20px}}
-  </style>
+  <title>STARLINK 内部曲库工作台</title>
+  <link rel="stylesheet" href="./styles.css" />
 </head>
 <body>
 <div class="app">
   <aside class="sidebar">
-    <div class="logo">STARLINK <small>INTERNAL</small></div>
-    <div class="section-label">工作</div>
-    <div class="nav">
-      <button class="nav-item active" data-page="工作台" data-desc="查看曲库规模、准备度、风险与近期变化。"><span class="ico">⌂</span>工作台</button>
-      <div class="nav-parent"><span class="ico">♫</span>曲库</div>
-      <div class="subnav">
-        <button class="nav-item" data-page="曲库检索" data-desc="按歌曲、标签、权利、区域、场景、热度等条件快速捞取内容。">曲库检索</button>
-        <button class="nav-item" data-page="曲库分析" data-desc="对可用曲库做数量、结构、权利覆盖与客户适配分析。">曲库分析</button>
-        <button class="nav-item" data-page="资产准备" data-desc="查看 Metadata、Rights、Audio、Tags、Embedding 与交付文件准备情况。">资产准备</button>
-      </div>
-      <button class="nav-item" data-page="歌单" data-desc="统一管理人工歌单、智能歌单、客户推荐歌单与动态规则歌单。"><span class="ico">≡</span>歌单</button>
-      <button class="nav-item" data-page="客户" data-desc="查看客户可用曲库、历史上架、项目与授权上下文。"><span class="ico">◎</span>客户</button>
-      <button class="nav-item" data-page="交付" data-desc="管理试听链接、下载、API 上架、网盘等不同交付方式。"><span class="ico">⇩</span>交付</button>
-      <button class="nav-item agent-item" data-page="AI Agent" data-desc="用自然语言查询、分析、选歌、创建歌单并发起交付。"><span class="ico">✦</span>AI Agent</button>
+    <div class="logo">STARLINK <span class="logo-badge">INTERNAL</span></div>
+
+    <button class="nav-item top active" data-route="dashboard">
+      <span>⌂</span><span>工作台</span>
+    </button>
+
+    <div class="nav-section">内容</div>
+    <div class="nav-group-label"><span>♫</span><span>曲库</span></div>
+    <div class="nav-sub">
+      <button class="nav-item" data-route="catalog-search">曲库检索</button>
+      <button class="nav-item" data-route="catalog-dashboard">曲库看板</button>
+      <button class="nav-item" data-route="tags">标签管理</button>
     </div>
-    <div class="section-label">管理</div>
-    <div class="nav"><button class="nav-item" data-page="系统设置" data-desc="角色权限、数据源、标签规则与系统配置。"><span class="ico">⚙</span>系统设置</button></div>
-    <div class="sidebar-foot"><div class="switch">查看外部客户体验 <a href="../customer/">客户平台 →</a></div></div>
+
+    <div class="nav-group-label" style="margin-top:6px"><span>≡</span><span>歌单与交付</span></div>
+    <div class="nav-sub">
+      <button class="nav-item" data-route="playlists">歌单管理</button>
+      <button class="nav-item" data-route="categories">分类管理</button>
+      <button class="nav-item" data-route="deliveries">交付记录</button>
+    </div>
+
+    <div class="nav-section">业务</div>
+    <div class="nav-group-label"><span>◎</span><span>客户</span></div>
+    <div class="nav-sub">
+      <button class="nav-item" data-route="customers">客户管理</button>
+      <button class="nav-item" data-route="projects">项目管理</button>
+      <button class="nav-item" data-route="requirements">需求管理</button>
+    </div>
+
+    <button class="nav-item top agent" data-route="agent"><span>✦</span><span>AI Agent</span></button>
+
+    <div class="nav-section">管理</div>
+    <button class="nav-item top" data-route="settings"><span>⚙</span><span>系统设置</span></button>
+
+    <div class="sidebar-footer">
+      外部客户平台暂保留现有 Demo<br><a href="../customer/">查看 STARLINK 客户端 →</a>
+    </div>
   </aside>
 
   <main class="main">
     <header class="topbar">
-      <div class="crumb" id="crumb">工作台</div>
-      <div class="agent-search"><span style="color:#7e8490;margin-right:8px">✦</span><input placeholder="问曲库：例如“找 30 首适合影石无人机旅行视频的全球可用音乐”"/><button>询问 Agent</button></div>
-      <div class="user">环</div>
+      <div class="breadcrumb" id="breadcrumb"><b>工作台</b></div>
+      <div class="global-agent">
+        <span class="spark">✦</span>
+        <input placeholder="问曲库：例如“找 30 首适合影石无人机旅行视频的全球可用音乐”" />
+        <button data-route="agent">询问 Agent</button>
+      </div>
+      <div class="avatar">环</div>
     </header>
 
-    <section class="content" id="workspace">
-      <div class="head"><div><h1>曲库工作台</h1><div class="desc">先看清楚“我们有什么、哪些已经可商用、哪些可以立刻交付”。</div></div><div><button class="ghost">导出概览</button> <button class="primary">开始找歌</button></div></div>
-      <div class="stats">
-        <div class="card"><div class="stat-label">全量曲库</div><div class="stat-num">29,830,412</div><div class="stat-foot">全部已入库音乐资产</div></div>
-        <div class="card"><div class="stat-label">常规商用可授权</div><div class="stat-num">3,184,206</div><div class="stat-foot">按当前权利状态实时计算</div></div>
-        <div class="card"><div class="stat-label">交付准备完成</div><div class="stat-num">2,706,881</div><div class="stat-foot">可直接试听 / 下载 / API</div></div>
-        <div class="card"><div class="stat-label">30 日内权利到期</div><div class="stat-num">12,438</div><div class="stat-foot">需要运营关注</div></div>
-      </div>
-      <div class="grid">
-        <div class="card"><h3>曲库准备度</h3>
-          <div class="ready-row"><span>Metadata</span><div class="bar"><span style="width:94%"></span></div><strong>94%</strong></div>
-          <div class="ready-row"><span>Rights</span><div class="bar"><span style="width:82%"></span></div><strong>82%</strong></div>
-          <div class="ready-row"><span>Audio / Files</span><div class="bar"><span style="width:89%"></span></div><strong>89%</strong></div>
-          <div class="ready-row"><span>Tags</span><div class="bar"><span style="width:76%"></span></div><strong>76%</strong></div>
-          <div class="ready-row"><span>AI Embedding</span><div class="bar"><span style="width:68%"></span></div><strong>68%</strong></div>
-        </div>
-        <div class="card"><h3>最近变化</h3><div class="activity">
-          <div class="activity-row"><span class="dot"></span><div><strong>新增可商用内容 32,581 首</strong><small>今天 10:20</small></div></div>
-          <div class="activity-row"><span class="dot"></span><div><strong>俄语区可用曲库新增 18,203 首</strong><small>昨天</small></div></div>
-          <div class="activity-row"><span class="dot"></span><div><strong>2,318 首进入 30 日到期窗口</strong><small>昨天</small></div></div>
-          <div class="activity-row"><span class="dot"></span><div><strong>影石客户曲库上架 150 首</strong><small>09-15</small></div></div>
-        </div></div>
-      </div>
-    </section>
+    <section class="content" id="workspace"></section>
   </main>
 </div>
-<script>
-  const items=[...document.querySelectorAll('.nav-item[data-page]')];
-  const workspace=document.getElementById('workspace');
-  const crumb=document.getElementById('crumb');
-  const defaultHTML=workspace.innerHTML;
-  const examples={
-    '曲库检索':['搜索 3000 万级曲库','按权利实时过滤','保存筛选为动态曲库'],
-    '曲库分析':['语种 / 地区 / 场景分布','CP 与权利覆盖','客户可用曲库对比'],
-    '资产准备':['Metadata 完整度','授权信息准备度','文件与 AI 数据准备度'],
-    '歌单':['人工歌单','智能歌单','客户推荐 / 动态规则歌单'],
-    '客户':['客户可用曲库','历史上架与交付','项目与授权上下文'],
-    '交付':['在线试听','文件下载 / 网盘','API 上架 / SFTP'],
-    'AI Agent':['自然语言找歌','曲库分析问答','创建歌单 / 发起交付'],
-    '系统设置':['角色与权限','标签与规则','数据源与集成']
-  };
-  function showPage(btn){
-    items.forEach(i=>i.classList.remove('active')); btn.classList.add('active');
-    const page=btn.dataset.page; crumb.textContent=page;
-    if(page==='工作台'){workspace.innerHTML=defaultHTML;return;}
-    const chips=(examples[page]||[]).map(x=>`<span class="chip">${x}</span>`).join('');
-    workspace.innerHTML=`<div class="head"><div><h1>${page}</h1><div class="desc">${btn.dataset.desc||''}</div></div><button class="primary">主要操作</button></div>
-      <div class="placeholder"><h2>${page} · 菜单结构 Demo</h2><div class="desc">本轮先确认信息架构和一级入口，具体页面下一步逐页展开。</div><div class="chips">${chips}</div>
-      <div class="mock-table"><div class="row header"><span>内容 / 对象</span><span>类型</span><span>权利状态</span><span>更新时间</span><span>操作</span></div>
-      <div class="row"><strong>示例内容 A</strong><span>${page}</span><span><i class="badge">可用</i></span><span>刚刚</span><a style="color:var(--blue)">查看</a></div>
-      <div class="row"><strong>示例内容 B</strong><span>${page}</span><span><i class="badge">可用</i></span><span>10 分钟前</span><a style="color:var(--blue)">查看</a></div></div></div>`;
-  }
-  items.forEach(btn=>btn.addEventListener('click',()=>showPage(btn)));
-</script>
+
+<div class="drawer-mask" id="drawerMask">
+  <aside class="drawer" id="drawerContent"></aside>
+</div>
+
+<script src="./app.js"></script>
 </body>
 </html>
