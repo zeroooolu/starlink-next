@@ -10,7 +10,7 @@ Page.playlists = () => `
           <svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
           新建普通歌单
         </button>
-        <button class="playlist-create primary">
+        <button class="playlist-create primary" data-route="smart-playlist-create">
           <svg viewBox="0 0 24 24"><path d="m12 3-1 2.8A5.6 5.6 0 0 1 7.8 9L5 10l2.8 1a5.6 5.6 0 0 1 3.2 3.2L12 17l1-2.8A5.6 5.6 0 0 1 16.2 11L19 10l-2.8-1A5.6 5.6 0 0 1 13 5.8L12 3Z"/></svg>
           新建智能歌单
         </button>
