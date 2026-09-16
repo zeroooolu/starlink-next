@@ -1,4 +1,21 @@
 (() => {
+  const cssHref = './workflow-management.css';
+  if (![...document.querySelectorAll('link[rel="stylesheet"]')].some(x => x.getAttribute('href') === cssHref)) {
+    const link = document.createElement('link');
+    link.rel = 'stylesheet';
+    link.href = cssHref;
+    document.head.appendChild(link);
+  }
+  const script = document.createElement('script');
+  script.src = './workflow-management.js';
+  script.onload = () => {
+    const current = location.hash.replace('#','') || 'dashboard';
+    if (['projects','project-detail','requirements','requirement-detail','deliveries','delivery-detail'].includes(current) && typeof routeTo === 'function') routeTo(current,false);
+  };
+  document.body.appendChild(script);
+})();
+
+(() => {
   function enhanceCustomerApiPanel() {
     const panelTitle = [...document.querySelectorAll('.cd-card-head h3')].find((node) => node.textContent.trim() === 'API 接入配置');
     if (!panelTitle) return;
