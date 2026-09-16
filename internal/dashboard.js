@@ -100,9 +100,8 @@ Page.dashboard = () => `
   </div>
 `;
 
-// app.js has already rendered once when this file loads. Refresh the dashboard only
-// when the user is currently on the dashboard; later route changes will use the override above.
-if (!location.hash || location.hash === '#dashboard') {
-  const workspace = document.getElementById('workspace');
-  if (workspace) workspace.innerHTML = Page.dashboard();
+// app.js captures render function references when building the route table.
+// Re-wire the dashboard route so both initial load and later navigation use the new page.
+if (typeof routes !== 'undefined' && routes.dashboard) {
+  routes.dashboard.render = Page.dashboard;
 }
