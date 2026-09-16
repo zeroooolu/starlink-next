@@ -5,9 +5,9 @@ Page.catalogSearch = () => `
         <h1>曲库检索</h1>
         <p>面向大规模曲库的组合检索工作台，支持复杂条件筛选、批量处理、导出和结果列配置。</p>
       </div>
-      <div class="actions">
-        <button class="btn">保存当前查询</button>
-        <button class="btn primary">导出结果</button>
+      <div class="actions catalog-head-actions">
+        <button class="btn catalog-ghost-btn">保存当前查询</button>
+        <button class="btn primary catalog-primary-btn">导出结果</button>
       </div>
     </div>
 
@@ -21,15 +21,26 @@ Page.catalogSearch = () => `
       <div class="search-primary">
         <div class="field-compact">
           <label>关键词</label>
-          <div class="field-control"><input placeholder="歌曲名称、专辑名称、艺人、厂牌 / CP" /></div>
+          <div class="field-control search-control">
+            ${searchIcon()}
+            <input placeholder="歌曲名称、专辑名称、艺人、厂牌 / CP" />
+          </div>
         </div>
         <div class="field-compact">
           <label>ID 搜索</label>
-          <div class="field-control"><span class="prefix">Track ID ▾</span><input placeholder="多个用空格或逗号隔开" /></div>
+          <div class="field-control id-search-control">
+            <div class="id-type-select" data-id-type>
+              <button type="button" class="id-type-trigger"><span>Track ID</span>${chevronIcon()}</button>
+              <div class="id-type-menu">
+                ${['Track ID','UID','ISRC','UPC','专辑 ID'].map((x,i)=>`<button type="button" class="id-type-option ${i===0?'selected':''}" data-value="${x}">${x}${i===0?checkIcon():''}</button>`).join('')}
+              </div>
+            </div>
+            <input placeholder="多个用空格或逗号隔开" />
+          </div>
         </div>
         <div class="search-actions">
-          <button class="btn">重置</button>
-          <button class="btn primary">查询</button>
+          <button class="btn catalog-ghost-btn">重置</button>
+          <button class="btn primary catalog-primary-btn">查询</button>
         </div>
       </div>
 
@@ -45,7 +56,10 @@ Page.catalogSearch = () => `
       </div>
 
       <div class="filter-section">
-        <div class="filter-section-head"><strong>筛选条件</strong><span>高频条件直接展示，低频条件按需展开</span></div>
+        <div class="filter-section-head">
+          <div><strong>筛选条件</strong><span class="filter-hint">常用条件默认展示，更多条件按需展开</span></div>
+          <span class="filter-count">10 个常用条件</span>
+        </div>
         <div class="filter-grid">
           ${filterSelect('歌曲状态',['审核通过','全部','待审核'])}
           ${filterSelect('商用状态',['全部','可商用','不可商用'])}
@@ -62,11 +76,11 @@ Page.catalogSearch = () => `
         <div class="advanced-filters" id="advancedFilters">
           <div class="filter-grid">
             ${filterSelect('有无标签',['全部','有标签','无标签'])}
-            ${filterInput('标签搜索','搜索并选择标签')}
-            ${filterInput('授权结束日期晚于','请选择日期')}
+            ${filterInput('标签搜索','搜索并选择标签', 'search')}
+            ${filterInput('授权结束日期晚于','请选择日期', 'calendar')}
             ${filterSelect('入库来源',['全部','发行系统','版权系统','人工导入','API'])}
-            ${filterInput('入库开始时间','请选择日期')}
-            ${filterInput('入库截止时间','请选择日期')}
+            ${filterInput('入库开始时间','请选择日期', 'calendar')}
+            ${filterInput('入库截止时间','请选择日期', 'calendar')}
             ${filterSelect('内容质量',['全部','完整','缺少封面','缺少音频','缺少权利'])}
             ${filterSelect('音频质量',['全部','无损','320kbps','96kbps','未知'])}
             ${filterSelect('音乐类型',['全部','音乐','音效','采样','Beats','词曲'])}
@@ -75,16 +89,16 @@ Page.catalogSearch = () => `
         </div>
 
         <div class="filter-footer">
-          <button class="expand-filters" id="expandFilters">展开更多条件（10）⌄</button>
-          <div class="filter-buttons"><button class="btn small">清空条件</button><button class="btn small primary">应用筛选</button></div>
+          <button class="expand-filters" id="expandFilters"><span>展开更多条件</span><em>10</em>${chevronIcon()}</button>
+          <div class="filter-buttons"><button class="btn small catalog-ghost-btn">清空条件</button><button class="btn small primary catalog-primary-btn">应用筛选</button></div>
         </div>
       </div>
 
       <div class="active-filters">
         <span class="active-title">当前条件</span>
-        <span class="active-chip"><b>歌曲状态</b> 审核通过 <i>×</i></span>
-        <span class="active-chip"><b>商用状态</b> 可商用 <i>×</i></span>
-        <span class="active-chip"><b>授权区域</b> 全球 <i>×</i></span>
+        <span class="active-chip"><b>歌曲状态</b><span>审核通过</span><button>×</button></span>
+        <span class="active-chip"><b>商用状态</b><span>可商用</span><button>×</button></span>
+        <span class="active-chip"><b>授权区域</b><span>全球</span><button>×</button></span>
         <button class="clear-filters">清空全部</button>
       </div>
     </section>
@@ -99,18 +113,18 @@ Page.catalogSearch = () => `
           <button class="view-btn">批量导出</button>
         </div>
         <div class="result-actions right">
-          <button class="view-btn primary-soft">列表视图：标准</button>
-          <button class="view-btn">列设置</button>
-          <button class="view-btn">密度：紧凑</button>
+          <button class="view-btn primary-soft">标准视图</button>
+          <button class="view-btn icon-text-btn">${columnsIcon()}列设置</button>
+          <button class="view-btn icon-text-btn">${densityIcon()}紧凑</button>
         </div>
       </div>
 
       <div class="catalog-table-wrap">
         <table class="catalog-table">
           <thead><tr>
-            <th class="check-col"><input type="checkbox" /></th>
+            <th class="check-col"><input class="ui-checkbox" type="checkbox" /></th>
             <th class="song-col">歌曲信息</th>
-            <th>热度 ↕</th>
+            <th>热度 <span class="sort-mark">↕</span></th>
             <th>商用状态</th>
             <th>交付次数</th>
             <th>内容质量</th>
@@ -121,9 +135,7 @@ Page.catalogSearch = () => `
             <th>授权情况</th>
             <th class="action-col">操作</th>
           </tr></thead>
-          <tbody>
-            ${catalogRows()}
-          </tbody>
+          <tbody>${catalogRows()}</tbody>
         </table>
       </div>
 
@@ -136,14 +148,29 @@ Page.catalogSearch = () => `
 `;
 
 function filterSelect(label, options){
-  return `<div class="filter-field"><label>${label}</label><div class="filter-input"><select>${options.map(x=>`<option>${x}</option>`).join('')}</select></div></div>`;
+  const first = options[0];
+  return `<div class="filter-field"><label>${label}</label>
+    <div class="custom-select" data-custom-select>
+      <button type="button" class="select-trigger"><span class="select-value">${first}</span>${chevronIcon()}</button>
+      <div class="select-menu">
+        ${options.map((x,i)=>`<button type="button" class="select-option ${i===0?'selected':''}" data-value="${x}"><span>${x}</span>${i===0?checkIcon():''}</button>`).join('')}
+      </div>
+    </div>
+  </div>`;
 }
-function filterInput(label, placeholder){
-  return `<div class="filter-field"><label>${label}</label><div class="filter-input"><input placeholder="${placeholder}" /></div></div>`;
+function filterInput(label, placeholder, icon=''){
+  return `<div class="filter-field"><label>${label}</label><div class="filter-input ${icon?'with-icon':''}">${icon==='search'?searchIcon():icon==='calendar'?calendarIcon():''}<input placeholder="${placeholder}" /></div></div>`;
 }
 function filterRange(label, left, right){
   return `<div class="filter-field"><label>${label}</label><div class="filter-input dual"><input placeholder="${left}"/><span class="range-sep">—</span><input placeholder="${right}"/></div></div>`;
 }
+
+function chevronIcon(){return `<svg class="chevron-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m7 9.5 5 5 5-5"/></svg>`}
+function checkIcon(){return `<svg class="check-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12 4 4L19 6"/></svg>`}
+function searchIcon(){return `<svg class="field-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg>`}
+function calendarIcon(){return `<svg class="field-icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 10h18"/></svg>`}
+function columnsIcon(){return `<svg class="button-icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M9 4v16M15 4v16"/></svg>`}
+function densityIcon(){return `<svg class="button-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg>`}
 
 function catalogRows(){
   const rows = [
@@ -155,12 +182,12 @@ function catalogRows(){
     ['Ma Introduction Skaten F…','1000003｜音乐','US3DF1502075','0.4251','不可用','—','完整','04:51｜97bpm','The Gifted and Privilege','Pipeline… / DashGo','0% 词：—<br>0% 曲：—<br>0% 录：Amped Up Mix Nation','2015.04.14 至 2099.12.31','off']
   ];
   return rows.map((r,i)=>`<tr class="clickable" data-track="${i}">
-    <td class="check-col"><input type="checkbox" /></td>
+    <td class="check-col"><input class="ui-checkbox" type="checkbox" /></td>
     <td class="song-col"><div class="song-cell"><div class="song-cover">♪</div><div class="song-main"><div class="song-name">${r[0]}</div><div class="song-meta">${r[1]} · ${r[2]}</div></div></div></td>
     <td><span class="heat-num">${r[3]}</span></td>
     <td><span class="status-dot ${r[12]}">${r[4]}</span></td>
     <td>${r[5]}</td>
-    <td><span class="badge green">${r[6]}</span></td>
+    <td><span class="quality-badge">${r[6]}</span></td>
     <td><div class="cell-stack"><div class="main-line">${r[7]}</div><div class="sub-line">音质无损｜未知人声</div></div></td>
     <td><div class="cell-stack"><div class="main-line">${r[8]}</div><div class="sub-line">专辑 ID 5004506</div></div></td>
     <td><div class="cell-stack"><div class="main-line">${r[9]}</div></div></td>
@@ -176,14 +203,55 @@ function catalogRows(){
 
 if (routes && routes['catalog-search']) routes['catalog-search'].render = Page.catalogSearch;
 
+function closeCatalogDropdowns(except=null){
+  document.querySelectorAll('.custom-select.open,.id-type-select.open').forEach(el=>{if(el!==except) el.classList.remove('open')});
+}
+
 // Lightweight demo interactions for the search workspace.
 document.addEventListener('click', (e) => {
+  const selectTrigger = e.target.closest('.select-trigger');
+  if (selectTrigger) {
+    const box = selectTrigger.closest('.custom-select');
+    const willOpen = !box.classList.contains('open');
+    closeCatalogDropdowns(box);
+    box.classList.toggle('open', willOpen);
+    return;
+  }
+  const option = e.target.closest('.select-option');
+  if (option) {
+    const box = option.closest('.custom-select');
+    box.querySelector('.select-value').textContent = option.dataset.value;
+    box.querySelectorAll('.select-option').forEach(x=>{x.classList.remove('selected'); const icon=x.querySelector('.check-icon'); if(icon) icon.remove();});
+    option.classList.add('selected');
+    option.insertAdjacentHTML('beforeend', checkIcon());
+    box.classList.remove('open');
+    return;
+  }
+  const idTrigger = e.target.closest('.id-type-trigger');
+  if (idTrigger) {
+    const box=idTrigger.closest('.id-type-select');
+    const willOpen=!box.classList.contains('open');
+    closeCatalogDropdowns(box);
+    box.classList.toggle('open',willOpen);
+    return;
+  }
+  const idOption=e.target.closest('.id-type-option');
+  if(idOption){
+    const box=idOption.closest('.id-type-select');
+    box.querySelector('.id-type-trigger span').textContent=idOption.dataset.value;
+    box.querySelectorAll('.id-type-option').forEach(x=>{x.classList.remove('selected'); const icon=x.querySelector('.check-icon'); if(icon) icon.remove();});
+    idOption.classList.add('selected');
+    idOption.insertAdjacentHTML('beforeend',checkIcon());
+    box.classList.remove('open');
+    return;
+  }
   const expand = e.target.closest('#expandFilters');
   if (expand) {
     const box = document.getElementById('advancedFilters');
     if (!box) return;
     box.classList.toggle('open');
-    expand.textContent = box.classList.contains('open') ? '收起更多条件 ⌃' : '展开更多条件（10）⌄';
+    expand.classList.toggle('open', box.classList.contains('open'));
+    expand.querySelector('span').textContent = box.classList.contains('open') ? '收起更多条件' : '展开更多条件';
     return;
   }
   const mode = e.target.closest('.query-mode');
@@ -196,5 +264,9 @@ document.addEventListener('click', (e) => {
   if (saved) {
     document.querySelectorAll('.saved-view').forEach(x=>x.classList.remove('active'));
     saved.classList.add('active');
+    return;
   }
+  if (!e.target.closest('.custom-select') && !e.target.closest('.id-type-select')) closeCatalogDropdowns();
 });
+
+document.addEventListener('keydown',e=>{if(e.key==='Escape') closeCatalogDropdowns();});
