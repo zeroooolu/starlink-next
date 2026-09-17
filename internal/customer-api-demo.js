@@ -1,10 +1,42 @@
 (() => {
+  function copyText(text, button) {
+    const finish = () => {
+      button.textContent = '已复制';
+      button.classList.add('copied');
+      setTimeout(() => {
+        button.textContent = '复制';
+        button.classList.remove('copied');
+      }, 1200);
+    };
+
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(finish).catch(() => fallbackCopy(text, finish));
+    } else {
+      fallbackCopy(text, finish);
+    }
+  }
+
+  function fallbackCopy(text, callback) {
+    const area = document.createElement('textarea');
+    area.value = text;
+    area.style.position = 'fixed';
+    area.style.opacity = '0';
+    document.body.appendChild(area);
+    area.select();
+    document.execCommand('copy');
+    area.remove();
+    callback();
+  }
+
   function enhanceCustomerApiPanel() {
     const panelTitle = [...document.querySelectorAll('.cd-card-head h3')].find((node) => node.textContent.trim() === 'API 接入配置');
     if (!panelTitle) return;
     const card = panelTitle.closest('.cd-card');
     if (!card || card.dataset.apiDemoEnhanced === 'true') return;
     card.dataset.apiDemoEnhanced = 'true';
+
+    const credBox = card.querySelector('.cd-api-cred');
+    if (credBox) credBox.classList.add('stacked');
 
     const values = card.querySelectorAll('.cd-api-cred .cd-cred code');
     const demoValues = ['demo-client-value-001', 'demo-access-value-002'];
@@ -14,74 +46,47 @@
       wrap.className = 'cd-cred-value';
       node.parentNode.insertBefore(wrap, node);
       wrap.appendChild(node);
+
       const button = document.createElement('button');
       button.type = 'button';
       button.className = 'cd-copy-btn';
       button.textContent = '复制';
-      button.addEventListener('click', async () => {
-        const text = node.textContent.trim();
-        try {
-          await navigator.clipboard.writeText(text);
-        } catch (err) {
-          const area = document.createElement('textarea');
-          area.value = text;
-          area.style.position = 'fixed';
-          area.style.opacity = '0';
-          document.body.appendChild(area);
-          area.select();
-          document.execCommand('copy');
-          area.remove();
-        }
-        button.textContent = '已复制';
-        button.classList.add('copied');
-        setTimeout(() => {
-          button.textContent = '复制';
-          button.classList.remove('copied');
-        }, 1200);
-      });
+      button.addEventListener('click', () => copyText(node.textContent.trim(), button));
       wrap.appendChild(button);
     });
 
     const status = card.querySelector('.cd-card-head .cd-badge');
     if (status) {
       status.className = 'cd-api-status active';
-      status.innerHTML = '<i></i>正常';
+      status.innerHTML = '<i></i>已授权';
     }
 
     const actions = card.querySelector('.cd-mini-actions');
     if (actions) {
-      actions.classList.add('cd-api-actions');
-      const toggle = document.createElement('button');
-      toggle.type = 'button';
-      toggle.className = 'cd-btn danger';
-      toggle.textContent = '停用 API';
-      toggle.dataset.disabled = 'false';
-      actions.appendChild(toggle);
+      actions.className = 'cd-api-auth-row';
+      actions.innerHTML = `
+        <div class="cd-api-auth-copy">
+          <strong>API 授权</strong>
+          <span>控制该客户是否可以使用以上凭证调用 STARLINK API。</span>
+        </div>
+        <button class="cd-api-switch on" type="button" role="switch" aria-checked="true" aria-label="API 授权">
+          <span></span>
+        </button>
+      `;
 
-      const note = document.createElement('div');
-      note.className = 'cd-api-warning';
-      note.textContent = '停用后，客户的 API 请求将立即被拒绝；历史日志与客户曲库不会删除。';
-      actions.insertAdjacentElement('afterend', note);
-
+      const toggle = actions.querySelector('.cd-api-switch');
       toggle.addEventListener('click', () => {
-        const isDisabled = toggle.dataset.disabled === 'true';
-        toggle.dataset.disabled = String(!isDisabled);
-        if (isDisabled) {
-          toggle.textContent = '停用 API';
-          toggle.className = 'cd-btn danger';
-          if (status) {
-            status.className = 'cd-api-status active';
-            status.innerHTML = '<i></i>正常';
-          }
-          note.classList.remove('disabled');
-        } else {
-          toggle.textContent = '重新启用';
-          toggle.className = 'cd-btn enable';
-          if (status) {
-            status.className = 'cd-api-status disabled';
-            status.innerHTML = '<i></i>已停用';
-          }
-          note.classList.add('disabled');
+        const enabled = toggle.classList.toggle('on');
+        toggle.setAttribute('aria-checked', String(enabled));
+        if (status) {
+          status.className = `cd-api-status ${enabled ? 'active' : 'disabled'}`;
+          status.innerHTML = `<i></i>${enabled ? '已授权' : '未授权'}`;
+        }
+        const desc = actions.querySelector('.cd-api-auth-copy span');
+        if (desc) {
+          desc.textContent = enabled
+            ? '控制该客户是否可以使用以上凭证调用 STARLINK API。'
+            : '当前未授权，客户使用以上凭证发起的 API 请求将被拒绝。';
         }
       });
     }
