@@ -1,21 +1,4 @@
 (() => {
-  const cssHref = './workflow-management.css';
-  if (![...document.querySelectorAll('link[rel="stylesheet"]')].some(x => x.getAttribute('href') === cssHref)) {
-    const link = document.createElement('link');
-    link.rel = 'stylesheet';
-    link.href = cssHref;
-    document.head.appendChild(link);
-  }
-  const script = document.createElement('script');
-  script.src = './workflow-management.js';
-  script.onload = () => {
-    const current = location.hash.replace('#','') || 'dashboard';
-    if (['projects','project-detail','requirements','requirement-detail','deliveries','delivery-detail'].includes(current) && typeof routeTo === 'function') routeTo(current,false);
-  };
-  document.body.appendChild(script);
-})();
-
-(() => {
   function enhanceCustomerApiPanel() {
     const panelTitle = [...document.querySelectorAll('.cd-card-head h3')].find((node) => node.textContent.trim() === 'API 接入配置');
     if (!panelTitle) return;
@@ -104,6 +87,37 @@
     }
   }
 
+  function loadStylesheet(href, marker) {
+    if (document.querySelector(`link[data-dynamic-asset="${marker}"]`)) return;
+    const link = document.createElement('link');
+    link.rel = 'stylesheet';
+    link.href = href;
+    link.dataset.dynamicAsset = marker;
+    document.head.appendChild(link);
+  }
+
+  function loadScript(src, marker, callback) {
+    const existing = document.querySelector(`script[data-dynamic-asset="${marker}"]`);
+    if (existing) {
+      if (callback) callback();
+      return;
+    }
+    const script = document.createElement('script');
+    script.src = src;
+    script.dataset.dynamicAsset = marker;
+    if (callback) script.addEventListener('load', callback, {once:true});
+    document.body.appendChild(script);
+  }
+
+  function ensureWorkflowAssets() {
+    loadStylesheet('./workflow-management.css', 'workflow-css');
+    loadStylesheet('./customer-workflow-tabs.css', 'customer-workflow-css');
+    loadScript('./workflow-management.js', 'workflow-js', () => {
+      loadScript('./customer-workflow-tabs.js', 'customer-workflow-js');
+    });
+  }
+
+  ensureWorkflowAssets();
   const observer = new MutationObserver(() => enhanceCustomerApiPanel());
   observer.observe(document.getElementById('workspace'), { childList: true, subtree: true });
   document.addEventListener('DOMContentLoaded', enhanceCustomerApiPanel);
