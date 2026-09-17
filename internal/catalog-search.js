@@ -39,20 +39,9 @@ Page.catalogSearch = () => `
           </div>
         </div>
         <div class="search-actions">
-          <button class="btn catalog-ghost-btn">重置</button>
-          <button class="btn primary catalog-primary-btn">查询</button>
+          <button class="btn catalog-ghost-btn" id="catalogReset">重置</button>
+          <button class="btn primary catalog-primary-btn" id="catalogQuery">查询</button>
         </div>
-      </div>
-
-      <div class="saved-views">
-        <span class="saved-label">常用查询</span>
-        <button class="saved-view active">全部曲库</button>
-        <button class="saved-view">可商用</button>
-        <button class="saved-view">即将到期</button>
-        <button class="saved-view">有风险 CP</button>
-        <button class="saved-view">无标签</button>
-        <button class="saved-view">本月新入库</button>
-        <button class="save-query">＋ 保存为常用查询</button>
       </div>
 
       <div class="filter-section">
@@ -90,16 +79,7 @@ Page.catalogSearch = () => `
 
         <div class="filter-footer">
           <button class="expand-filters" id="expandFilters"><span>展开更多条件</span><em>10</em>${chevronIcon()}</button>
-          <div class="filter-buttons"><button class="btn small catalog-ghost-btn">清空条件</button><button class="btn small primary catalog-primary-btn">应用筛选</button></div>
         </div>
-      </div>
-
-      <div class="active-filters">
-        <span class="active-title">当前条件</span>
-        <span class="active-chip"><b>歌曲状态</b><span>审核通过</span><button>×</button></span>
-        <span class="active-chip"><b>商用状态</b><span>可商用</span><button>×</button></span>
-        <span class="active-chip"><b>授权区域</b><span>全球</span><button>×</button></span>
-        <button class="clear-filters">清空全部</button>
       </div>
     </section>
 
@@ -207,6 +187,37 @@ function closeCatalogDropdowns(except=null){
   document.querySelectorAll('.custom-select.open,.id-type-select.open').forEach(el=>{if(el!==except) el.classList.remove('open')});
 }
 
+function resetCatalogSearch(){
+  const workspace=document.querySelector('.search-workspace');
+  if(!workspace) return;
+  workspace.querySelectorAll('input').forEach(input=>input.value='');
+  workspace.querySelectorAll('.custom-select').forEach(box=>{
+    const options=box.querySelectorAll('.select-option');
+    if(!options.length) return;
+    options.forEach(x=>{x.classList.remove('selected');x.querySelector('.check-icon')?.remove();});
+    const first=options[0];
+    first.classList.add('selected');
+    first.insertAdjacentHTML('beforeend',checkIcon());
+    const value=box.querySelector('.select-value');
+    if(value) value.textContent=first.dataset.value;
+    box.classList.remove('open');
+  });
+  const idBox=workspace.querySelector('.id-type-select');
+  if(idBox){
+    const options=idBox.querySelectorAll('.id-type-option');
+    options.forEach(x=>{x.classList.remove('selected');x.querySelector('.check-icon')?.remove();});
+    const first=options[0];
+    if(first){first.classList.add('selected');first.insertAdjacentHTML('beforeend',checkIcon());}
+    const label=idBox.querySelector('.id-type-trigger span');
+    if(label) label.textContent='Track ID';
+    idBox.classList.remove('open');
+  }
+  const advanced=document.getElementById('advancedFilters');
+  const expand=document.getElementById('expandFilters');
+  advanced?.classList.remove('open');
+  if(expand){expand.classList.remove('open');const text=expand.querySelector('span');if(text)text.textContent='展开更多条件';}
+}
+
 // Lightweight demo interactions for the search workspace.
 document.addEventListener('click', (e) => {
   const selectTrigger = e.target.closest('.select-trigger');
@@ -260,10 +271,8 @@ document.addEventListener('click', (e) => {
     mode.classList.add('active');
     return;
   }
-  const saved = e.target.closest('.saved-view');
-  if (saved) {
-    document.querySelectorAll('.saved-view').forEach(x=>x.classList.remove('active'));
-    saved.classList.add('active');
+  if(e.target.closest('#catalogReset')){
+    resetCatalogSearch();
     return;
   }
   if (!e.target.closest('.custom-select') && !e.target.closest('.id-type-select')) closeCatalogDropdowns();
