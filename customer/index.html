@@ -3,81 +3,77 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>STARLINK 客户平台 · Demo</title>
-  <style>
-    :root{--blue:#2f49ff;--ink:#17191f;--muted:#737986;--line:#e7e9ef;--bg:#f7f8fb;--card:#fff}
-    *{box-sizing:border-box} body{margin:0;font-family:Inter,"PingFang SC","Microsoft YaHei",Arial,sans-serif;background:var(--bg);color:var(--ink);font-size:14px}
-    button,input{font:inherit}.top{height:64px;background:#fff;border-bottom:1px solid var(--line);display:flex;align-items:center;padding:0 26px;gap:28px;position:sticky;top:0;z-index:10}.logo{font-size:20px;font-weight:900;color:var(--blue);letter-spacing:.01em}.nav{display:flex;align-items:center;gap:4px}.nav button{border:0;background:transparent;padding:10px 12px;border-radius:8px;color:#4f5560;cursor:pointer}.nav button.active{color:var(--blue);background:#eef1ff;font-weight:800}.actions{margin-left:auto;display:flex;align-items:center;gap:10px}.ai{border:1px solid #d9deff;background:#f8f9ff;color:var(--blue);padding:9px 12px;border-radius:9px;font-weight:800;cursor:pointer}.avatar{width:32px;height:32px;border-radius:50%;display:grid;place-items:center;background:var(--blue);color:#fff;font-weight:800}
-    .page{max-width:1500px;margin:0 auto;padding:26px}.hero{background:linear-gradient(135deg,#20294d,#2f49ff 72%,#5d75ff);border-radius:20px;padding:34px;color:#fff;position:relative;overflow:hidden}.hero:after{content:"";position:absolute;right:-80px;top:-90px;width:320px;height:320px;border-radius:50%;background:rgba(255,255,255,.1)}.hero small{opacity:.78}.hero h1{font-size:30px;margin:8px 0 8px}.hero p{opacity:.82;margin:0 0 24px}.search{position:relative;z-index:1;display:flex;gap:8px;background:#fff;border-radius:12px;padding:7px;max-width:780px}.search input{flex:1;border:0;outline:none;padding:8px 12px;color:#252a32}.search button{border:0;background:var(--blue);color:#fff;border-radius:9px;padding:10px 16px;font-weight:800;cursor:pointer}
-    .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin:18px 0}.card{background:#fff;border:1px solid var(--line);border-radius:14px;padding:18px}.stat-label{font-size:12px;color:var(--muted)}.stat-num{font-size:23px;font-weight:800;margin-top:8px}.stat-foot{font-size:12px;color:#969ba6;margin-top:7px}.section{margin-top:24px}.section-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}.section-head h2{margin:0;font-size:18px}.section-head a{color:var(--blue);font-size:13px;cursor:pointer}.music-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}.music-card{background:#fff;border:1px solid var(--line);border-radius:14px;overflow:hidden}.cover{aspect-ratio:16/9;background:linear-gradient(145deg,#dfe4ff,#f0f3ff);display:flex;align-items:center;justify-content:center;font-size:34px;color:var(--blue)}.music-body{padding:14px}.music-body h3{margin:0 0 6px;font-size:14px}.music-body p{margin:0;color:var(--muted);font-size:12px;line-height:1.6}.pill{display:inline-flex;margin-top:10px;padding:5px 8px;border-radius:999px;background:#eff8f2;color:#2e8b4e;font-size:11px;font-weight:700}
-    .placeholder{background:#fff;border:1px solid var(--line);border-radius:14px;padding:26px;min-height:460px}.placeholder h1{margin:0 0 8px}.desc{color:var(--muted);line-height:1.7}.chips{display:flex;flex-wrap:wrap;gap:8px;margin:20px 0}.chip{padding:7px 10px;border-radius:999px;background:#f5f6f8;border:1px solid #e6e8ee;color:#555d69;font-size:12px}.table{margin-top:24px;border-top:1px solid var(--line)}.row{display:grid;grid-template-columns:1.3fr .8fr .8fr .8fr 100px;gap:14px;padding:14px 4px;border-bottom:1px solid var(--line);align-items:center}.row.header{color:#8e949e;font-size:12px;font-weight:700}.badge{display:inline-flex;padding:4px 8px;border-radius:999px;background:#eef1ff;color:var(--blue);font-size:11px;width:max-content}.link{color:var(--blue);cursor:pointer;font-weight:700}
-    @media(max-width:980px){.nav{display:none}.stats{grid-template-columns:repeat(2,1fr)}.music-grid{grid-template-columns:repeat(2,1fr)}.page{padding:18px}}
-  </style>
+  <meta name="theme-color" content="#f6f7fb" />
+  <title>STARLINK · 企业音乐工作台</title>
+  <link rel="stylesheet" href="./styles.css" />
 </head>
 <body>
-<header class="top">
-  <div class="logo">STARLINK</div>
-  <nav class="nav">
-    <button class="active" data-page="首页">首页</button>
-    <button data-page="发现音乐">发现音乐</button>
-    <button data-page="我的歌单">我的歌单</button>
-    <button data-page="我的曲库">我的曲库</button>
-    <button data-page="获取记录">获取记录</button>
-    <button data-page="API">API</button>
-  </nav>
-  <div class="actions"><button class="ai">✦ AI 找歌</button><div class="avatar">K</div></div>
-</header>
-<main class="page" id="workspace">
-  <section class="hero">
-    <small>我的可用曲库</small>
-    <h1>找到现在就能用的音乐</h1>
-    <p>搜索歌曲、艺人、场景，或者直接描述你想要的音乐。</p>
-    <div class="search"><input placeholder="例如：适合户外跑步，节奏感强，不要中文，人声不要太重"/><button>搜索音乐</button></div>
-  </section>
-  <section class="stats">
-    <div class="card"><div class="stat-label">可访问音乐</div><div class="stat-num">184,320</div><div class="stat-foot">基于当前授权范围</div></div>
-    <div class="card"><div class="stat-label">本月新增</div><div class="stat-num">2,143</div><div class="stat-foot">持续更新到你的曲库</div></div>
-    <div class="card"><div class="stat-label">我的歌单</div><div class="stat-num">18</div><div class="stat-foot">含 3 个协作歌单</div></div>
-    <div class="card"><div class="stat-label">已获取内容</div><div class="stat-num">7,812</div><div class="stat-foot">下载与 API 获取合计</div></div>
-  </section>
-  <section class="section">
-    <div class="section-head"><h2>为你推荐</h2><a>查看全部</a></div>
-    <div class="music-grid">
-      <article class="music-card"><div class="cover">♫</div><div class="music-body"><h3>运动健身 · 高能量</h3><p>适合跑步、训练、运动内容</p><span class="pill">当前可用</span></div></article>
-      <article class="music-card"><div class="cover">◌</div><div class="music-body"><h3>旅行与探索</h3><p>适合户外、航拍、旅行视频</p><span class="pill">当前可用</span></div></article>
-      <article class="music-card"><div class="cover">⌁</div><div class="music-body"><h3>欧美流行热度</h3><p>按近期流媒体热度聚合</p><span class="pill">当前可用</span></div></article>
-      <article class="music-card"><div class="cover">✦</div><div class="music-body"><h3>本周新增</h3><p>最新进入你授权范围的音乐</p><span class="pill">2,143 首</span></div></article>
-    </div>
-  </section>
-</main>
-<script>
-  const buttons=[...document.querySelectorAll('.nav button[data-page]')];
-  const workspace=document.getElementById('workspace');
-  const home=workspace.innerHTML;
-  const meta={
-    '发现音乐':['全部音乐','场景与分类','热门 / 新增','相似歌曲与 AI 搜索'],
-    '我的歌单':['我创建的歌单','客户项目歌单','收藏 / 待选','协作与分享'],
-    '我的曲库':['当前可用曲库','已上架 API 曲库','最近新增','自主上架 / 下架'],
-    '获取记录':['下载记录','API 获取记录','历史交付内容','按项目 / 时间查询'],
-    'API':['API Key','接口文档','Webhook','调用与上架状态']
-  };
-  const desc={
-    '发现音乐':'面向全量授权曲库自助搜索、试听和挖掘内容。',
-    '我的歌单':'保存候选音乐、筛选结果和项目歌单。',
-    '我的曲库':'管理已经进入自己业务系统或当前持续使用的内容。',
-    '获取记录':'清楚知道什么时候、通过什么方式拿过哪些音乐。',
-    'API':'面向客户系统和未来 Agent 的程序化曲库访问入口。'
-  };
-  function show(btn){
-    buttons.forEach(b=>b.classList.remove('active'));btn.classList.add('active');const p=btn.dataset.page;
-    if(p==='首页'){workspace.innerHTML=home;return;}
-    const chips=(meta[p]||[]).map(x=>`<span class="chip">${x}</span>`).join('');
-    workspace.innerHTML=`<section class="placeholder"><h1>${p}</h1><div class="desc">${desc[p]||''}</div><div class="chips">${chips}</div>
-      <div class="table"><div class="row header"><span>内容</span><span>类型</span><span>授权状态</span><span>更新时间</span><span>操作</span></div>
-      <div class="row"><strong>示例内容 A</strong><span>${p}</span><span class="badge">可使用</span><span>刚刚</span><span class="link">查看</span></div>
-      <div class="row"><strong>示例内容 B</strong><span>${p}</span><span class="badge">可使用</span><span>今天</span><span class="link">查看</span></div></div></section>`;
-  }
-  buttons.forEach(b=>b.addEventListener('click',()=>show(b)));
-</script>
+  <div class="app-shell">
+    <aside class="sidebar" id="sidebar">
+      <div class="brand-row">
+        <a class="brand" href="#/home" aria-label="STARLINK 首页">
+          <span class="brand-mark">S</span>
+          <span class="brand-copy"><strong>STARLINK</strong><small>企业音乐工作台</small></span>
+        </a>
+        <button class="icon-btn sidebar-toggle" id="sidebarToggle" aria-label="收起侧边栏" title="收起侧边栏" data-icon="panel-left"></button>
+      </div>
+
+      <button class="workspace-switch" id="workspaceSwitch">
+        <span class="workspace-logo">K</span>
+        <span class="workspace-meta"><strong>看见音乐</strong><small>企业工作空间</small></span>
+        <span class="workspace-chevron" data-icon="chevrons-up-down"></span>
+      </button>
+
+      <nav class="side-nav" id="sideNav" aria-label="主导航"></nav>
+
+      <div class="sidebar-bottom">
+        <button class="support-card" data-route="developer">
+          <span class="support-icon" data-icon="sparkles"></span>
+          <span><strong>需要帮助？</strong><small>查看接入文档与支持</small></span>
+          <span data-icon="arrow-up-right"></span>
+        </button>
+        <div class="account-card">
+          <span class="avatar">KH</span>
+          <span class="account-meta"><strong>客户管理员</strong><small>admin@kanjian.com</small></span>
+          <button class="icon-btn" title="账户设置" data-route="settings" data-icon="ellipsis"></button>
+        </div>
+      </div>
+    </aside>
+
+    <section class="main-shell">
+      <header class="topbar">
+        <div class="mobile-brand">
+          <button class="icon-btn" id="mobileMenu" aria-label="打开菜单" data-icon="menu"></button>
+          <span class="brand-mark">S</span>
+        </div>
+        <button class="project-switch" id="projectSwitch">
+          <span class="project-icon" data-icon="briefcase-business"></span>
+          <span class="project-copy"><small>当前项目</small><strong>Keep App · 2026 Q4</strong></span>
+          <span data-icon="chevron-down"></span>
+        </button>
+        <div class="global-search" id="globalSearch">
+          <span data-icon="search"></span>
+          <input id="globalSearchInput" autocomplete="off" placeholder="搜索歌曲、艺人、ISRC，或描述你想要的音乐" />
+          <kbd>⌘ K</kbd>
+        </div>
+        <div class="top-actions">
+          <button class="top-action ai-entry" data-route="ai"><span data-icon="sparkles"></span><span>AI 找歌</span></button>
+          <button class="icon-btn has-dot" title="通知" data-icon="bell"></button>
+          <button class="icon-btn" title="帮助" data-icon="circle-help"></button>
+        </div>
+      </header>
+
+      <main class="workspace" id="workspace" tabindex="-1"></main>
+    </section>
+  </div>
+
+  <div class="scrim" id="scrim"></div>
+  <div class="toast-stack" id="toastStack" aria-live="polite"></div>
+
+  <template id="dropdownTemplate">
+    <div class="dropdown-panel"></div>
+  </template>
+
+  <script src="./app.js"></script>
 </body>
 </html>
