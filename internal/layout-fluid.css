@@ -1,0 +1,6 @@
+/* Keep the internal workspace fluid on wide screens. Content width follows the available main area; spacing is controlled only by the existing page padding. */
+.content{
+  width:100%;
+  max-width:none;
+  margin:0;
+}
