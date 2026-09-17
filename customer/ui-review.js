@@ -50,8 +50,9 @@
       ];
 
       const columns = 'minmax(240px,1.65fr) 150px minmax(210px,1fr) 190px 110px';
+      const rowStyle = `grid-template-columns:${columns};min-width:920px`;
       const rows = projects.map(project => `
-        <div class="data-row" style="grid-template-columns:${columns};min-height:62px;cursor:default">
+        <div class="data-row" style="${rowStyle};min-height:62px;cursor:default">
           <div class="data-main">
             <strong>${project.name}</strong>
             <small>由 STARLINK 后台配置</small>
@@ -63,8 +64,8 @@
         </div>`).join('');
 
       return `${pageHead('我的项目','查看当前企业已授权的项目。项目信息由 STARLINK 后台统一配置，客户端仅支持查看。')}
-        <div class="table-card project-readonly-list">
-          <div class="data-row head" style="grid-template-columns:${columns}">
+        <div class="table-card project-readonly-list" style="overflow-x:auto">
+          <div class="data-row head" style="${rowStyle}">
             <span>项目名称</span>
             <span>项目编号</span>
             <span>授权范围</span>
