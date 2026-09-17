@@ -6,6 +6,7 @@
   <meta name="theme-color" content="#f6f7fb" />
   <title>STARLINK · 企业音乐工作台</title>
   <link rel="stylesheet" href="./styles.css" />
+  <link rel="stylesheet" href="./ui-review.css" />
 </head>
 <body>
   <div class="app-shell">
@@ -18,11 +19,8 @@
         <button class="icon-btn sidebar-toggle" id="sidebarToggle" aria-label="收起侧边栏" title="收起侧边栏" data-icon="panel-left"></button>
       </div>
 
-      <button class="workspace-switch" id="workspaceSwitch">
-        <span class="workspace-logo">K</span>
-        <span class="workspace-meta"><strong>看见音乐</strong><small>企业工作空间</small></span>
-        <span class="workspace-chevron" data-icon="chevrons-up-down"></span>
-      </button>
+      <!-- 保留不可见挂载点兼容现有 Demo 脚本；前台不再提供组织/账号切换入口。 -->
+      <span id="workspaceSwitch" hidden aria-hidden="true"></span>
 
       <nav class="side-nav" id="sideNav" aria-label="主导航"></nav>
 
