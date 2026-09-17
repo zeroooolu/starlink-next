@@ -1,0 +1,171 @@
+(() => {
+  const v2 = {
+    selectedTracks: new Set(['ST-310284','ST-401237','ST-229850']),
+  };
+
+  const requests = [
+    {id:'REQ-20260916-028',title:'户外旅行音乐周更',type:'API 增量',project:'Insta360 内容音乐',target:'8 首',progress:'已上架 8 首',pct:100,status:'已完成',updated:'今天 14:21',delivery:'DEL-20260916-028'},
+    {id:'REQ-20260915-024',title:'无人机首发配乐',type:'选曲',project:'影石无人机音乐',target:'20 首',progress:'候选 30 · 已选 6',pct:55,status:'待我确认',updated:'昨天 18:03',delivery:'2 次试听'},
+    {id:'REQ-20260910-017',title:'Ace Pro 秋季运动内容',type:'选曲',project:'Ace Pro 内容音乐',target:'12 首',progress:'候选 24 · 已选 9',pct:76,status:'待我确认',updated:'09-16 11:42',delivery:'1 次试听'},
+    {id:'REQ-20260909-015',title:'中秋旅行内容',type:'文件交付',project:'Insta360 内容音乐',target:'8 首',progress:'已交付 7 首',pct:100,status:'已完成',updated:'09-12 16:06',delivery:'DEL-20260912-015'},
+    {id:'REQ-20260903-009',title:'经典耳熟内容盘活',type:'API 增量',project:'Insta360 内容音乐',target:'30 首',progress:'已上架 22 首',pct:100,status:'已完成',updated:'09-08 15:18',delivery:'DEL-20260908-009'}
+  ];
+
+  const deliveries = [
+    {id:'DEL-20260916-028',name:'9 月户外旅行增量',request:'户外旅行音乐周更',type:'API 上架',count:'8 首',date:'2026-09-16',status:'已完成'},
+    {id:'DEL-20260915-024-A',name:'无人机首发第一轮',request:'无人机首发配乐',type:'试听选曲',count:'30 首',date:'2026-09-15',status:'待选择'},
+    {id:'DEL-20260912-015',name:'中秋旅行内容',request:'中秋旅行内容',type:'文件交付',count:'7 首',date:'2026-09-12',status:'已交付'},
+    {id:'DEL-20260908-009',name:'经典内容盘活',request:'经典耳熟内容盘活',type:'API 上架',count:'22 首',date:'2026-09-08',status:'已完成'},
+    {id:'DEL-20260301-001',name:'首批 API 曲库',request:'初始合作',type:'API 上架',count:'120,000 首',date:'2026-03-01',status:'已完成'}
+  ];
+
+  const customerCatalog = [
+    ['Never Stop Moving','Neon Avenue','ST-310284','9 月户外旅行增量','2026-09-16','Insta360 内容音乐','全球 · 数字内容','可使用'],
+    ['Forward Motion','Northline','ST-401237','9 月户外旅行增量','2026-09-16','Insta360 内容音乐','全球 · 数字内容','可使用'],
+    ['Open Road','Atlas Weekend','ST-229850','无人机首发第一轮','2026-09-15','影石无人机音乐','全球 · 试听选曲','候选中'],
+    ['Pulse Theory','Lumen Club','ST-381092','首批 API 曲库','2026-03-01','Insta360 内容音乐','全球 · API','可使用'],
+    ['Skyline Stories','June Harbor','ST-338610','首批 API 曲库','2026-03-01','Insta360 内容音乐','全球 · API','可使用'],
+    ['Quiet Momentum','Paper Satellites','ST-390771','经典内容盘活','2026-09-08','Insta360 内容音乐','全球 · 数字内容','可使用']
+  ];
+
+  function statusPill(status){
+    const cls=status.includes('待')?'wait':status.includes('候选')?'blue':status.includes('完成')||status.includes('交付')||status.includes('使用')?'':'neutral';
+    return `<span class="v2-pill ${cls}">${status}</span>`;
+  }
+
+  function homeV2(){
+    return `${pageHead('工作台','查看当前可用曲库、待处理内容需求和最近交付。',`<button class="btn" data-route="requirements">${icon('list-music')}查看内容需求</button>`)}
+      <div class="hero-card"><div class="hero-copy"><div class="eyebrow">STARLINK · CUSTOMER CATALOG</div><h2>你的音乐内容，都在这里</h2><p>搜索可用内容、处理选曲需求，并查看每一次正式交付。</p><div class="hero-search">${icon('search')}<input id="heroSearchInput" placeholder="搜索全曲库，或描述你想找的音乐"/><button class="btn btn-primary" id="heroSearchBtn">搜索音乐</button></div></div></div>
+      <section class="section"><div class="v2-kpi-grid">
+        ${kpi('library','我的曲库','182,381','近 30 天新增 4,812 首')}
+        ${kpi('list-music','进行中需求','3','其中 2 个待你确认')}
+        ${kpi('download','累计交付','27 次','累计交付 612 首内容')}
+        ${kpi('check','累计选曲','486 首','来自 48 次选曲记录')}
+      </div></section>
+      <section class="section v2-home-grid">
+        <div class="v2-table-card"><div class="v2-table-head"><div class="v2-table-head-copy"><strong>待我处理</strong><small>需要你试听、选择或确认的内容</small></div><button class="section-link" data-route="requirements">查看全部</button></div><div class="v2-focus-list">
+          ${focus('sparkles','无人机首发配乐','已提供 30 首候选 · 已选择 6 首','待确认','09-20 前')}
+          ${focus('music','Ace Pro 秋季运动内容','已提供 24 首候选 · 已选择 9 首','待确认','今天到期')}
+        </div></div>
+        <div class="v2-table-card"><div class="v2-table-head"><div class="v2-table-head-copy"><strong>最近交付</strong><small>最近收到的正式内容</small></div><button class="section-link" data-route="deliveries">全部记录</button></div><div class="activity-list">
+          ${deliveryMini('9 月户外旅行增量','API 上架 · 8 首','今天')}
+          ${deliveryMini('中秋旅行内容','文件交付 · 7 首','09-12')}
+          ${deliveryMini('经典内容盘活','API 上架 · 22 首','09-08')}
+        </div></div>
+      </section>`;
+  }
+
+  function kpi(iconName,label,value,sub){return `<div class="v2-kpi"><div class="v2-kpi-top"><span>${label}</span><span class="v2-kpi-icon">${icon(iconName)}</span></div><div class="v2-kpi-value">${value}</div><div class="v2-kpi-sub">${sub}</div></div>`}
+  function focus(iconName,title,sub,status,due){return `<div class="v2-focus-item" data-route="requirement-detail" style="cursor:pointer"><span class="v2-focus-icon">${icon(iconName)}</span><span class="v2-focus-main"><strong>${title}</strong><small>${sub}</small></span><span class="v2-focus-side"><strong>${status}</strong><small>${due}</small></span></div>`}
+  function deliveryMini(title,sub,date){return `<div class="activity-item"><span class="activity-icon">${icon('download')}</span><span class="activity-copy"><strong>${title}</strong><small>${sub}</small></span><span class="activity-side">${date}</span></div>`}
+
+  function myCatalogPage(){
+    return `${pageHead('我的曲库','已经正式授权或交付给你的音乐内容；每首歌曲都可追溯来源和所属合作项目。',`<button class="btn" data-route="catalog">${icon('search')}搜索全曲库</button>`)}
+      <div class="v2-catalog-summary">
+        <div class="v2-catalog-main"><span>当前可用音乐</span><strong>182,381</strong><small>由首批曲库、API 增量、正式选曲与其他交付持续累积</small></div>
+        <div class="v2-summary-card"><span>近 30 天新增</span><strong>4,812</strong><small>来自 6 个交付批次</small></div>
+        <div class="v2-summary-card"><span>API 已上架</span><strong>176,204</strong><small>占当前曲库 96.6%</small></div>
+        <div class="v2-summary-card"><span>即将到期</span><strong>328</strong><small>30 天内需要关注</small></div>
+      </div>
+      <div class="v2-table-card"><div class="v2-table-head"><div class="v2-filter-row"><div class="v2-search">${icon('search')}<input placeholder="搜索歌曲、艺人、Track ID"/></div><button class="v2-filter">来源批次 ${icon('chevron-down')}</button><button class="v2-filter">所属项目 ${icon('chevron-down')}</button><button class="v2-filter">状态 ${icon('chevron-down')}</button></div><span class="result-meta">共 182,381 首</span></div>
+        <div class="v2-table-wrap"><table class="v2-table"><thead><tr><th>歌曲</th><th>来源</th><th>加入时间</th><th>所属项目</th><th>使用范围</th><th>状态</th></tr></thead><tbody>${customerCatalog.map(c=>`<tr><td><span class="v2-primary">${c[0]}</span><span class="v2-secondary">${c[1]} · ${c[2]}</span></td><td><span class="v2-primary">${c[3]}</span><span class="v2-secondary">可追溯交付批次</span></td><td>${c[4]}</td><td>${c[5]}</td><td>${c[6]}</td><td>${statusPill(c[7])}</td></tr>`).join('')}</tbody></table></div>
+      </div>`;
+  }
+
+  function requirementsPage(){
+    return `${pageHead('内容需求','查看每一次内容需求从提出、候选、反馈到最终交付的处理进度。','')}
+      <div class="v2-kpi-grid">
+        ${kpi('list-music','累计需求','12','本月新增 5 个需求')}${kpi('clock','处理中','2','均在正常处理时限内')}${kpi('check','待我确认','2','最近更新：昨天 18:03')}${kpi('download','本月已完成','7','平均处理 2.4 天')}
+      </div>
+      <section class="section"><div class="v2-request-tabs"><button class="v2-request-tab active">全部 12</button><button class="v2-request-tab">待我处理 2</button><button class="v2-request-tab">处理中 2</button><button class="v2-request-tab">已完成 7</button></div>
+      <div class="v2-table-card"><div class="v2-table-head"><div class="v2-filter-row"><div class="v2-search">${icon('search')}<input placeholder="搜索需求名称 / 需求编号"/></div><button class="v2-filter">需求类型 ${icon('chevron-down')}</button><button class="v2-filter">所属项目 ${icon('chevron-down')}</button></div><span class="result-meta">按最近更新排序</span></div><div class="v2-table-wrap"><table class="v2-table"><thead><tr><th>需求</th><th>类型</th><th>所属项目</th><th>目标</th><th>当前进度</th><th>状态</th><th>关联交付</th><th>更新时间</th></tr></thead><tbody>${requests.map(r=>requestRow(r)).join('')}</tbody></table></div></div></section>`;
+  }
+
+  function requestRow(r){return `<tr class="v2-clickable" data-route="requirement-detail"><td><span class="v2-primary">${r.title}</span><span class="v2-secondary">${r.id}</span></td><td>${r.type}</td><td>${r.project}</td><td>${r.target}</td><td><div class="v2-request-progress"><strong>${r.progress}</strong><div class="v2-progress-line"><span style="width:${r.pct}%"></span></div></div></td><td>${statusPill(r.status)}</td><td>${r.delivery}</td><td>${r.updated}</td></tr>`}
+
+  function requirementDetailPage(){
+    const list=tracks.slice(0,6);
+    return `<div class="v2-detail-head"><button class="v2-back" data-route="requirements">← 返回内容需求</button><div class="v2-detail-title"><div><h1>无人机首发配乐</h1><p>REQ-20260915-024 · 影石无人机音乐</p></div>${statusPill('待我确认')}</div><div class="v2-detail-meta"><div class="v2-meta-block"><small>需求类型</small><strong>试听选曲</strong></div><div class="v2-meta-block"><small>目标数量</small><strong>20 首</strong></div><div class="v2-meta-block"><small>当前候选</small><strong>30 首</strong></div><div class="v2-meta-block"><small>反馈截止</small><strong>2026-09-20</strong></div></div></div>
+      <div class="v2-detail-grid"><section class="v2-table-card"><div class="v2-table-head"><div class="v2-table-head-copy"><strong>候选音乐</strong><small>试听后选择你希望保留的歌曲；最终确认后会形成正式选曲记录。</small></div><span class="result-meta">第一轮 · 30 首</span></div><div>${list.map((t,i)=>selectTrackRow(t,i)).join('')}</div><div class="v2-select-summary"><span>当前已选择 <strong id="v2SelectedCount">${v2.selectedTracks.size}</strong> / 30 首</span><button class="btn btn-primary" data-v2-action="confirm-selection">确认本轮选择</button></div></section>
+      <aside><div class="panel"><div class="panel-head"><h3>需求说明</h3></div><div class="panel-body"><div class="v2-brief-list"><div class="v2-brief"><small>使用场景</small><strong>无人机首发 / 航拍</strong></div><div class="v2-brief"><small>内容方向</small><strong>大气 / 开阔 / 户外</strong></div><div class="v2-brief"><small>偏好</small><strong>国际化、弱人声</strong></div><div class="v2-brief"><small>交付目标</small><strong>约 20 首</strong></div></div></div></div><div class="panel section"><div class="panel-head"><h3>处理记录</h3></div><div class="panel-body"><div class="v2-timeline"><div class="v2-timeline-item"><strong>第一轮候选已发送</strong><small>09-15 18:03 · 30 首</small></div><div class="v2-timeline-item"><strong>客户开始试听</strong><small>09-16 09:24</small></div><div class="v2-timeline-item"><strong>当前已选择 6 首</strong><small>等待最终确认</small></div></div></div></div></aside></div>`;
+  }
+
+  function selectTrackRow(t,index){
+    const selected=v2.selectedTracks.has(t.id);
+    return `<div class="v2-track-select ${selected?'selected':''}" data-v2-track-row="${t.id}"><div>${cover(t)}</div><div class="track-main"><div class="track-title">${t.title}</div><div class="track-sub">${t.artist} · ${t.genre}</div></div><div class="track-cell">${t.bpm} BPM</div><div class="track-cell">${t.duration}</div><button class="v2-select-btn" data-v2-select="${t.id}">${selected?'已选择':'选择'}</button></div>`;
+  }
+
+  function deliveriesPage(){
+    return `${pageHead('交付记录','查看所有已经收到或正在处理的内容批次，包括 API 上架、试听选曲和文件交付。','')}
+      <div class="v2-kpi-grid">${kpi('download','累计交付','27 次','共计 612 首正式内容')}${kpi('code','API 上架','18 次','当前 API 曲库 176,204 首')}${kpi('music','试听选曲','6 次','累计确认 486 首')}${kpi('folder','文件交付','3 次','最近一次 09-12')}</div>
+      <section class="section"><div class="v2-table-card"><div class="v2-table-head"><div class="v2-filter-row"><div class="v2-search">${icon('search')}<input placeholder="搜索交付名称 / 交付编号"/></div><button class="v2-filter">交付方式 ${icon('chevron-down')}</button><button class="v2-filter">所属项目 ${icon('chevron-down')}</button></div><span class="result-meta">共 27 次交付</span></div><div class="v2-table-wrap"><table class="v2-table"><thead><tr><th>交付</th><th>关联需求</th><th>交付方式</th><th>内容数量</th><th>交付时间</th><th>状态</th></tr></thead><tbody>${deliveries.map(deliveryRow).join('')}</tbody></table></div></div></section>`;
+  }
+
+  function deliveryRow(d){
+    const typeIcon=d.type.includes('API')?'code':d.type.includes('试听')?'music':'download';
+    return `<tr class="v2-clickable" data-route="delivery-detail"><td><span class="v2-primary">${d.name}</span><span class="v2-secondary">${d.id}</span></td><td>${d.request}</td><td><span class="v2-delivery-type"><span class="v2-type-icon">${icon(typeIcon)}</span>${d.type}</span></td><td>${d.count}</td><td>${d.date}</td><td>${statusPill(d.status)}</td></tr>`;
+  }
+
+  function deliveryDetailPage(){
+    return `<div class="v2-detail-head"><button class="v2-back" data-route="deliveries">← 返回交付记录</button><div class="v2-detail-title"><div><h1>9 月户外旅行增量</h1><p>DEL-20260916-028 · 关联需求：户外旅行音乐周更</p></div>${statusPill('已完成')}</div><div class="v2-detail-meta"><div class="v2-meta-block"><small>交付方式</small><strong>API 上架</strong></div><div class="v2-meta-block"><small>内容数量</small><strong>8 首</strong></div><div class="v2-meta-block"><small>交付时间</small><strong>2026-09-16 14:21</strong></div><div class="v2-meta-block"><small>结果</small><strong>已加入我的曲库</strong></div></div></div>
+      <div class="v2-detail-grid"><section class="v2-table-card"><div class="v2-table-head"><div class="v2-table-head-copy"><strong>本次交付内容</strong><small>本批内容已经正式进入你的客户曲库。</small></div><button class="btn btn-sm" data-route="my-catalog">查看我的曲库</button></div><div class="v2-table-wrap"><table class="v2-table"><thead><tr><th>歌曲</th><th>艺人</th><th>Track ID</th><th>结果</th></tr></thead><tbody>${tracks.slice(0,5).map(t=>`<tr><td class="v2-primary">${t.title}</td><td>${t.artist}</td><td>${t.id}</td><td>${statusPill('已上架')}</td></tr>`).join('')}</tbody></table></div></section><aside><div class="panel"><div class="panel-head"><h3>交付过程</h3></div><div class="panel-body"><div class="v2-timeline"><div class="v2-timeline-item"><strong>内容准备完成</strong><small>09-16 11:42</small></div><div class="v2-timeline-item"><strong>授权校验完成</strong><small>09-16 13:06 · 8 / 8 首通过</small></div><div class="v2-timeline-item"><strong>API 上架完成</strong><small>09-16 14:21 · 已同步到客户曲库</small></div></div></div></div></aside></div>`;
+  }
+
+  function managementPage(){
+    return `${pageHead('管理','管理你的账号与团队；合作信息仅作为只读参考。','')}
+      <div class="v2-manage-layout"><aside class="v2-manage-nav"><button class="active">${icon('users')}账号与成员</button><button>${icon('lock')}安全设置</button><button class="weak" data-v2-action="show-cooperation">${icon('briefcase-business')}合作信息</button></aside><section class="v2-manage-panel" id="v2ManagePanel">
+        <div class="v2-manage-section"><h3>账号与成员</h3><p>查看当前企业下可以访问 STARLINK 的成员账号。</p>${[['KH','客户管理员','admin@kanjian.com','管理员'],['LS','李思','lisi@company.com','内容成员'],['CY','陈雨','chenyu@company.com','内容成员'],['WW','王维','wangwei@company.com','开发者']].map(m=>`<div class="member-row"><div class="member-info"><span class="avatar-sm">${m[0]}</span><span><strong>${m[1]}</strong><small>${m[2]}</small></span></div><div class="data-cell">${m[3]}</div><div class="data-cell">正常</div><span></span></div>`).join('')}</div>
+        <div class="v2-manage-section"><h3>登录与安全</h3><p>用于当前账号的基础安全设置。</p><div class="info-grid"><div class="info-block"><small>最近登录</small><strong>今天 16:42</strong></div><div class="info-block"><small>登录保护</small><strong>已开启</strong></div></div></div>
+      </section></div>`;
+  }
+
+  function cooperationPanel(){
+    return `<div class="v2-manage-section"><h3>合作信息</h3><p>这些信息由 STARLINK 后台维护，仅作为当前合作范围的只读参考。</p><div class="info-grid"><div class="info-block"><small>客户名称</small><strong>影石 Insta360</strong></div><div class="info-block"><small>合作开始</small><strong>2024-06-01</strong></div></div><div class="v2-coop-card"><strong>Insta360 内容音乐</strong><small>运动相机 / UGC / 短视频 · 2024-06-01 ～ 长期 · 合作中</small></div><div class="v2-coop-card"><strong>影石无人机音乐</strong><small>无人机 / 户外 / 旅行 · 2026-08-15 ～ 长期 · 合作中</small></div><div class="v2-coop-card"><strong>授权结果</strong><small>当前可使用 182,381 首 · 全球 · 支持在线试听、文件获取与 API 调用</small></div></div>`;
+  }
+
+  navGroups.splice(0,navGroups.length,
+    {label:'工作区',items:[{id:'home',label:'工作台',icon:'home'}]},
+    {label:'内容',items:[{id:'my-catalog',label:'我的曲库',icon:'library',badge:'18.2万'},{id:'catalog',label:'全曲库搜索',icon:'search'},{id:'discover',label:'分类浏览',icon:'compass'},{id:'ai',label:'AI 找歌',icon:'sparkles',badge:'AI'}]},
+    {label:'服务',items:[{id:'requirements',label:'内容需求',icon:'list-music',badge:'2'},{id:'deliveries',label:'交付记录',icon:'download'}]},
+    {label:'开发者',items:[{id:'developer',label:'接入中心',icon:'code'}]},
+    {label:'系统',items:[{id:'settings',label:'管理',icon:'settings'}]}
+  );
+
+  pages.home=homeV2;
+  pages['my-catalog']=myCatalogPage;
+  pages.requirements=requirementsPage;
+  pages['requirement-detail']=requirementDetailPage;
+  pages.deliveries=deliveriesPage;
+  pages['delivery-detail']=deliveryDetailPage;
+  pages.settings=managementPage;
+
+  const oldMap={projects:'settings',playlists:'requirements',content:'my-catalog'};
+  if(oldMap[state.route]){
+    state.route=oldMap[state.route];
+    history.replaceState(null,'',`#/${state.route}`);
+  }
+
+  document.addEventListener('click',e=>{
+    const select=e.target.closest('[data-v2-select]');
+    if(select){
+      e.preventDefault();e.stopPropagation();
+      const id=select.dataset.v2Select;
+      if(v2.selectedTracks.has(id)) v2.selectedTracks.delete(id); else v2.selectedTracks.add(id);
+      const row=document.querySelector(`[data-v2-track-row="${id}"]`);
+      row?.classList.toggle('selected',v2.selectedTracks.has(id));
+      select.textContent=v2.selectedTracks.has(id)?'已选择':'选择';
+      const count=document.getElementById('v2SelectedCount');if(count) count.textContent=v2.selectedTracks.size;
+      return;
+    }
+    const action=e.target.closest('[data-v2-action]')?.dataset.v2Action;
+    if(action==='confirm-selection'){e.preventDefault();e.stopPropagation();toast(`已确认本轮选择，共 ${v2.selectedTracks.size} 首`);return}
+    if(action==='show-cooperation'){
+      e.preventDefault();e.stopPropagation();
+      document.querySelectorAll('.v2-manage-nav button').forEach(b=>b.classList.remove('active'));e.target.closest('button').classList.add('active');
+      const panel=document.getElementById('v2ManagePanel');if(panel) panel.innerHTML=cooperationPanel();
+    }
+  },true);
+
+  renderNav();
+  renderPage();
+})();
