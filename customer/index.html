@@ -7,6 +7,7 @@
   <title>STARLINK · 企业音乐工作台</title>
   <link rel="stylesheet" href="./styles.css" />
   <link rel="stylesheet" href="./ui-review.css" />
+  <link rel="stylesheet" href="./portal-v2.css" />
 </head>
 <body>
   <div class="app-shell">
@@ -44,7 +45,8 @@
           <button class="icon-btn" id="mobileMenu" aria-label="打开菜单" data-icon="menu"></button>
           <span class="brand-mark">S</span>
         </div>
-        <button class="project-switch" id="projectSwitch">
+        <!-- 兼容旧脚本挂载；项目不再作为客户前台的核心工作上下文。 -->
+        <button class="project-switch" id="projectSwitch" aria-hidden="true" tabindex="-1">
           <span class="project-icon" data-icon="briefcase-business"></span>
           <span class="project-copy"><small>当前项目</small><strong>Keep App · 2026 Q4</strong></span>
           <span data-icon="chevron-down"></span>
@@ -74,5 +76,6 @@
 
   <script src="./app.js"></script>
   <script src="./ui-review.js"></script>
+  <script src="./portal-v2.js"></script>
 </body>
 </html>
