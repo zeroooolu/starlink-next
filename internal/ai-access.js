@@ -1,15 +1,32 @@
 (() => {
   const MCP_URL = 'https://mcp.starlink.example/mcp';
   const agents = {
-    chatgpt:{name:'ChatGPT',mark:'G',connected:true,enabled:true,last:'今天 11:18',account:'环环',connectedAt:'2026-09-17 09:42'},
-    claude:{name:'Claude',mark:'C',connected:true,enabled:true,last:'昨天 18:42',account:'环环',connectedAt:'2026-09-15 14:08'},
-    codex:{name:'Codex',mark:'X',connected:true,enabled:true,last:'今天 10:06',account:'环环',connectedAt:'2026-09-14 10:16'},
-    cursor:{name:'Cursor',mark:'Cu',connected:false,enabled:false,last:'—',account:'环环',connectedAt:'—'}
+    chatgpt:{name:'ChatGPT',icon:'https://chatgpt.com/favicon.ico',connected:true,enabled:true,last:'今天 11:18',account:'环环',connectedAt:'2026-09-17 09:42'},
+    claude:{name:'Claude',icon:'https://claude.ai/favicon.ico',connected:true,enabled:true,last:'昨天 18:42',account:'环环',connectedAt:'2026-09-15 14:08'},
+    codex:{name:'Codex',icon:'https://openai.com/favicon.ico',connected:true,enabled:true,last:'今天 10:06',account:'环环',connectedAt:'2026-09-14 10:16'},
+    cursor:{name:'Cursor',icon:'https://cursor.com/favicon.ico',connected:false,enabled:false,last:'—',account:'环环',connectedAt:'—'},
+    workbuddy:{name:'WorkBuddy',icon:'https://www.workbuddy.cn/favicon.ico',connected:false,enabled:false,last:'—',account:'环环',connectedAt:'—'}
   };
+
+  function fallbackIcon(key){
+    if(key==='claude') return '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.8v18.4M2.8 12h18.4M5.5 5.5l13 13M18.5 5.5l-13 13"/></svg>';
+    if(key==='cursor') return '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 3 8 4.6v8.8L12 21l-8-4.6V7.6L12 3Z"/><path d="m4 7.6 8 4.6 8-4.6M12 12.2V21"/></svg>';
+    if(key==='workbuddy') return '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 7 5 3l5 2h4l5-2-2 4a7 7 0 1 1-10 0Z"/><path d="M9 12h.01M15 12h.01M9.5 15c1.5 1 3.5 1 5 0"/></svg>';
+    return '<svg viewBox="0 0 24 24" aria-hidden="true"><ellipse cx="12" cy="7.5" rx="6" ry="3.7"/><ellipse cx="12" cy="16.5" rx="6" ry="3.7"/><ellipse cx="8.1" cy="12" rx="6" ry="3.7" transform="rotate(60 8.1 12)"/><ellipse cx="15.9" cy="12" rx="6" ry="3.7" transform="rotate(60 15.9 12)"/><ellipse cx="8.1" cy="12" rx="6" ry="3.7" transform="rotate(-60 8.1 12)"/><ellipse cx="15.9" cy="12" rx="6" ry="3.7" transform="rotate(-60 15.9 12)"/></svg>';
+  }
 
   function logo(key){
     const a=agents[key];
-    return `<span class="aia-agent-logo ${key}">${a.mark}</span>`;
+    return `<span class="aia-agent-logo ${key}"><img src="${a.icon}" alt="${a.name}" loading="lazy"><span class="aia-logo-fallback">${fallbackIcon(key)}</span></span>`;
+  }
+
+  function initLogoFallbacks(scope=document){
+    scope.querySelectorAll('.aia-agent-logo img:not([data-aia-logo-ready])').forEach(img=>{
+      img.dataset.aiaLogoReady='1';
+      const showFallback=()=>img.closest('.aia-agent-logo')?.classList.add('fallback');
+      img.addEventListener('error',showFallback,{once:true});
+      if(img.complete && !img.naturalWidth) showFallback();
+    });
   }
 
   function status(a){
@@ -36,21 +53,17 @@
 
   routes['ai-access']={title:'个人设置 / AI 工具',render:Page.aiAccess};
 
-  function refresh(){const list=document.getElementById('aiaAgentList');if(list)list.innerHTML=rows();}
+  function refresh(){const list=document.getElementById('aiaAgentList');if(list){list.innerHTML=rows();initLogoFallbacks(list);}}
   function toast(text){let node=document.getElementById('aiaToast');if(!node){node=document.createElement('div');node.id='aiaToast';node.className='aia-toast';document.body.appendChild(node);}node.textContent=text;node.classList.add('show');clearTimeout(window.__aiaToast);window.__aiaToast=setTimeout(()=>node.classList.remove('show'),1400);}
   function closeModal(){document.getElementById('aiaModalMask')?.classList.remove('open');}
-  function modal(content){let mask=document.getElementById('aiaModalMask');if(!mask){mask=document.createElement('div');mask.id='aiaModalMask';mask.className='aia-modal-mask';document.body.appendChild(mask);mask.addEventListener('click',e=>{if(e.target===mask)closeModal();});}mask.innerHTML=`<div class="aia-modal">${content}</div>`;mask.classList.add('open');}
+  function modal(content){let mask=document.getElementById('aiaModalMask');if(!mask){mask=document.createElement('div');mask.id='aiaModalMask';mask.className='aia-modal-mask';document.body.appendChild(mask);mask.addEventListener('click',e=>{if(e.target===mask)closeModal();});}mask.innerHTML=`<div class="aia-modal">${content}</div>`;mask.classList.add('open');initLogoFallbacks(mask);}
   function flow(step){return `<div class="aia-flow"><div class="${step>1?'done':step===1?'active':''}"><i>${step>1?'✓':'1'}</i><span>打开 Agent</span></div><em></em><div class="${step>2?'done':step===2?'active':''}"><i>${step>2?'✓':'2'}</i><span>STARLINK 授权</span></div><em></em><div class="${step===3?'active done':''}"><i>${step===3?'✓':'3'}</i><span>连接完成</span></div></div>`;}
 
   function connectAgent(key){
     const a=agents[key];
     modal(`<div class="aia-modal-head"><div class="aia-modal-title">${logo(key)}<div><h2>连接 ${a.name}</h2><p>系统会在 ${a.name} 中添加 STARLINK，然后使用你的员工账号完成授权。</p></div></div><button class="aia-close" type="button" data-aia-close>×</button></div>
       ${flow(1)}
-      <div class="aia-modal-body">
-        <div class="aia-connect-card"><div class="aia-connect-icon">↗</div><div><strong>打开 ${a.name}</strong><span>下一步会模拟 ${a.name} 发起 STARLINK 连接请求。</span></div></div>
-        <button class="aia-manual-link" type="button" data-aia-manual-toggle>无法自动打开？手动连接</button>
-        <div class="aia-manual-box" id="aiaManualBox"><label>STARLINK MCP 地址</label><div class="aia-copy-row"><code>${MCP_URL}</code><button type="button" data-aia-copy="${MCP_URL}">复制</button></div><p>在 ${a.name} 的 MCP / Connector 设置中添加这个地址即可。不需要单独的长期 Key，后续仍通过 STARLINK 登录授权。</p></div>
-      </div>
+      <div class="aia-modal-body"><div class="aia-connect-card"><div class="aia-connect-icon">↗</div><div><strong>打开 ${a.name}</strong><span>下一步会模拟 ${a.name} 发起 STARLINK 连接请求。</span></div></div><button class="aia-manual-link" type="button" data-aia-manual-toggle>无法自动打开？手动连接</button><div class="aia-manual-box" id="aiaManualBox"><label>STARLINK MCP 地址</label><div class="aia-copy-row"><code>${MCP_URL}</code><button type="button" data-aia-copy="${MCP_URL}">复制</button></div><p>在 ${a.name} 的 MCP / Connector 设置中添加这个地址即可。不需要单独的长期 Key，后续仍通过 STARLINK 登录授权。</p></div></div>
       <div class="aia-modal-foot"><button class="aia-btn" type="button" data-aia-close>取消</button><button class="aia-btn primary" type="button" data-aia-open-agent="${key}">打开 ${a.name}</button></div>`);
   }
 
@@ -58,10 +71,7 @@
     const a=agents[key];
     modal(`<div class="aia-modal-head"><div class="aia-modal-title">${logo(key)}<div><h2>${a.name} 正在连接 STARLINK</h2><p>这是 Agent 侧收到 MCP 地址后的连接状态 Demo。</p></div></div><button class="aia-close" type="button" data-aia-close>×</button></div>
       ${flow(1)}
-      <div class="aia-modal-body">
-        <div class="aia-external-window"><div class="aia-window-head"><span>${a.name}</span><small>Connected services</small></div><div class="aia-service-row"><span class="aia-starlink-mark">S</span><div><strong>STARLINK</strong><small>${MCP_URL}</small></div><span class="aia-requesting">等待授权</span></div></div>
-        <div class="aia-connect-note">${a.name} 已识别 STARLINK 服务，接下来需要确认当前员工身份。</div>
-      </div>
+      <div class="aia-modal-body"><div class="aia-external-window"><div class="aia-window-head"><span>${a.name}</span><small>Connected services</small></div><div class="aia-service-row"><span class="aia-starlink-mark">S</span><div><strong>STARLINK</strong><small>${MCP_URL}</small></div><span class="aia-requesting">等待授权</span></div></div><div class="aia-connect-note">${a.name} 已识别 STARLINK 服务，接下来需要确认当前员工身份。</div></div>
       <div class="aia-modal-foot"><button class="aia-btn" type="button" data-aia-connect="${key}">返回</button><button class="aia-btn primary" type="button" data-aia-authorize="${key}">登录 STARLINK</button></div>`);
   }
 
@@ -69,39 +79,25 @@
     const a=agents[key];
     modal(`<div class="aia-modal-head"><div><h2>授权 ${a.name} 访问 STARLINK</h2><p>使用当前登录员工账号完成连接。</p></div><button class="aia-close" type="button" data-aia-close>×</button></div>
       ${flow(2)}
-      <div class="aia-modal-body">
-        <div class="aia-auth-brand"><span class="aia-starlink-mark large">S</span><div><strong>STARLINK</strong><span>AI 工具连接授权</span></div></div>
-        <div class="aia-auth-account"><span class="aia-user-dot">环</span><div><strong>环环</strong><small>当前已登录员工账号</small></div><b>已登录</b></div>
-        <div class="aia-info-list"><div><span>连接工具</span><strong>${a.name}</strong></div><div><span>权限</span><strong>与当前员工账号一致</strong></div><div><span>连接方式</span><strong>STARLINK 登录授权</strong></div></div>
-        <p class="aia-auth-note">连接后，${a.name} 只能执行你本人当前有权限执行的后台操作；账号权限变化会实时生效。</p>
-      </div>
+      <div class="aia-modal-body"><div class="aia-auth-brand"><span class="aia-starlink-mark large">S</span><div><strong>STARLINK</strong><span>AI 工具连接授权</span></div></div><div class="aia-auth-account"><span class="aia-user-dot">环</span><div><strong>环环</strong><small>当前已登录员工账号</small></div><b>已登录</b></div><div class="aia-info-list"><div><span>连接工具</span><strong>${a.name}</strong></div><div><span>权限</span><strong>与当前员工账号一致</strong></div><div><span>连接方式</span><strong>STARLINK 登录授权</strong></div></div><p class="aia-auth-note">连接后，${a.name} 只能执行你本人当前有权限执行的后台操作；账号权限变化会实时生效。</p></div>
       <div class="aia-modal-foot"><button class="aia-btn" type="button" data-aia-open-agent="${key}">返回</button><button class="aia-btn primary" type="button" data-aia-approve="${key}">允许连接</button></div>`);
   }
 
   function successStep(key){
-    const a=agents[key];
-    a.connected=true;a.enabled=true;a.connectedAt='2026-09-17 11:52';a.last='刚刚';refresh();
-    modal(`<div class="aia-modal-head"><div><h2>连接完成</h2><p>${a.name} 现在可以使用你的 STARLINK 权限。</p></div><button class="aia-close" type="button" data-aia-close>×</button></div>
-      ${flow(3)}
-      <div class="aia-modal-body"><div class="aia-success"><span>✓</span><h3>${a.name} 已连接</h3><p>以后在 ${a.name} 里直接要求它查询曲库、处理歌单、需求或交付即可。</p></div><div class="aia-info-list"><div><span>连接账号</span><strong>环环</strong></div><div><span>权限</span><strong>自动跟随员工账号</strong></div><div><span>状态</span><strong>已允许访问后台</strong></div></div></div>
-      <div class="aia-modal-foot"><button class="aia-btn primary" type="button" data-aia-close>完成</button></div>`);
+    const a=agents[key];a.connected=true;a.enabled=true;a.connectedAt='2026-09-17 11:52';a.last='刚刚';refresh();
+    modal(`<div class="aia-modal-head"><div><h2>连接完成</h2><p>${a.name} 现在可以使用你的 STARLINK 权限。</p></div><button class="aia-close" type="button" data-aia-close>×</button></div>${flow(3)}<div class="aia-modal-body"><div class="aia-success"><span>✓</span><h3>${a.name} 已连接</h3><p>以后在 ${a.name} 里直接要求它查询曲库、处理歌单、需求或交付即可。</p></div><div class="aia-info-list"><div><span>连接账号</span><strong>环环</strong></div><div><span>权限</span><strong>自动跟随员工账号</strong></div><div><span>状态</span><strong>已允许访问后台</strong></div></div></div><div class="aia-modal-foot"><button class="aia-btn primary" type="button" data-aia-close>完成</button></div>`);
   }
 
   function manageAgent(key){
     const a=agents[key];
-    modal(`<div class="aia-modal-head"><div class="aia-modal-title">${logo(key)}<div><h2>${a.name}</h2><p>连接使用当前员工账号权限，不单独维护 Agent 权限。</p></div></div><button class="aia-close" type="button" data-aia-close>×</button></div>
-      <div class="aia-modal-body">
-        <div class="aia-manage-row"><div><strong>允许访问 STARLINK</strong><span>关闭后 ${a.name} 将无法继续访问后台。</span></div><button class="aia-switch large ${a.enabled?'on':''}" type="button" role="switch" aria-checked="${a.enabled}" data-aia-modal-toggle="${key}"><span></span></button></div>
-        <div class="aia-info-list"><div><span>连接账号</span><strong>${a.account}</strong></div><div><span>权限</span><strong>与当前员工账号一致</strong></div><div><span>连接方式</span><strong>STARLINK 登录授权</strong></div><div><span>连接时间</span><strong>${a.connectedAt}</strong></div><div><span>最近使用</span><strong>${a.last}</strong></div></div>
-        <button class="aia-manual-link" type="button" data-aia-reauthorize="${key}">重新授权连接</button>
-      </div>
-      <div class="aia-modal-foot between"><button class="aia-btn danger" type="button" data-aia-disconnect="${key}">断开连接</button><div><button class="aia-btn" type="button" data-aia-close>取消</button><button class="aia-btn primary" type="button" data-aia-save="${key}">保存</button></div></div>`);
+    modal(`<div class="aia-modal-head"><div class="aia-modal-title">${logo(key)}<div><h2>${a.name}</h2><p>连接使用当前员工账号权限，不单独维护 Agent 权限。</p></div></div><button class="aia-close" type="button" data-aia-close>×</button></div><div class="aia-modal-body"><div class="aia-manage-row"><div><strong>允许访问 STARLINK</strong><span>关闭后 ${a.name} 将无法继续访问后台。</span></div><button class="aia-switch large ${a.enabled?'on':''}" type="button" role="switch" aria-checked="${a.enabled}" data-aia-modal-toggle="${key}"><span></span></button></div><div class="aia-info-list"><div><span>连接账号</span><strong>${a.account}</strong></div><div><span>权限</span><strong>与当前员工账号一致</strong></div><div><span>连接方式</span><strong>STARLINK 登录授权</strong></div><div><span>连接时间</span><strong>${a.connectedAt}</strong></div><div><span>最近使用</span><strong>${a.last}</strong></div></div><button class="aia-manual-link" type="button" data-aia-reauthorize="${key}">重新授权连接</button></div><div class="aia-modal-foot between"><button class="aia-btn danger" type="button" data-aia-disconnect="${key}">断开连接</button><div><button class="aia-btn" type="button" data-aia-close>取消</button><button class="aia-btn primary" type="button" data-aia-save="${key}">保存</button></div></div>`);
   }
 
   function copyText(text,button){const done=()=>{button.textContent='已复制';setTimeout(()=>button.textContent='复制',1000);};if(navigator.clipboard?.writeText)navigator.clipboard.writeText(text).then(done).catch(done);else done();}
-
   function ensureUserMenu(){const user=document.querySelector('.user-menu');if(!user||user.dataset.aiaReady)return;user.dataset.aiaReady='true';user.style.position='relative';user.style.cursor='pointer';const menu=document.createElement('div');menu.className='aia-user-menu';menu.innerHTML=`<button type="button" data-route="ai-access"><span>✦</span><div><strong>AI 工具</strong><small>连接和管理我的 Agent</small></div></button><div></div><button type="button"><span>⚙</span><div><strong>个人设置</strong><small>账号与偏好</small></div></button>`;user.appendChild(menu);user.addEventListener('click',e=>{if(e.target.closest('.aia-user-menu'))return;menu.classList.toggle('open');});document.addEventListener('click',e=>{if(!user.contains(e.target))menu.classList.remove('open');});}
-  ensureUserMenu();document.addEventListener('DOMContentLoaded',ensureUserMenu);
+  ensureUserMenu();document.addEventListener('DOMContentLoaded',()=>{ensureUserMenu();initLogoFallbacks();});
+
+  const observer=new MutationObserver(()=>initLogoFallbacks());observer.observe(document.getElementById('workspace'),{childList:true,subtree:true});
 
   document.addEventListener('click',e=>{
     const close=e.target.closest('[data-aia-close]');if(close){closeModal();return;}
