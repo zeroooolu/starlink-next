@@ -63,10 +63,13 @@
       return;
     }
 
-    const signature = `${route}:${items.map(x => x.label).join('/')}`;
-    if (breadcrumb.dataset.detailBreadcrumb === signature) return;
+    const currentLabel = items.find(x => x.current)?.label || '';
+    if (
+      breadcrumb.dataset.detailBreadcrumb === route &&
+      breadcrumb.querySelector('.breadcrumb-current')?.textContent.trim() === currentLabel
+    ) return;
 
-    breadcrumb.dataset.detailBreadcrumb = signature;
+    breadcrumb.dataset.detailBreadcrumb = route;
     breadcrumb.innerHTML = items.map((item, index) => {
       const content = item.route
         ? `<button type="button" class="breadcrumb-link" data-route="${item.route}">${item.label}</button>`
