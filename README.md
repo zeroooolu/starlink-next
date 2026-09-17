@@ -14,7 +14,7 @@
 
 当前主要模块：
 
-- 工作台
+- 工作台（内置 AI 处理入口、待办、最近工作和曲库概览）
 - 曲库
   - 曲库检索
   - 曲库看板
@@ -27,11 +27,10 @@
   - 客户管理
   - 项目管理
   - 需求管理
-- AI 曲库助手
 - 系统设置
 - 个人 AI 工具接入
 
-AI 曲库助手用于直接用自然语言处理曲库运营工作；个人 AI 工具接入用于将 ChatGPT、Claude、Codex、Cursor 等 Agent 连接到 STARLINK，并自动继承当前员工账号权限。
+AI 能力直接融入工作台和顶部全局入口，不再作为独立侧边栏模块。个人 AI 工具接入用于将 ChatGPT、Claude、Codex、Cursor、WorkBuddy 等 Agent 连接到 STARLINK，并自动继承当前员工账号权限。
 
 ## 外部 STARLINK 客户平台
 
