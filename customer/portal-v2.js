@@ -3,6 +3,8 @@
     selectedTracks: new Set(['ST-310284','ST-401237','ST-229850']),
     authorizedFromSimilar: new Set(),
     trackDetailId: 'ST-310284',
+    previewTrackId: null,
+    previewPaused: false,
   };
 
   const requests = [
@@ -316,6 +318,98 @@
     history.replaceState(null,'',`#/${state.route}`);
   }
 
+  function previewTrackById(id){
+    return tracks.find(t=>t.id===id)||similarPool.find(t=>t.id===id)||tracks[0];
+  }
+
+  function playerCover(track){
+    const cls=track.cover==='c1'?'':track.cover||'';
+    return `<div class="v2-player-cover ${cls}"><span>${initials(track.artist)}</span></div>`;
+  }
+
+  function syncPreviewButtons(){
+    document.querySelectorAll('.play-track[data-track]').forEach(btn=>{
+      const active=btn.dataset.track===v2.previewTrackId;
+      const paused=v2.previewPaused;
+      if(btn.classList.contains('btn')){
+        btn.innerHTML=`${icon(active&&!paused?'pause':'play')}${active&&!paused?'暂停':'播放'}`;
+      }else{
+        btn.innerHTML=icon(active&&!paused?'pause':'play');
+      }
+      btn.classList.toggle('is-playing',active&&!paused);
+    });
+  }
+
+  function renderPreviewPlayer(track){
+    let node=document.getElementById('v2PreviewPlayer');
+    if(!node){
+      node=document.createElement('div');
+      node.id='v2PreviewPlayer';
+      node.className='v2-preview-player';
+      document.body.appendChild(node);
+    }
+    const playing=!v2.previewPaused;
+    node.innerHTML=`
+      <div class="v2-player-track">
+        ${playerCover(track)}
+        <div class="v2-player-copy">
+          <strong>${track.title}</strong>
+          <small>${track.artist} · ${track.id}</small>
+        </div>
+      </div>
+      <div class="v2-player-center">
+        <div class="v2-player-controls">
+          <button class="v2-player-icon" data-v2-player-prev title="上一首">${icon('chevron-down')}</button>
+          <button class="v2-player-main" data-v2-player-toggle title="${playing?'暂停':'播放'}">${icon(playing?'pause':'play')}</button>
+          <button class="v2-player-icon next" data-v2-player-next title="下一首">${icon('chevron-down')}</button>
+        </div>
+        <div class="v2-player-progress">
+          <span>01:14</span>
+          <input type="range" min="0" max="100" value="38" aria-label="试听进度" />
+          <span>${track.duration}</span>
+        </div>
+      </div>
+      <div class="v2-player-side">
+        <div class="v2-player-volume">
+          <span class="v2-volume-icon">◖</span>
+          <input type="range" min="0" max="100" value="72" aria-label="音量" />
+        </div>
+        <button class="v2-player-icon" data-v2-download="${track.id}" title="下载">${icon('download')}</button>
+        <button class="v2-player-icon" data-v2-player-close title="关闭播放器">${icon('x')}</button>
+      </div>`;
+    document.body.classList.add('v2-player-open');
+    syncPreviewButtons();
+  }
+
+  function openPreviewPlayer(id){
+    v2.previewTrackId=id;
+    v2.previewPaused=false;
+    state.playing=id;
+    renderPreviewPlayer(previewTrackById(id));
+  }
+
+  function togglePreviewPlayer(){
+    if(!v2.previewTrackId) return;
+    v2.previewPaused=!v2.previewPaused;
+    state.playing=v2.previewPaused?null:v2.previewTrackId;
+    renderPreviewPlayer(previewTrackById(v2.previewTrackId));
+  }
+
+  function stepPreviewPlayer(direction){
+    const currentIndex=Math.max(0,tracks.findIndex(t=>t.id===v2.previewTrackId));
+    const nextIndex=(currentIndex+direction+tracks.length)%tracks.length;
+    openPreviewPlayer(tracks[nextIndex].id);
+  }
+
+  function closePreviewPlayer(){
+    document.getElementById('v2PreviewPlayer')?.remove();
+    document.body.classList.remove('v2-player-open');
+    v2.previewTrackId=null;
+    v2.previewPaused=false;
+    state.playing=null;
+    syncPreviewButtons();
+  }
+
   function openAuthorizationConfirm(track){
     closeAuthorizationConfirm();
     const node=document.createElement('div');
@@ -333,6 +427,26 @@
   function closeAuthorizationConfirm(){document.getElementById('v2ConfirmModal')?.remove()}
 
   document.addEventListener('click',e=>{
+    const playButton=e.target.closest('.play-track[data-track]');
+    if(playButton){
+      e.preventDefault();e.stopImmediatePropagation();
+      const id=playButton.dataset.track;
+      if(v2.previewTrackId===id) togglePreviewPlayer(); else openPreviewPlayer(id);
+      return;
+    }
+    if(e.target.closest('[data-v2-player-toggle]')){
+      e.preventDefault();e.stopImmediatePropagation();togglePreviewPlayer();return;
+    }
+    if(e.target.closest('[data-v2-player-prev]')){
+      e.preventDefault();e.stopImmediatePropagation();stepPreviewPlayer(-1);return;
+    }
+    if(e.target.closest('[data-v2-player-next]')){
+      e.preventDefault();e.stopImmediatePropagation();stepPreviewPlayer(1);return;
+    }
+    if(e.target.closest('[data-v2-player-close]')){
+      e.preventDefault();e.stopImmediatePropagation();closePreviewPlayer();return;
+    }
+
     const select=e.target.closest('[data-v2-select]');
     if(select){
       e.preventDefault();e.stopPropagation();
@@ -475,4 +589,5 @@
 
   renderNav();
   renderPage();
+  syncPreviewButtons();
 })();
