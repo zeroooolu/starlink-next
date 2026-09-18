@@ -1116,3 +1116,91 @@ body.v2-player-open .workspace{padding-bottom:132px}
   .v2-subcategory-tabs{margin-top:12px}
   .v2-subcategory-head{align-items:flex-start}
 }
+
+
+/* Discover hierarchy v2 —一级分类 -> 二级分类 -> 歌单 */
+.v2-secondary-index{
+  display:flex;
+  gap:7px;
+  margin-top:16px;
+  padding-bottom:2px;
+  overflow-x:auto;
+}
+.v2-secondary-index::-webkit-scrollbar{height:0}
+.v2-secondary-index button{
+  height:31px;
+  border:1px solid var(--line);
+  border-radius:8px;
+  background:#fff;
+  padding:0 10px;
+  color:#6e7784;
+  font-size:8px;
+  white-space:nowrap;
+  cursor:pointer;
+}
+.v2-secondary-index button:hover{border-color:#d5d8e2;background:#fafbfc;color:#414955}
+
+.v2-secondary-section{
+  margin-top:27px;
+}
+.v2-secondary-head{
+  display:flex;
+  align-items:flex-end;
+  justify-content:space-between;
+  gap:16px;
+  margin:0 1px 11px;
+}
+.v2-secondary-head h2{
+  margin:0;
+  font-size:15px;
+  color:#2f3540;
+  letter-spacing:-.015em;
+}
+.v2-secondary-head p{
+  margin:4px 0 0;
+  font-size:8px;
+  color:#9aa1ac;
+}
+.v2-secondary-section .v2-official-grid{
+  grid-template-columns:repeat(6,minmax(0,1fr));
+  gap:10px;
+}
+
+.v2-subcategory-hero{
+  min-height:156px;
+  padding:22px 24px;
+  border:1px solid var(--line);
+  border-radius:16px;
+  background:linear-gradient(135deg,#fff,#f8f9ff);
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:24px;
+}
+.v2-subcategory-hero>div:first-child{max-width:720px}
+.v2-subcategory-hero>div:first-child>span{
+  font-size:8px;
+  color:#8d95a2;
+  font-weight:700;
+}
+.v2-subcategory-hero h1{
+  margin:6px 0 0;
+  font-size:24px;
+  color:#292f39;
+  letter-spacing:-.03em;
+}
+.v2-subcategory-hero p{
+  margin:8px 0 0;
+  font-size:9px;
+  line-height:1.65;
+  color:#878f9c;
+}
+
+@media(max-width:1280px){
+  .v2-secondary-section .v2-official-grid{grid-template-columns:repeat(3,minmax(0,1fr))}
+}
+@media(max-width:720px){
+  .v2-secondary-head{align-items:flex-start;flex-direction:column}
+  .v2-subcategory-hero{align-items:flex-start;flex-direction:column}
+  .v2-secondary-section .v2-official-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
