@@ -1,6 +1,8 @@
 (() => {
   const v2 = {
     selectedTracks: new Set(['ST-310284','ST-401237','ST-229850']),
+    authorizedFromSimilar: new Set(),
+    trackDetailId: 'ST-310284',
   };
 
   const requests = [
@@ -27,6 +29,28 @@
     ['Skyline Stories','June Harbor','ST-338610','首批 API 曲库','2026-03-01','Insta360 内容音乐','全球 · API','可使用'],
     ['Quiet Momentum','Paper Satellites','ST-390771','经典内容盘活','2026-09-08','Insta360 内容音乐','全球 · 数字内容','可使用']
   ];
+
+  const similarPool = [
+    {id:'ST-510101',title:'Electric Horizon',artist:'Nova Lane',genre:'Electronic · Pop',mood:['未来','明亮'],bpm:122,duration:'03:08',vocal:'纯音乐',cover:'c2'},
+    {id:'ST-510102',title:'Motion Lines',artist:'Vela North',genre:'Electronic',mood:['活力','科技'],bpm:120,duration:'02:54',vocal:'纯音乐',cover:'c3'},
+    {id:'ST-510103',title:'Daybreak Circuit',artist:'Mono Atlas',genre:'Indie Electronic',mood:['积极','开阔'],bpm:118,duration:'03:21',vocal:'弱人声',cover:'c4'},
+    {id:'ST-510104',title:'Into The Current',artist:'Echo Harbor',genre:'Pop · Electronic',mood:['运动','明亮'],bpm:124,duration:'02:47',vocal:'女声',cover:'c5'},
+    {id:'ST-510105',title:'Open Frequency',artist:'Arc Runner',genre:'Electronic',mood:['科技','坚定'],bpm:121,duration:'03:14',vocal:'纯音乐',cover:'c1'},
+    {id:'ST-510106',title:'Golden Momentum',artist:'Northfield',genre:'Indie Pop',mood:['积极','自由'],bpm:116,duration:'03:02',vocal:'男声',cover:'c2'},
+    {id:'ST-510107',title:'Bright Machines',artist:'Signal Coast',genre:'Electronic · Ambient',mood:['未来','高级'],bpm:112,duration:'03:38',vocal:'纯音乐',cover:'c3'},
+    {id:'ST-510108',title:'Run With Light',artist:'Mira Avenue',genre:'Pop · Dance',mood:['活力','运动'],bpm:126,duration:'02:58',vocal:'女声',cover:'c4'},
+    {id:'ST-510109',title:'Vector Bloom',artist:'Satellite Club',genre:'Electronic',mood:['科技','积极'],bpm:119,duration:'03:11',vocal:'纯音乐',cover:'c5'},
+    {id:'ST-510110',title:'Higher Motion',artist:'Atlas Neon',genre:'Indie Electronic',mood:['开阔','激励'],bpm:123,duration:'03:26',vocal:'弱人声',cover:'c1'}
+  ];
+
+  const detailTags = {
+    genre:['Electronic','Pop','Dance Pop'],
+    mood:['活力','积极','明亮','激励'],
+    scene:['运动健身','户外旅行','品牌广告','短视频'],
+    instrument:['Synth','Electronic Drums','Bass','Pad'],
+    vocal:['女声','英文','人声较弱'],
+    energy:['中高能量','124 BPM','稳定律动']
+  };
 
   function statusPill(status){
     const cls=status.includes('待')?'wait':status.includes('候选')?'blue':status.includes('完成')||status.includes('交付')||status.includes('使用')?'':'neutral';
@@ -68,29 +92,57 @@
     return `<div class="v2-catalog-wave" aria-hidden="true">${bars}</div>`;
   }
 
+  function initials(name='Music'){
+    return name.split(' ').map(x=>x[0]).join('').slice(0,2).toUpperCase();
+  }
+
   function myCatalogTrackRow(track,meta,index){
-    const favorite=state.favorites.has(track.id);
     const tags=[track.genre.split(' · ')[0],track.mood[0],track.mood[1],`${track.bpm} BPM`].filter(Boolean);
-    return `<div class="v2-catalog-track" data-catalog-search="${(track.title+' '+track.artist+' '+track.id+' '+track.genre+' '+track.mood.join(' ')).toLowerCase()}">
-      <div class="v2-catalog-track-main">
-        <div class="v2-catalog-cover">${cover(track,index)}</div>
-        <div class="v2-catalog-copy">
-          <div class="v2-catalog-title-row"><strong>${track.title}</strong><span>${track.duration}</span></div>
-          <small>${track.artist} · ${track.id}</small>
-          <div class="v2-catalog-tags">${tags.map(tag=>`<span>${tag}</span>`).join('')}</div>
+    return `<div class="v2-catalog-track-wrap" data-v2-track-wrap="${track.id}">
+      <div class="v2-catalog-track" data-catalog-search="${(track.title+' '+track.artist+' '+track.id+' '+track.genre+' '+track.mood.join(' ')).toLowerCase()}">
+        <div class="v2-catalog-track-main">
+          <div class="v2-catalog-cover">${cover(track,index)}</div>
+          <div class="v2-catalog-copy">
+            <div class="v2-catalog-title-row"><button class="v2-title-link" data-v2-detail="${track.id}">${track.title}</button><span>${track.duration}</span></div>
+            <small>${track.artist} · ${track.id}</small>
+            <div class="v2-catalog-tags">${tags.map(tag=>`<span>${tag}</span>`).join('')}</div>
+          </div>
+        </div>
+        <div class="v2-wave-cell">
+          ${catalogWave(track,index)}
+          <small>${meta?.source||'首批 API 曲库'} · ${meta?.date||'2026-03-01'}</small>
+        </div>
+        <div class="v2-catalog-actions">
+          <button class="v2-track-action play-track" data-track="${track.id}" title="${state.playing===track.id?'暂停':'播放'}">${icon(state.playing===track.id?'pause':'play')}</button>
+          <button class="v2-track-action" data-v2-download="${track.id}" title="下载">${icon('download')}</button>
+          <button class="v2-track-action" data-v2-similar="${track.id}" data-track-title="${track.title}" title="找相似">${icon('sparkles')}</button>
+          <button class="v2-track-action" data-v2-detail="${track.id}" title="歌曲详情">${icon('more-horizontal')}</button>
         </div>
       </div>
-      <div class="v2-wave-cell">
-        ${catalogWave(track,index)}
-        <small>${meta?.source||'首批 API 曲库'} · ${meta?.date||'2026-03-01'}</small>
+      <div class="v2-similar-slot" data-v2-similar-slot="${track.id}"></div>
+    </div>`;
+  }
+
+  function similarResultsPanel(sourceId,sourceTitle){
+    return `<section class="v2-similar-panel">
+      <div class="v2-similar-head">
+        <div><strong>与「${sourceTitle}」相似</strong><small>根据曲风、情绪、节奏、编曲和标签匹配的 10 首候选歌曲</small></div>
+        <button class="v2-similar-close" data-v2-similar-close="${sourceId}">${icon('x')}收起</button>
       </div>
-      <div class="v2-catalog-actions">
-        <button class="v2-track-action play-track" data-track="${track.id}" title="${state.playing===track.id?'暂停':'播放'}">${icon(state.playing===track.id?'pause':'play')}</button>
-        <button class="v2-track-action" data-v2-download="${track.id}" title="下载">${icon('download')}</button>
-        <button class="v2-track-action" data-v2-similar="${track.id}" data-track-title="${track.title}" title="找相似">${icon('sparkles')}</button>
-        <button class="v2-track-action favorite-track ${favorite?'active':''}" data-track="${track.id}" title="${favorite?'取消收藏':'收藏'}">${icon('heart')}</button>
-        <button class="v2-track-action" data-v2-more="${track.id}" data-track-title="${track.title}" title="更多">${icon('more-horizontal')}</button>
+      <div class="v2-similar-list">
+        ${similarPool.map((track,index)=>similarResultRow(track,index)).join('')}
       </div>
+    </section>`;
+  }
+
+  function similarResultRow(track,index){
+    const added=v2.authorizedFromSimilar.has(track.id);
+    return `<div class="v2-similar-row">
+      <div class="v2-sim-cover ${track.cover||''}"><span>${initials(track.artist)}</span></div>
+      <div class="v2-sim-copy"><strong>${track.title}</strong><small>${track.artist} · ${track.id}</small></div>
+      <div class="v2-sim-tags"><span>${track.genre.split(' · ')[0]}</span><span>${track.mood[0]}</span><span>${track.bpm} BPM</span></div>
+      <span class="v2-sim-duration">${track.duration}</span>
+      <button class="v2-add-auth ${added?'done':''}" data-v2-add-auth="${track.id}" ${added?'disabled':''}>${added?'已加入':'加入授权曲库'}</button>
     </div>`;
   }
 
@@ -117,7 +169,7 @@
           <div class="v2-catalog-query">
             <div class="v2-catalog-keyword">${icon('search')}<input id="myCatalogKeyword" autocomplete="off" placeholder="搜索歌曲、艺人、Track ID 或标签" /></div>
             <button class="v2-catalog-filter" data-v2-catalog-filter="source">来源批次 ${icon('chevron-down')}</button>
-            <button class="v2-catalog-filter" data-v2-catalog-filter="date">加入时间 ${icon('chevron-down')}</button>
+            <button class="v2-catalog-filter" data-v2-date-range>加入时间 ${icon('chevron-down')}</button>
           </div>
           <div class="v2-catalog-count"><strong>176,204</strong> 首已授权</div>
         </div>
@@ -132,6 +184,63 @@
         <button class="v2-load-more">加载更多已授权音乐</button>
       </div>`;
   }
+
+  function trackDetailPage(){
+    const track=tracks.find(t=>t.id===v2.trackDetailId)||tracks[0];
+    const meta=customerCatalog.find(c=>c[2]===track.id);
+    const source=meta?.[3]||'首批 API 曲库';
+    const joined=meta?.[4]||'2026-03-01';
+    const groups=[
+      ['曲风',detailTags.genre],['情绪',detailTags.mood],['适用场景',detailTags.scene],
+      ['乐器 / 编曲',detailTags.instrument],['人声 / 语言',detailTags.vocal],['节奏 / 能量',detailTags.energy]
+    ];
+    return `<div class="v2-track-detail-page">
+      <button class="v2-back" data-route="my-catalog">← 返回我的曲库</button>
+      <section class="v2-track-hero">
+        <div class="v2-track-detail-cover">${cover(track)}</div>
+        <div class="v2-track-detail-main">
+          <span class="v2-track-detail-kicker">已授权歌曲</span>
+          <h1>${track.title}</h1>
+          <p>${track.artist} · ${track.id}</p>
+          <div class="v2-track-detail-actions">
+            <button class="btn btn-primary play-track" data-track="${track.id}">${icon(state.playing===track.id?'pause':'play')}${state.playing===track.id?'暂停':'播放'}</button>
+            <button class="btn" data-v2-download="${track.id}">${icon('download')}下载</button>
+            <button class="btn" data-v2-detail-similar="${track.id}" data-track-title="${track.title}">${icon('sparkles')}找相似</button>
+          </div>
+        </div>
+        <div class="v2-track-wave-card">
+          ${catalogWave(track,2)}
+          <small>${track.duration} · ${track.bpm} BPM</small>
+        </div>
+      </section>
+
+      <div class="v2-track-detail-grid">
+        <section class="v2-detail-card">
+          <div class="v2-detail-card-head"><strong>基本信息</strong><small>歌曲与授权曲库中的基础元数据</small></div>
+          <div class="v2-basic-info-grid">
+            ${detailInfo('歌曲名称',track.title)}
+            ${detailInfo('艺人',track.artist)}
+            ${detailInfo('Track ID',track.id)}
+            ${detailInfo('时长',track.duration)}
+            ${detailInfo('BPM',String(track.bpm))}
+            ${detailInfo('人声',track.vocal)}
+            ${detailInfo('曲风',track.genre)}
+            ${detailInfo('来源批次',source)}
+            ${detailInfo('加入时间',joined)}
+          </div>
+        </section>
+        <section class="v2-detail-card">
+          <div class="v2-detail-card-head"><strong>标签信息</strong><small>按标签维度分组展示歌曲特征</small></div>
+          <div class="v2-tag-groups">
+            ${groups.map(([name,tags])=>`<div class="v2-tag-group"><label>${name}</label><div>${tags.map(tag=>`<span>${tag}</span>`).join('')}</div></div>`).join('')}
+          </div>
+        </section>
+      </div>
+      <div id="v2DetailSimilar"></div>
+    </div>`;
+  }
+
+  function detailInfo(label,value){return `<div class="v2-detail-info"><small>${label}</small><strong>${value}</strong></div>`}
 
   function requirementsPage(){
     return `${pageHead('内容需求','查看每一次内容需求从提出、候选、反馈到最终交付的处理进度。','')}
@@ -198,6 +307,7 @@
   pages['requirement-detail']=requirementDetailPage;
   pages.deliveries=deliveriesPage;
   pages['delivery-detail']=deliveryDetailPage;
+  pages['track-detail']=trackDetailPage;
   pages.settings=managementPage;
 
   const oldMap={projects:'settings',playlists:'requirements',content:'my-catalog'};
@@ -205,6 +315,22 @@
     state.route=oldMap[state.route];
     history.replaceState(null,'',`#/${state.route}`);
   }
+
+  function openAuthorizationConfirm(track){
+    closeAuthorizationConfirm();
+    const node=document.createElement('div');
+    node.className='v2-confirm-modal';
+    node.id='v2ConfirmModal';
+    node.innerHTML=`<div class="v2-confirm-backdrop"></div><div class="v2-confirm-dialog">
+      <span class="v2-confirm-icon">${icon('plus')}</span>
+      <h3>加入授权曲库？</h3>
+      <p>确认将《${track.title}》加入当前客户的授权曲库。确认后该歌曲会进入已授权结果，并按当前配置同步到可用范围。</p>
+      <div class="v2-confirm-track"><strong>${track.title}</strong><small>${track.artist} · ${track.id}</small></div>
+      <div class="v2-confirm-actions"><button class="btn" data-v2-cancel-auth>取消</button><button class="btn btn-primary" data-v2-confirm-auth="${track.id}">确认加入</button></div>
+    </div>`;
+    document.body.appendChild(node);
+  }
+  function closeAuthorizationConfirm(){document.getElementById('v2ConfirmModal')?.remove()}
 
   document.addEventListener('click',e=>{
     const select=e.target.closest('[data-v2-select]');
@@ -221,11 +347,20 @@
     const catalogFilter=e.target.closest('[data-v2-catalog-filter]');
     if(catalogFilter){
       e.preventDefault();e.stopPropagation();
-      const kind=catalogFilter.dataset.v2CatalogFilter;
-      const items=kind==='source'
-        ? ['全部来源批次','9 月户外旅行增量','无人机首发第一轮','经典内容盘活','首批 API 曲库']
-        : ['全部时间','近 7 天','近 30 天','近 90 天','更早'];
-      showDropdown(catalogFilter,`<div class="dropdown-title">${kind==='source'?'来源批次':'加入时间'}</div>${items.map((item,i)=>`<button class="dropdown-item ${i===0?'active':''}" data-v2-filter-value="${item}">${item}</button>`).join('')}`);
+      const items=['全部来源批次','9 月户外旅行增量','无人机首发第一轮','经典内容盘活','首批 API 曲库'];
+      showDropdown(catalogFilter,`<div class="dropdown-title">来源批次</div>${items.map((item,i)=>`<button class="dropdown-item ${i===0?'active':''}" data-v2-filter-value="${item}">${item}</button>`).join('')}`);
+      return;
+    }
+    const dateRange=e.target.closest('[data-v2-date-range]');
+    if(dateRange){
+      e.preventDefault();e.stopPropagation();
+      showDropdown(dateRange,`<div class="dropdown-title">加入时间</div>
+        <div class="v2-date-range-pop">
+          <label><span>开始日期</span><input id="v2DateStart" type="date" value="2026-08-18"></label>
+          <span class="v2-date-sep">至</span>
+          <label><span>结束日期</span><input id="v2DateEnd" type="date" value="2026-09-18"></label>
+        </div>
+        <div class="v2-date-actions"><button class="btn btn-sm" data-v2-date-clear>清空</button><button class="btn btn-sm btn-primary" data-v2-date-apply>应用</button></div>`);
       return;
     }
     const filterValue=e.target.closest('[data-v2-filter-value]');
@@ -233,6 +368,22 @@
       e.preventDefault();e.stopPropagation();
       document.querySelectorAll('.dropdown').forEach(node=>node.remove());
       toast(`已选择：${filterValue.dataset.v2FilterValue}`);
+      return;
+    }
+    if(e.target.closest('[data-v2-date-clear]')){
+      e.preventDefault();e.stopPropagation();
+      const s=document.getElementById('v2DateStart');const ed=document.getElementById('v2DateEnd');
+      if(s) s.value='';if(ed) ed.value='';
+      return;
+    }
+    if(e.target.closest('[data-v2-date-apply]')){
+      e.preventDefault();e.stopPropagation();
+      const s=document.getElementById('v2DateStart')?.value;
+      const ed=document.getElementById('v2DateEnd')?.value;
+      if(!s||!ed){toast('请选择完整的开始和结束日期');return}
+      if(s>ed){toast('开始日期不能晚于结束日期');return}
+      document.querySelectorAll('.dropdown').forEach(node=>node.remove());
+      toast(`已筛选加入时间：${s} ～ ${ed}`);
       return;
     }
     const download=e.target.closest('[data-v2-download]');
@@ -244,21 +395,61 @@
     const similar=e.target.closest('[data-v2-similar]');
     if(similar){
       e.preventDefault();e.stopPropagation();
-      routeTo('catalog',{query:`相似于 ${similar.dataset.trackTitle}`});
+      const id=similar.dataset.v2Similar;
+      const slot=document.querySelector(`[data-v2-similar-slot="${id}"]`);
+      document.querySelectorAll('.v2-similar-slot').forEach(node=>{if(node!==slot) node.innerHTML=''});
+      if(slot){
+        const opened=slot.dataset.open==='1';
+        slot.innerHTML=opened?'':similarResultsPanel(id,similar.dataset.trackTitle);
+        slot.dataset.open=opened?'0':'1';
+        slot.scrollIntoView?.({behavior:'smooth',block:'nearest'});
+      }
       return;
     }
-    const more=e.target.closest('[data-v2-more]');
-    if(more){
+    const similarClose=e.target.closest('[data-v2-similar-close]');
+    if(similarClose){
       e.preventDefault();e.stopPropagation();
-      showDropdown(more,`<div class="dropdown-title">${more.dataset.trackTitle}</div><button class="dropdown-item">查看歌曲详情</button><button class="dropdown-item" data-route="deliveries">查看交付来源</button><button class="dropdown-item" data-v2-copy-track="${more.dataset.v2More}">复制 Track ID</button>`);
+      const slot=document.querySelector(`[data-v2-similar-slot="${similarClose.dataset.v2SimilarClose}"]`);
+      if(slot){slot.innerHTML='';slot.dataset.open='0'}
       return;
     }
-    const copyTrack=e.target.closest('[data-v2-copy-track]');
-    if(copyTrack){
+    const detailSimilar=e.target.closest('[data-v2-detail-similar]');
+    if(detailSimilar){
       e.preventDefault();e.stopPropagation();
-      navigator.clipboard?.writeText(copyTrack.dataset.v2CopyTrack);
-      toast('Track ID 已复制');
+      const host=document.getElementById('v2DetailSimilar');
+      if(host){
+        host.innerHTML=similarResultsPanel(detailSimilar.dataset.v2DetailSimilar,detailSimilar.dataset.trackTitle);
+        host.scrollIntoView?.({behavior:'smooth',block:'start'});
+      }
       return;
+    }
+    const detail=e.target.closest('[data-v2-detail]');
+    if(detail){
+      e.preventDefault();e.stopPropagation();
+      v2.trackDetailId=detail.dataset.v2Detail;
+      routeTo('track-detail');
+      return;
+    }
+    const addAuth=e.target.closest('[data-v2-add-auth]');
+    if(addAuth){
+      e.preventDefault();e.stopPropagation();
+      const track=similarPool.find(t=>t.id===addAuth.dataset.v2AddAuth);
+      if(track) openAuthorizationConfirm(track);
+      return;
+    }
+    const confirmAuth=e.target.closest('[data-v2-confirm-auth]');
+    if(confirmAuth){
+      e.preventDefault();e.stopPropagation();
+      const id=confirmAuth.dataset.v2ConfirmAuth;
+      const track=similarPool.find(t=>t.id===id);
+      v2.authorizedFromSimilar.add(id);
+      document.querySelectorAll(`[data-v2-add-auth="${id}"]`).forEach(btn=>{btn.textContent='已加入';btn.disabled=true;btn.classList.add('done')});
+      closeAuthorizationConfirm();
+      toast(`《${track?.title||'歌曲'}》已加入授权曲库`);
+      return;
+    }
+    if(e.target.closest('[data-v2-cancel-auth]')||e.target.closest('.v2-confirm-backdrop')){
+      e.preventDefault();e.stopPropagation();closeAuthorizationConfirm();return;
     }
     const action=e.target.closest('[data-v2-action]')?.dataset.v2Action;
     if(action==='confirm-selection'){e.preventDefault();e.stopPropagation();toast(`已确认本轮选择，共 ${v2.selectedTracks.size} 首`);return}
