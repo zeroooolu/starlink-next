@@ -3,6 +3,7 @@
     selectedTracks: new Set(['ST-310284','ST-401237','ST-229850']),
     authorizedFromSimilar: new Set(),
     trackDetailId: 'ST-310284',
+    trackDetailMode: 'authorized',
     previewTrackId: null,
     previewPaused: false,
   };
@@ -273,12 +274,14 @@
       <section class="v2-track-hero">
         <div class="v2-track-detail-cover">${cover(track)}</div>
         <div class="v2-track-detail-main">
-          <span class="v2-track-detail-kicker">已授权歌曲</span>
+          <span class="v2-track-detail-kicker">${v2.trackDetailMode==='search'?'可加入曲库':'已授权歌曲'}</span>
           <h1>${track.title}</h1>
           <p>${track.artist} · ${track.id}</p>
           <div class="v2-track-detail-actions">
-            <button class="btn btn-primary play-track" data-track="${track.id}">${icon(state.playing===track.id?'pause':'play')}${state.playing===track.id?'暂停':'播放'}</button>
-            <button class="btn" data-v2-download="${track.id}">${icon('download')}下载</button>
+            <button class="btn btn-primary play-track" data-track="${track.id}">${icon(state.playing===track.id?'pause':'play')}${state.playing===track.id?'暂停':'试听'}</button>
+            ${v2.trackDetailMode==='search'
+              ? `<button class="btn" data-v2-add-search="${track.id}">${icon('plus')}加入曲库</button>`
+              : `<button class="btn" data-v2-download="${track.id}">${icon('download')}下载</button>`}
             <button class="btn" data-v2-detail-similar="${track.id}" data-track-title="${track.title}">${icon('sparkles')}找相似</button>
           </div>
         </div>
@@ -299,8 +302,8 @@
             ${detailInfo('BPM',String(track.bpm))}
             ${detailInfo('人声',track.vocal)}
             ${detailInfo('曲风',track.genre)}
-            ${detailInfo('来源批次',source)}
-            ${detailInfo('加入时间',joined)}
+            ${v2.trackDetailMode==='authorized'?detailInfo('来源批次',source):detailInfo('曲库状态','可加入我的曲库')}
+            ${v2.trackDetailMode==='authorized'?detailInfo('加入时间',joined):detailInfo('授权范围','符合当前客户搜索授权')}
           </div>
         </section>
         <section class="v2-detail-card">
@@ -676,6 +679,7 @@
     if(detail){
       e.preventDefault();e.stopPropagation();
       v2.trackDetailId=detail.dataset.v2Detail;
+      v2.trackDetailMode=state.route==='catalog'?'search':'authorized';
       routeTo('track-detail');
       return;
     }
