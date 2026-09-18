@@ -9,6 +9,7 @@
     previewTrackId: null,
     previewPaused: false,
     discoverCategoryKey: 'healing',
+    discoverSubcategory: '白噪音疗愈',
     discoverPlaylistId: 'healing-city',
   };
 
@@ -86,6 +87,7 @@
   const officialPlaylistSections = [
     {
       key:'healing',title:'疗愈音乐',count:99,
+      subcategories:['白噪音疗愈','乐音疗愈','状态唤醒与专注','助眠与休憩','冥想与身心灵疗愈','情绪与压力调节','禅乐','赫兹频率音乐','关系修复','脑波音乐','胎教音乐','ASMR','宠物疗愈'],
       description:'围绕放松、助眠、专注与身心疗愈整理的专业场景曲库。',
       playlists:[
         {id:'healing-city',group:'氛围音景',title:'氛围音景｜城市环境模拟',count:60},
@@ -101,6 +103,7 @@
     },
     {
       key:'drama-music',title:'短剧配乐',count:83,
+      subcategories:['逆袭重生','古装仙侠','女频情感','家庭治愈','奇异科幻','喜剧沙雕'],
       description:'覆盖甜宠、古风、悬疑、都市与轻喜等剧情类型的短剧专属配乐。',
       playlists:[
         {id:'drama-memory',group:'女频情感',title:'回忆',count:83},
@@ -119,6 +122,7 @@
     },
     {
       key:'drama-sfx',title:'短剧音效',count:277,
+      subcategories:['动物音效','城市环境音效','载具音效','人类音效','自然环境音效','武器音效'],
       description:'从自然环境、人声到转场、动作与特效，覆盖剧情制作中的常用声音素材。',
       playlists:[
         {id:'sfx-forest',group:'自然环境音效',title:'音效-森林环境',count:5},
@@ -137,6 +141,7 @@
     },
     {
       key:'game',title:'游戏配乐',count:33,
+      subcategories:['休闲卡牌类游戏','音乐节奏类游戏','建造生存类游戏','其他类型游戏配乐','体育竞技类游戏','模拟经营类游戏'],
       description:'面向不同游戏类型、世界观与玩法节奏整理的可商用游戏音乐。',
       playlists:[
         {id:'game-rhythm-pop',group:'音乐节奏类游戏',title:'节奏流行类',count:399},
@@ -155,6 +160,7 @@
     },
     {
       key:'fitness',title:'运动健身',count:32,
+      subcategories:['动感单车','跑步行走','冥想瑜伽','舞蹈健身','太极&气功','中老年健体'],
       description:'覆盖骑行、跑步、瑜伽、舞蹈与健体等运动场景的高适配度音乐。',
       playlists:[
         {id:'fitness-fast-ride',group:'动感单车',title:'速度骑行（踏频150以上）',count:67},
@@ -173,6 +179,7 @@
     },
     {
       key:'scene',title:'场景配乐',count:17,
+      subcategories:['综艺配乐','有声书配乐','节日音乐','企业宣传','长短视频配乐','运动健身'],
       description:'围绕综艺、有声书、节日、公播与企业内容制作整理的通用场景配乐。',
       playlists:[
         {id:'scene-regret',group:'综艺配乐',title:'悲伤童话｜成为遗憾的话，是不是会记得很久',count:678},
@@ -416,12 +423,29 @@
     return {section:officialPlaylistSections[0],playlist:officialPlaylistSections[0].playlists[0]};
   }
 
+  function playlistSubcategory(section,item){
+    if(item.subcategory) return item.subcategory;
+    if(section.key==='healing') return '白噪音疗愈';
+    return item.group;
+  }
+
+  function officialSubcategoryCard(section,subcategory,sectionIndex,itemIndex){
+    return `<article class="v2-official-playlist v2-subcategory-card" data-v2-category="${section.key}" data-v2-subcategory="${subcategory}">
+      ${playlistArt(sectionIndex,itemIndex)}
+      <div class="v2-official-playlist-copy">
+        <strong>${subcategory}</strong>
+        <small>${section.title} · 二级分类</small>
+      </div>
+      <span class="v2-playlist-open">${icon('arrow-up-right')}</span>
+    </article>`;
+  }
+
   function officialPlaylistCard(section,item,sectionIndex,itemIndex){
     return `<article class="v2-official-playlist" data-v2-playlist="${item.id}">
       ${playlistArt(sectionIndex,itemIndex)}
       <div class="v2-official-playlist-copy">
         <strong>${item.title}</strong>
-        <small>${item.group} · ${item.count.toLocaleString()} 首</small>
+        <small>${item.group||playlistSubcategory(section,item)} · ${item.count.toLocaleString()} 首</small>
       </div>
       <span class="v2-playlist-open">${icon('arrow-up-right')}</span>
     </article>`;
@@ -436,7 +460,7 @@
         <button class="v2-official-more" data-v2-category="${section.key}">查看全部 ${section.count} 个曲库 ${icon('arrow-up-right')}</button>
       </div>
       <div class="v2-official-grid">
-        ${section.playlists.slice(0,6).map((item,itemIndex)=>officialPlaylistCard(section,item,sectionIndex,itemIndex)).join('')}
+        ${section.subcategories.slice(0,6).map((subcategory,itemIndex)=>officialSubcategoryCard(section,subcategory,sectionIndex,itemIndex)).join('')}
       </div>
     </section>`;
   }
@@ -467,16 +491,17 @@
         </div>
       </section>
 
-      <div class="v2-official-heading">
-        <div><span>OFFICIAL COLLECTIONS</span><h2>官方歌单</h2><p>按官方专业曲库分类浏览，进入分类后可查看该分类下的全部歌单。</p></div>
-      </div>
-
       ${officialPlaylistSections.map(officialPlaylistSection).join('')}`;
   }
 
   function discoverCategoryPage(){
     const section=findDiscoverCategory(v2.discoverCategoryKey);
     const sectionIndex=officialPlaylistSections.indexOf(section);
+    const subcategories=section.subcategories||[];
+    if(!subcategories.includes(v2.discoverSubcategory)) v2.discoverSubcategory=subcategories[0]||'';
+    const active=v2.discoverSubcategory;
+    const visible=section.playlists.filter(item=>playlistSubcategory(section,item)===active);
+    const fallback=visible.length?visible:section.playlists.slice(0,8);
     return `<div class="v2-library-breadcrumb"><button data-route="discover">分类浏览</button><span>/</span><strong>${section.title}</strong></div>
       <section class="v2-category-hero">
         <div>
@@ -486,12 +511,17 @@
         </div>
         <div class="v2-category-count"><strong>${section.count}</strong><small>个官方曲库</small></div>
       </section>
-      <div class="v2-category-list-head">
-        <div><h2>全部歌单</h2><p>官网同分类下的歌单内容，在这里以客户可访问曲库的形式统一浏览。</p></div>
-        <button class="btn" data-route="catalog">${icon('search')}搜索该分类</button>
+
+      <nav class="v2-subcategory-tabs" aria-label="${section.title}二级分类">
+        ${subcategories.map((name,index)=>`<button class="${name===active?'active':''}" data-v2-subcategory-tab="${name}"><span>${name}</span><small>0${index+1}</small></button>`).join('')}
+      </nav>
+
+      <div class="v2-category-list-head v2-subcategory-head">
+        <div><h2>${active}</h2><p>${section.title} / ${active} 下的官方歌单</p></div>
+        <span>${visible.length||fallback.length} 个示例歌单</span>
       </div>
       <div class="v2-category-playlist-grid">
-        ${section.playlists.map((item,itemIndex)=>officialPlaylistCard(section,item,sectionIndex,itemIndex)).join('')}
+        ${fallback.map((item,itemIndex)=>officialPlaylistCard(section,item,sectionIndex,itemIndex)).join('')}
       </div>`;
   }
 
@@ -883,7 +913,16 @@
     if(categoryLink){
       e.preventDefault();e.stopPropagation();
       v2.discoverCategoryKey=categoryLink.dataset.v2Category;
+      const section=findDiscoverCategory(v2.discoverCategoryKey);
+      v2.discoverSubcategory=categoryLink.dataset.v2Subcategory||section.subcategories?.[0]||'';
       routeTo('discover-category');
+      return;
+    }
+    const subcategoryTab=e.target.closest('[data-v2-subcategory-tab]');
+    if(subcategoryTab){
+      e.preventDefault();e.stopPropagation();
+      v2.discoverSubcategory=subcategoryTab.dataset.v2SubcategoryTab;
+      renderPage();
       return;
     }
     const playlistLink=e.target.closest('[data-v2-playlist]');
