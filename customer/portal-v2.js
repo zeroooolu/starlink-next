@@ -1248,13 +1248,17 @@
     rawSecret:'slk_secret_demo_insta360_9F2K'
   };
   const agentCatalog=[
-    {id:'chatgpt',name:'ChatGPT',mark:'G',desc:'在 ChatGPT 中连接 STARLINK，直接查询曲库、查找内容和处理业务信息。'},
-    {id:'claude',name:'Claude',mark:'C',desc:'通过 Claude 的 Connector / MCP 接入 STARLINK 曲库与业务能力。'},
-    {id:'codex',name:'Codex',mark:'CX',desc:'在开发工作流中调用 STARLINK，完成曲库查询、内容定位和数据读取。'},
-    {id:'cursor',name:'Cursor',mark:'CU',desc:'在 Cursor 中添加 STARLINK MCP，开发时直接查询音乐内容与元数据。'},
-    {id:'workbuddy',name:'WorkBuddy',mark:'W',desc:'将 STARLINK 作为企业 Agent 能力接入日常业务工作流。'}
+    {id:'chatgpt',name:'ChatGPT',icon:'https://chatgpt.com/favicon.ico',method:'Connector / MCP',desc:'直接查询曲库、查找内容和读取当前账号可访问的业务信息。'},
+    {id:'claude',name:'Claude',icon:'https://claude.ai/favicon.ico',method:'Connector / MCP',desc:'通过 Claude Connector 接入 STARLINK 曲库与业务能力。'},
+    {id:'codex',name:'Codex',icon:'https://openai.com/favicon.ico',method:'MCP',desc:'在开发工作流中查询曲库、内容元数据和业务信息。'},
+    {id:'cursor',name:'Cursor',icon:'https://cursor.com/favicon.ico',method:'MCP',desc:'在 Cursor 中添加 STARLINK MCP，开发时直接调用音乐内容能力。'},
+    {id:'workbuddy',name:'WorkBuddy',icon:'https://www.workbuddy.cn/favicon.ico',method:'MCP / 企业 Agent',desc:'将 STARLINK 接入企业 Agent 的日常业务工作流。'}
   ];
   const STARLINK_MCP='https://mcp.starlink.example/mcp';
+
+  function agentLogo(agent){
+    return `<span class="v2-agent-logo ${agent.id}"><img src="${agent.icon}" alt="${agent.name}" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='grid'"><span class="v2-agent-fallback">${agent.name.slice(0,2).toUpperCase()}</span></span>`;
+  }
 
   function agentStatus(id){
     return v2.agentConnections.has(id)
@@ -1287,21 +1291,21 @@
         <div class="v2-agent-access-head">
           <div><span>AI AGENT</span><h2>连接 AI Agent</h2><p>连接后，在常用 AI 工具里直接使用 STARLINK。权限自动跟随当前客户账号，不需要为每个 Agent 单独配置业务权限。</p></div>
         </div>
-        <div class="v2-agent-grid">
-          ${agentCatalog.map(agent=>`<article class="v2-agent-card">
-            <div class="v2-agent-card-top">
-              <span class="v2-agent-logo ${agent.id}">${agent.mark}</span>
-              ${agentStatus(agent.id)}
+        <div class="v2-agent-list">
+          <div class="v2-agent-list-head"><span>Agent</span><span>接入方式</span><span>状态</span><span>操作</span></div>
+          ${agentCatalog.map(agent=>`<div class="v2-agent-row">
+            <div class="v2-agent-main">
+              ${agentLogo(agent)}
+              <div><strong>${agent.name}</strong><small>${agent.desc}</small></div>
             </div>
-            <h3>${agent.name}</h3>
-            <p>${agent.desc}</p>
-            <div class="v2-agent-flow-mini">
-              <span>1 打开 ${agent.name}</span><i></i><span>2 添加 STARLINK</span><i></i><span>3 完成授权</span>
+            <div class="v2-agent-method"><span>${agent.method}</span><small>使用当前 STARLINK 账号授权</small></div>
+            <div class="v2-agent-state">${agentStatus(agent.id)}</div>
+            <div class="v2-agent-actions">
+              <button class="btn ${v2.agentConnections.has(agent.id)?'':'btn-primary'}" data-v2-agent-connect="${agent.id}">
+                ${v2.agentConnections.has(agent.id)?'查看接入':'开始接入'} ${icon('arrow-up-right')}
+              </button>
             </div>
-            <button class="btn ${v2.agentConnections.has(agent.id)?'':'btn-primary'}" data-v2-agent-connect="${agent.id}">
-              ${v2.agentConnections.has(agent.id)?'查看接入方式':'开始接入'} ${icon('arrow-up-right')}
-            </button>
-          </article>`).join('')}
+          </div>`).join('')}
         </div>
       </section>`;
   }
@@ -1319,7 +1323,7 @@
     node.className='v2-confirm-modal';node.id='v2AgentModal';
     node.innerHTML=`<div class="v2-confirm-backdrop"></div><div class="v2-agent-modal">
       <div class="v2-modal-head">
-        <div class="v2-agent-modal-title"><span class="v2-agent-logo ${agent.id}">${agent.mark}</span><div><h2>${connected?`${agent.name} 接入方式`:`连接 ${agent.name}`}</h2><p>按下面步骤将 STARLINK 接入 ${agent.name}。</p></div></div>
+        <div class="v2-agent-modal-title">${agentLogo(agent)}<div><h2>${connected?`${agent.name} 接入方式`:`连接 ${agent.name}`}</h2><p>按下面步骤将 STARLINK 接入 ${agent.name}。</p></div></div>
         <button data-v2-close-agent>${icon('x')}</button>
       </div>
       <div class="v2-agent-modal-body">
