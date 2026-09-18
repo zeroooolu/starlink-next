@@ -1276,7 +1276,7 @@
           <div class="v2-credential-row">
             <div><small>Secret</small><code id="v2DeveloperSecret">${v2.developerSecretVisible?developerCredentials.rawSecret:developerCredentials.secret}</code></div>
             <div class="v2-credential-actions">
-              <button class="v2-credential-action" data-v2-toggle-secret>${icon(v2.developerSecretVisible?'lock':'eye')}${v2.developerSecretVisible?'隐藏':'显示'}</button>
+              <button class="v2-credential-action" data-v2-toggle-secret>${icon('lock')}${v2.developerSecretVisible?'隐藏':'显示'}</button>
               <button class="v2-credential-action" data-v2-copy-credential="secret">${icon('copy')}复制</button>
             </div>
           </div>
@@ -1573,7 +1573,8 @@
     const agentConnect=e.target.closest('[data-v2-agent-connect]');
     if(agentConnect){
       e.preventDefault();e.stopPropagation();
-      agentFlowModal(agentConnect.dataset.v2AgentConnect,1);
+      const agentId=agentConnect.dataset.v2AgentConnect;
+      agentFlowModal(agentId,v2.agentConnections.has(agentId)?3:1);
       return;
     }
     const agentNext=e.target.closest('[data-v2-agent-next]');
