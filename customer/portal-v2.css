@@ -311,3 +311,130 @@ body.v2-player-open .workspace{padding-bottom:132px}
   .v2-player-controls{margin-top:-5px}
   body.v2-player-open .workspace{padding-bottom:150px}
 }
+
+
+/* Full catalog search — unified filter panel + consumer music results */
+.v2-search-panel{
+  background:#fff;
+  border:1px solid var(--line);
+  border-radius:15px;
+  padding:14px;
+  margin-bottom:15px;
+}
+.v2-search-main-row{display:flex;align-items:center;gap:9px}
+.v2-search-main-input{
+  height:42px;
+  flex:1;
+  min-width:0;
+  display:flex;
+  align-items:center;
+  gap:9px;
+  padding:0 10px 0 12px;
+  border:1px solid var(--line);
+  border-radius:10px;
+  background:#fafbfc;
+  transition:.15s;
+}
+.v2-search-main-input:focus-within{background:#fff;border-color:#c6cbff;box-shadow:0 0 0 3px rgba(79,94,247,.07)}
+.v2-search-main-input>svg{width:16px;color:#8e96a3;flex:0 0 auto}
+.v2-search-main-input input{flex:1;min-width:0;border:0;outline:0;background:transparent;color:#303641;font-size:10.5px}
+.v2-search-clear{width:28px;height:28px;border:0;background:transparent;border-radius:7px;color:#a0a7b2;display:grid;place-items:center;cursor:pointer}
+.v2-search-clear:hover{background:#f0f1f4;color:#606875}.v2-search-clear svg{width:12px;height:12px}
+
+.v2-search-filter-row{
+  display:flex;
+  align-items:center;
+  gap:7px;
+  margin-top:11px;
+  overflow-x:auto;
+  padding-bottom:1px;
+}
+.v2-search-filter-row::-webkit-scrollbar{height:0}
+.v2-search-filter-chip{
+  height:31px;
+  border:1px solid var(--line);
+  background:#fff;
+  border-radius:8px;
+  padding:0 9px;
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  color:#616a77;
+  font-size:8.5px;
+  white-space:nowrap;
+  cursor:pointer;
+}
+.v2-search-filter-chip:hover{background:#fafbfc;border-color:#d8dbe3}
+.v2-search-filter-chip svg{width:11px;height:11px;color:#929aa7}
+.v2-search-reset{
+  margin-left:auto;
+  height:30px;
+  flex:0 0 auto;
+  border:0;
+  background:transparent;
+  color:#9aa1ac;
+  font-size:8px;
+  cursor:pointer;
+  white-space:nowrap;
+}
+.v2-search-reset:hover{color:#626a76}
+
+.v2-active-filters{display:flex;align-items:center;gap:6px;min-height:0;margin-top:9px;flex-wrap:wrap}
+.v2-active-filters:empty{display:none}
+.v2-active-filter{
+  height:23px;
+  padding:0 4px 0 8px;
+  border-radius:999px;
+  background:var(--v2-blue-soft);
+  color:#5965df;
+  font-size:7.5px;
+  display:inline-flex;
+  align-items:center;
+  gap:4px;
+}
+.v2-active-filter button{width:17px;height:17px;border:0;background:transparent;color:inherit;display:grid;place-items:center;cursor:pointer;padding:0}
+.v2-active-filter button svg{width:9px;height:9px}
+
+.v2-search-results{min-width:0}
+.v2-search-results-head{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  margin:0 2px 9px;
+}
+.v2-search-results-head>div{display:flex;align-items:baseline;gap:8px;min-width:0}
+.v2-search-results-head strong{font-size:11px;color:#3b424e;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.v2-search-results-head span{font-size:8.5px;color:#969da8;white-space:nowrap}
+.v2-sort-button{
+  height:30px;
+  border:1px solid var(--line);
+  background:#fff;
+  border-radius:8px;
+  padding:0 9px;
+  display:inline-flex;
+  align-items:center;
+  gap:5px;
+  font-size:8px;
+  color:#6f7783;
+  white-space:nowrap;
+  cursor:pointer;
+}
+.v2-sort-button svg{width:10px;height:10px}
+.v2-search-browser{border-radius:14px}
+.v2-search-track .v2-catalog-actions{gap:4px}
+.v2-add-search.done{background:#eef8f4;color:#16876a;border-color:#dcebe5;cursor:default}
+.v2-add-search.done:hover{background:#eef8f4;color:#16876a}
+.v2-search-track .v2-catalog-copy>small{color:#929aa7}
+
+@media(max-width:900px){
+  .v2-search-filter-row{padding-right:4px}
+  .v2-search-reset{margin-left:0}
+}
+@media(max-width:680px){
+  .v2-search-main-row{align-items:stretch}
+  .v2-search-main-row>.btn{height:42px}
+  .v2-search-results-head{align-items:flex-start}
+  .v2-search-results-head>div{display:block}
+  .v2-search-results-head span{display:block;margin-top:2px}
+}
