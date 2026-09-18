@@ -1304,3 +1304,23 @@ body.v2-player-open .workspace{padding-bottom:132px}
   .v2-ai-result-browser{margin:0 8px 8px}
   .v2-ai-result-summary{margin:9px 8px}
 }
+
+
+/* AI result actions — play / authorize / similar only */
+.v2-ai-result-browser .v2-catalog-list-head,
+.v2-ai-result-browser .v2-catalog-track{
+  grid-template-columns:minmax(350px,1.2fr) minmax(280px,.95fr) 116px;
+}
+@media(max-width:1180px){
+  .v2-ai-result-browser .v2-catalog-list-head,
+  .v2-ai-result-browser .v2-catalog-track{
+    grid-template-columns:minmax(330px,1.15fr) minmax(220px,.8fr) 112px;
+  }
+}
+@media(max-width:960px){
+  .v2-ai-result-browser .v2-catalog-list-head{grid-template-columns:minmax(320px,1fr) 112px}
+  .v2-ai-result-browser .v2-catalog-track{grid-template-columns:minmax(320px,1fr) 112px}
+}
+@media(max-width:680px){
+  .v2-ai-result-browser .v2-catalog-track{grid-template-columns:minmax(0,1fr)}
+}
