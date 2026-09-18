@@ -4,6 +4,8 @@
     authorizedFromSimilar: new Set(),
     trackDetailId: 'ST-310284',
     trackDetailMode: 'authorized',
+    trackDetailReturnRoute: 'my-catalog',
+    trackDetailReturnLabel: '我的曲库',
     previewTrackId: null,
     previewPaused: false,
     discoverCategoryKey: 'healing',
@@ -595,7 +597,7 @@
       ['乐器 / 编曲',detailTags.instrument],['人声 / 语言',detailTags.vocal],['节奏 / 能量',detailTags.energy]
     ];
     return `<div class="v2-track-detail-page">
-      <button class="v2-back" data-route="my-catalog">← 返回我的曲库</button>
+      <button class="v2-back" data-route="${v2.trackDetailReturnRoute}">← 返回${v2.trackDetailReturnLabel}</button>
       <section class="v2-track-hero">
         <div class="v2-track-detail-cover">${cover(track)}</div>
         <div class="v2-track-detail-main">
@@ -1069,7 +1071,17 @@
     if(detail){
       e.preventDefault();e.stopPropagation();
       v2.trackDetailId=detail.dataset.v2Detail;
-      v2.trackDetailMode=state.route==='catalog'?'search':'authorized';
+      v2.trackDetailMode=state.route==='my-catalog'?'authorized':'search';
+      if(state.route==='playlist-detail'){
+        v2.trackDetailReturnRoute='playlist-detail';
+        v2.trackDetailReturnLabel='歌单';
+      }else if(state.route==='catalog'){
+        v2.trackDetailReturnRoute='catalog';
+        v2.trackDetailReturnLabel='全曲库搜索';
+      }else{
+        v2.trackDetailReturnRoute='my-catalog';
+        v2.trackDetailReturnLabel='我的曲库';
+      }
       routeTo('track-detail');
       return;
     }
