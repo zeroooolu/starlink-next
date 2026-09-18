@@ -14,22 +14,82 @@
     aiStage: 'idle',
     aiQuery: '',
     aiSearchToken: 0,
+    activeRequirementId: 'REQ-20260915-024',
+    activeDeliveryId: 'DLV-20260915-0176',
+    deliverySelections: {
+      'DLV-20260915-0176': new Set(['ST-310284','ST-284911','ST-401237','ST-229850','ST-376612','ST-194720'])
+    },
   };
 
   const requests = [
-    {id:'REQ-20260916-028',title:'户外旅行音乐周更',type:'API 增量',project:'Insta360 内容音乐',target:'8 首',progress:'已上架 8 首',pct:100,status:'已完成',updated:'今天 14:21',delivery:'DEL-20260916-028'},
-    {id:'REQ-20260915-024',title:'无人机首发配乐',type:'选曲',project:'影石无人机音乐',target:'20 首',progress:'候选 30 · 已选 6',pct:55,status:'待我确认',updated:'昨天 18:03',delivery:'2 次试听'},
-    {id:'REQ-20260910-017',title:'Ace Pro 秋季运动内容',type:'选曲',project:'Ace Pro 内容音乐',target:'12 首',progress:'候选 24 · 已选 9',pct:76,status:'待我确认',updated:'09-16 11:42',delivery:'1 次试听'},
-    {id:'REQ-20260909-015',title:'中秋旅行内容',type:'文件交付',project:'Insta360 内容音乐',target:'8 首',progress:'已交付 7 首',pct:100,status:'已完成',updated:'09-12 16:06',delivery:'DEL-20260912-015'},
-    {id:'REQ-20260903-009',title:'经典耳熟内容盘活',type:'API 增量',project:'Insta360 内容音乐',target:'30 首',progress:'已上架 22 首',pct:100,status:'已完成',updated:'09-08 15:18',delivery:'DEL-20260908-009'}
+    {
+      id:'REQ-20260916-028',title:'户外旅行音乐周更',project:'Insta360 内容音乐',
+      brief:'每周补充适合户外、旅行、运动相机视频的音乐，优先热门、耳熟、节奏感强的内容。',
+      tags:['户外','旅行','运动','热门优先','全球可用'],target:'7–8 首',due:'2026-09-18',
+      submitted:'2026-09-16 09:15',status:'处理中',stage:3,updated:'今天 14:21',
+      deliveries:['DLV-20260916-0182'],note:'本周优先补骑行与山野画面，女声占比可以少一些。'
+    },
+    {
+      id:'REQ-20260915-024',title:'无人机首发配乐',project:'影石无人机音乐',
+      brief:'为无人机首发内容准备一批大气、开阔、有空间感的航拍配乐，整体国际化，避免过强人声。',
+      tags:['无人机','航拍','大气','开阔','弱人声'],target:'20 首',due:'2026-09-20',
+      submitted:'2026-09-15 10:42',status:'待我处理',stage:4,updated:'昨天 18:03',
+      deliveries:['DLV-20260915-0176'],note:'希望首轮先提供 30 首左右候选，确认方向后再补第二轮。'
+    },
+    {
+      id:'REQ-20260910-017',title:'Ace Pro 秋季运动内容',project:'Ace Pro 内容音乐',
+      brief:'秋季运动内容使用，偏极限运动、速度和户外氛围，节奏明显、国际化。',
+      tags:['运动','极限','强节奏','国际化'],target:'12 首',due:'2026-09-19',
+      submitted:'2026-09-10 11:08',status:'待我处理',stage:4,updated:'09-16 11:42',
+      deliveries:['DLV-20260914-0149'],note:'优先无明显歌词内容。'
+    },
+    {
+      id:'REQ-20260909-015',title:'中秋旅行内容',project:'Insta360 内容音乐',
+      brief:'中秋假期旅行内容配乐，温暖、有节日氛围但不过于传统。',
+      tags:['旅行','温暖','节日','华人市场'],target:'8 首',due:'2026-09-12',
+      submitted:'2026-09-09 09:31',status:'已完成',stage:5,updated:'09-12 16:06',
+      deliveries:['DLV-20260912-015'],note:''
+    },
+    {
+      id:'REQ-20260903-009',title:'经典耳熟内容盘活',project:'Insta360 内容音乐',
+      brief:'补一批经典、耳熟、适合短视频的成熟内容，优先平台高热歌曲。',
+      tags:['经典','耳熟','短视频','高热'],target:'30 首',due:'2026-09-08',
+      submitted:'2026-09-03 14:20',status:'已完成',stage:5,updated:'09-08 15:18',
+      deliveries:['DLV-20260908-009'],note:''
+    }
   ];
 
   const deliveries = [
-    {id:'DEL-20260916-028',name:'9 月户外旅行增量',request:'户外旅行音乐周更',type:'API 上架',count:'8 首',date:'2026-09-16',status:'已完成'},
-    {id:'DEL-20260915-024-A',name:'无人机首发第一轮',request:'无人机首发配乐',type:'试听选曲',count:'30 首',date:'2026-09-15',status:'待选择'},
-    {id:'DEL-20260912-015',name:'中秋旅行内容',request:'中秋旅行内容',type:'文件交付',count:'7 首',date:'2026-09-12',status:'已交付'},
-    {id:'DEL-20260908-009',name:'经典内容盘活',request:'经典耳熟内容盘活',type:'API 上架',count:'22 首',date:'2026-09-08',status:'已完成'},
-    {id:'DEL-20260301-001',name:'首批 API 曲库',request:'初始合作',type:'API 上架',count:'120,000 首',date:'2026-03-01',status:'已完成'}
+    {
+      id:'DLV-20260915-0176',name:'无人机首发第一轮',requirementId:'REQ-20260915-024',requirement:'无人机首发配乐',
+      mode:'selection',type:'试听选曲',round:'第 1 轮',count:30,listened:24,selected:6,rejected:8,
+      date:'2026-09-15 18:03',due:'2026-09-20',status:'待我处理',result:'等待提交本轮选择',
+      songIds:['ST-310284','ST-284911','ST-401237','ST-229850','ST-376612','ST-194720','ST-451083','ST-338107','ST-510101','ST-510102']
+    },
+    {
+      id:'DLV-20260916-0182',name:'9 月户外旅行增量',requirementId:'REQ-20260916-028',requirement:'户外旅行音乐周更',
+      mode:'api',type:'API 上架',round:'正式交付',count:8,listened:0,selected:8,rejected:0,
+      date:'2026-09-16 14:21',due:'',status:'已完成',result:'8 首已上架至我的曲库',
+      songIds:['ST-310284','ST-401237','ST-376612','ST-229850','ST-510103','ST-510105','ST-510107','ST-510109']
+    },
+    {
+      id:'DLV-20260914-0149',name:'Ace Pro 秋季运动候选',requirementId:'REQ-20260910-017',requirement:'Ace Pro 秋季运动内容',
+      mode:'selection',type:'试听选曲',round:'第 1 轮',count:24,listened:19,selected:9,rejected:6,
+      date:'2026-09-14 18:03',due:'2026-09-19',status:'待我处理',result:'等待提交本轮选择',
+      songIds:['ST-376612','ST-338107','ST-310284','ST-284911','ST-401237','ST-510104','ST-510106','ST-510108','ST-510110']
+    },
+    {
+      id:'DLV-20260912-015',name:'中秋旅行正式交付',requirementId:'REQ-20260909-015',requirement:'中秋旅行内容',
+      mode:'file',type:'文件交付',round:'正式交付',count:7,listened:7,selected:7,rejected:0,
+      date:'2026-09-12 16:06',due:'',status:'已完成',result:'7 首正式文件已交付',
+      songIds:['ST-194720','ST-229850','ST-451083','ST-510103','ST-510106','ST-510107','ST-510110']
+    },
+    {
+      id:'DLV-20260908-009',name:'经典内容盘活',requirementId:'REQ-20260903-009',requirement:'经典耳熟内容盘活',
+      mode:'api',type:'API 上架',round:'正式交付',count:22,listened:0,selected:22,rejected:0,
+      date:'2026-09-08 15:18',due:'',status:'已完成',result:'22 首已上架至我的曲库',
+      songIds:['ST-310284','ST-284911','ST-401237','ST-229850','ST-376612','ST-194720','ST-451083','ST-338107']
+    }
   ];
 
   const customerCatalog = [
@@ -883,43 +943,297 @@
 
   function detailInfo(label,value){return `<div class="v2-detail-info"><small>${label}</small><strong>${value}</strong></div>`}
 
-  function requirementsPage(){
-    return `${pageHead('内容需求','查看每一次内容需求从提出、候选、反馈到最终交付的处理进度。','')}
-      <div class="v2-kpi-grid">
-        ${kpi('list-music','累计需求','12','本月新增 5 个需求')}${kpi('clock','处理中','2','均在正常处理时限内')}${kpi('check','待我确认','2','最近更新：昨天 18:03')}${kpi('download','本月已完成','7','平均处理 2.4 天')}
-      </div>
-      <section class="section"><div class="v2-request-tabs"><button class="v2-request-tab active">全部 12</button><button class="v2-request-tab">待我处理 2</button><button class="v2-request-tab">处理中 2</button><button class="v2-request-tab">已完成 7</button></div>
-      <div class="v2-table-card"><div class="v2-table-head"><div class="v2-filter-row"><div class="v2-search">${icon('search')}<input placeholder="搜索需求名称 / 需求编号"/></div><button class="v2-filter">需求类型 ${icon('chevron-down')}</button><button class="v2-filter">所属项目 ${icon('chevron-down')}</button></div><span class="result-meta">按最近更新排序</span></div><div class="v2-table-wrap"><table class="v2-table"><thead><tr><th>需求</th><th>类型</th><th>所属项目</th><th>目标</th><th>当前进度</th><th>状态</th><th>关联交付</th><th>更新时间</th></tr></thead><tbody>${requests.map(r=>requestRow(r)).join('')}</tbody></table></div></div></section>`;
+  function requirementStatusPill(status){
+    const cls=status==='已完成'?'done':status==='待我处理'?'action':status==='待受理'?'new':'doing';
+    return `<span class="v2-workflow-status ${cls}">${status}</span>`;
   }
 
-  function requestRow(r){return `<tr class="v2-clickable" data-route="requirement-detail"><td><span class="v2-primary">${r.title}</span><span class="v2-secondary">${r.id}</span></td><td>${r.type}</td><td>${r.project}</td><td>${r.target}</td><td><div class="v2-request-progress"><strong>${r.progress}</strong><div class="v2-progress-line"><span style="width:${r.pct}%"></span></div></div></td><td>${statusPill(r.status)}</td><td>${r.delivery}</td><td>${r.updated}</td></tr>`}
+  function requirementNextAction(r){
+    if(r.status==='待我处理') return '<strong>需要你处理交付</strong><small>试听、挑选或确认本轮内容</small>';
+    if(r.status==='处理中') return '<strong>STARLINK 正在处理</strong><small>有新交付后会在这里通知你</small>';
+    if(r.status==='待受理') return '<strong>等待受理</strong><small>需求已提交</small>';
+    return '<strong>已完成</strong><small>相关交付已形成结果</small>';
+  }
+
+  function requirementsPage(){
+    const actionCount=requests.filter(r=>r.status==='待我处理').length;
+    const doingCount=requests.filter(r=>['处理中','待受理'].includes(r.status)).length;
+    const doneCount=requests.filter(r=>r.status==='已完成').length;
+    return `${pageHead('内容需求','向 STARLINK 发起内容需求，并跟踪从受理、处理到交付完成的全过程。',`<button class="btn btn-primary" data-v2-new-requirement>${icon('plus')}发起内容需求</button>`)}
+      <div class="v2-workflow-summary">
+        <div><span>待我处理</span><strong>${actionCount}</strong><small>已有交付等待试听或确认</small></div>
+        <div><span>处理中</span><strong>${doingCount}</strong><small>STARLINK 正在准备内容</small></div>
+        <div><span>已完成</span><strong>${doneCount}</strong><small>需求已经形成最终交付</small></div>
+      </div>
+
+      <section class="v2-workflow-card">
+        <div class="v2-workflow-toolbar">
+          <div class="v2-request-tabs">
+            <button class="v2-request-tab active">全部 ${requests.length}</button>
+            <button class="v2-request-tab">待我处理 ${actionCount}</button>
+            <button class="v2-request-tab">处理中 ${doingCount}</button>
+            <button class="v2-request-tab">已完成 ${doneCount}</button>
+          </div>
+          <div class="v2-search compact">${icon('search')}<input placeholder="搜索需求名称 / 需求编号" /></div>
+        </div>
+        <div class="v2-requirement-list">
+          ${requests.map(requirementListItem).join('')}
+        </div>
+      </section>`;
+  }
+
+  function requirementListItem(r){
+    const deliveryText=r.deliveries.length?`${r.deliveries.length} 次交付`:'尚未产生交付';
+    return `<article class="v2-requirement-item" data-v2-requirement="${r.id}">
+      <div class="v2-requirement-main">
+        <div class="v2-requirement-title"><strong>${r.title}</strong>${requirementStatusPill(r.status)}</div>
+        <small>${r.id} · ${r.project} · 提交于 ${r.submitted}</small>
+        <p>${r.brief}</p>
+        <div class="v2-requirement-tags">${r.tags.slice(0,4).map(x=>`<span>${x}</span>`).join('')}</div>
+      </div>
+      <div class="v2-requirement-meta"><span>目标</span><strong>${r.target}</strong><small>期望 ${r.due}</small></div>
+      <div class="v2-requirement-meta"><span>关联交付</span><strong>${deliveryText}</strong><small>最近更新 ${r.updated}</small></div>
+      <div class="v2-requirement-next">${requirementNextAction(r)}</div>
+      <button class="v2-row-arrow" title="查看需求">${icon('arrow-up-right')}</button>
+    </article>`;
+  }
+
+  function requirementProgress(stage){
+    const steps=['需求已提交','已受理','准备内容','客户处理','完成交付'];
+    return `<div class="v2-customer-flow">${steps.map((name,index)=>{
+      const n=index+1,done=n<stage,current=n===stage;
+      return `<div class="${done?'done':''} ${current?'current':''}"><span>${done?icon('check'):n}</span><strong>${name}</strong></div>${index<steps.length-1?'<i></i>':''}`;
+    }).join('')}</div>`;
+  }
+
+  function requirementDeliveryCard(d){
+    const needsAction=d.status==='待我处理';
+    return `<div class="v2-linked-delivery" data-v2-delivery="${d.id}">
+      <span class="v2-linked-icon">${icon(d.mode==='api'?'code':d.mode==='file'?'download':'music')}</span>
+      <div class="v2-linked-main">
+        <div><strong>${d.name}</strong><span>${d.type}</span></div>
+        <small>${d.round} · ${d.count} 首 · ${d.date}</small>
+      </div>
+      <div class="v2-linked-result"><strong>${d.result}</strong><small>${needsAction?'需要你处理':'无需处理'}</small></div>
+      <button class="btn btn-sm ${needsAction?'btn-primary':''}">${needsAction?'去处理':'查看交付'}</button>
+    </div>`;
+  }
 
   function requirementDetailPage(){
-    const list=tracks.slice(0,6);
-    return `<div class="v2-detail-head"><button class="v2-back" data-route="requirements">← 返回内容需求</button><div class="v2-detail-title"><div><h1>无人机首发配乐</h1><p>REQ-20260915-024 · 影石无人机音乐</p></div>${statusPill('待我确认')}</div><div class="v2-detail-meta"><div class="v2-meta-block"><small>需求类型</small><strong>试听选曲</strong></div><div class="v2-meta-block"><small>目标数量</small><strong>20 首</strong></div><div class="v2-meta-block"><small>当前候选</small><strong>30 首</strong></div><div class="v2-meta-block"><small>反馈截止</small><strong>2026-09-20</strong></div></div></div>
-      <div class="v2-detail-grid"><section class="v2-table-card"><div class="v2-table-head"><div class="v2-table-head-copy"><strong>候选音乐</strong><small>试听后选择你希望保留的歌曲；最终确认后会形成正式选曲记录。</small></div><span class="result-meta">第一轮 · 30 首</span></div><div>${list.map((t,i)=>selectTrackRow(t,i)).join('')}</div><div class="v2-select-summary"><span>当前已选择 <strong id="v2SelectedCount">${v2.selectedTracks.size}</strong> / 30 首</span><button class="btn btn-primary" data-v2-action="confirm-selection">确认本轮选择</button></div></section>
-      <aside><div class="panel"><div class="panel-head"><h3>需求说明</h3></div><div class="panel-body"><div class="v2-brief-list"><div class="v2-brief"><small>使用场景</small><strong>无人机首发 / 航拍</strong></div><div class="v2-brief"><small>内容方向</small><strong>大气 / 开阔 / 户外</strong></div><div class="v2-brief"><small>偏好</small><strong>国际化、弱人声</strong></div><div class="v2-brief"><small>交付目标</small><strong>约 20 首</strong></div></div></div></div><div class="panel section"><div class="panel-head"><h3>处理记录</h3></div><div class="panel-body"><div class="v2-timeline"><div class="v2-timeline-item"><strong>第一轮候选已发送</strong><small>09-15 18:03 · 30 首</small></div><div class="v2-timeline-item"><strong>客户开始试听</strong><small>09-16 09:24</small></div><div class="v2-timeline-item"><strong>当前已选择 6 首</strong><small>等待最终确认</small></div></div></div></div></aside></div>`;
+    const r=requests.find(x=>x.id===v2.activeRequirementId)||requests[0];
+    const linked=deliveries.filter(d=>r.deliveries.includes(d.id));
+    return `<div class="v2-library-breadcrumb"><button data-route="requirements">内容需求</button><span>/</span><strong>${r.title}</strong></div>
+      <section class="v2-workflow-detail-hero">
+        <div>
+          <div class="v2-detail-title-line"><h1>${r.title}</h1>${requirementStatusPill(r.status)}</div>
+          <p>${r.id} · ${r.project}</p>
+        </div>
+        ${r.status==='待我处理'&&linked[0]?`<button class="btn btn-primary" data-v2-delivery="${linked[0].id}">${icon('music')}处理最新交付</button>`:''}
+      </section>
+
+      <section class="v2-progress-card">
+        ${requirementProgress(r.stage)}
+      </section>
+
+      <div class="v2-workflow-detail-grid">
+        <section class="v2-workflow-panel">
+          <div class="v2-panel-title"><div><h2>我的需求</h2><p>你提交给 STARLINK 的原始内容需求。</p></div><button class="btn btn-sm" data-v2-add-requirement-note>补充说明</button></div>
+          <div class="v2-requirement-brief">${r.brief}</div>
+          <div class="v2-requirement-tags large">${r.tags.map(x=>`<span>${x}</span>`).join('')}</div>
+          <div class="v2-detail-kv-grid">
+            <div><span>目标数量</span><strong>${r.target}</strong></div>
+            <div><span>期望完成</span><strong>${r.due}</strong></div>
+            <div><span>提交时间</span><strong>${r.submitted}</strong></div>
+            <div><span>关联交付</span><strong>${linked.length} 次</strong></div>
+          </div>
+          ${r.note?`<div class="v2-requirement-note"><span>补充说明</span><p>${r.note}</p></div>`:''}
+        </section>
+
+        <aside class="v2-workflow-panel">
+          <div class="v2-panel-title"><div><h2>处理动态</h2><p>只展示与你相关的关键进展。</p></div></div>
+          <div class="v2-customer-timeline">
+            <div class="done"><i></i><div><strong>需求已提交</strong><small>${r.submitted}</small></div></div>
+            <div class="done"><i></i><div><strong>STARLINK 已受理</strong><small>正在按需求准备内容</small></div></div>
+            ${linked.length?`<div class="current"><i></i><div><strong>已创建 ${linked.length} 次交付</strong><small>最新：${linked[0].name}</small></div></div>`:''}
+            ${r.status==='已完成'?'<div class="done"><i></i><div><strong>需求已完成</strong><small>最终交付结果已确认</small></div></div>':''}
+          </div>
+        </aside>
+      </div>
+
+      <section class="v2-workflow-panel v2-linked-section">
+        <div class="v2-panel-title"><div><h2>关联交付</h2><p>STARLINK 会在处理需求过程中创建一到多次交付；试听和挑选都在交付中完成。</p></div><span>${linked.length} 次</span></div>
+        <div class="v2-linked-delivery-list">
+          ${linked.length?linked.map(requirementDeliveryCard).join(''):'<div class="v2-workflow-empty small">当前还没有交付，STARLINK 处理后会显示在这里。</div>'}
+        </div>
+      </section>`;
   }
 
-  function selectTrackRow(t,index){
-    const selected=v2.selectedTracks.has(t.id);
-    return `<div class="v2-track-select ${selected?'selected':''}" data-v2-track-row="${t.id}"><div>${cover(t)}</div><div class="track-main"><div class="track-title">${t.title}</div><div class="track-sub">${t.artist} · ${t.genre}</div></div><div class="track-cell">${t.bpm} BPM</div><div class="track-cell">${t.duration}</div><button class="v2-select-btn" data-v2-select="${t.id}">${selected?'已选择':'选择'}</button></div>`;
+  function deliveryStatusPill(status){
+    const cls=status==='已完成'?'done':status==='待我处理'?'action':status==='已提交'?'submitted':'doing';
+    return `<span class="v2-workflow-status ${cls}">${status}</span>`;
   }
 
   function deliveriesPage(){
-    return `${pageHead('交付记录','查看所有已经收到或正在处理的内容批次，包括 API 上架、试听选曲和文件交付。','')}
-      <div class="v2-kpi-grid">${kpi('download','累计交付','27 次','共计 612 首正式内容')}${kpi('code','API 上架','18 次','当前 API 曲库 176,204 首')}${kpi('music','试听选曲','6 次','累计确认 486 首')}${kpi('folder','文件交付','3 次','最近一次 09-12')}</div>
-      <section class="section"><div class="v2-table-card"><div class="v2-table-head"><div class="v2-filter-row"><div class="v2-search">${icon('search')}<input placeholder="搜索交付名称 / 交付编号"/></div><button class="v2-filter">交付方式 ${icon('chevron-down')}</button><button class="v2-filter">所属项目 ${icon('chevron-down')}</button></div><span class="result-meta">共 27 次交付</span></div><div class="v2-table-wrap"><table class="v2-table"><thead><tr><th>交付</th><th>关联需求</th><th>交付方式</th><th>内容数量</th><th>交付时间</th><th>状态</th></tr></thead><tbody>${deliveries.map(deliveryRow).join('')}</tbody></table></div></div></section>`;
+    const actionCount=deliveries.filter(d=>d.status==='待我处理').length;
+    const doneCount=deliveries.filter(d=>d.status==='已完成').length;
+    return `${pageHead('交付记录','查看 STARLINK 基于内容需求提供的试听歌单、API 上架和正式文件交付。','')}
+      <div class="v2-workflow-summary delivery">
+        <div><span>待我处理</span><strong>${actionCount}</strong><small>需要试听、挑选或提交反馈</small></div>
+        <div><span>已完成</span><strong>${doneCount}</strong><small>已经形成正式交付结果</small></div>
+        <div><span>累计交付</span><strong>${deliveries.length}</strong><small>包含试听、API 与文件交付</small></div>
+      </div>
+
+      <section class="v2-workflow-card">
+        <div class="v2-workflow-toolbar">
+          <div class="v2-request-tabs"><button class="v2-request-tab active">全部</button><button class="v2-request-tab">待我处理 ${actionCount}</button><button class="v2-request-tab">已完成 ${doneCount}</button></div>
+          <div class="v2-filter-row"><div class="v2-search compact">${icon('search')}<input placeholder="搜索交付名称 / 需求名称" /></div><button class="v2-filter">交付类型 ${icon('chevron-down')}</button></div>
+        </div>
+        <div class="v2-delivery-list">${deliveries.map(deliveryListItem).join('')}</div>
+      </section>`;
   }
 
-  function deliveryRow(d){
-    const typeIcon=d.type.includes('API')?'code':d.type.includes('试听')?'music':'download';
-    return `<tr class="v2-clickable" data-route="delivery-detail"><td><span class="v2-primary">${d.name}</span><span class="v2-secondary">${d.id}</span></td><td>${d.request}</td><td><span class="v2-delivery-type"><span class="v2-type-icon">${icon(typeIcon)}</span>${d.type}</span></td><td>${d.count}</td><td>${d.date}</td><td>${statusPill(d.status)}</td></tr>`;
+  function deliveryListItem(d){
+    const needsAction=d.status==='待我处理';
+    const modeIcon=d.mode==='api'?'code':d.mode==='file'?'download':'music';
+    const progress=d.mode==='selection'
+      ?`${d.count} 首候选 · 已试听 ${d.listened} · 已选 ${d.selected}`
+      :d.result;
+    return `<article class="v2-delivery-item" data-v2-delivery="${d.id}">
+      <span class="v2-delivery-mode ${d.mode}">${icon(modeIcon)}</span>
+      <div class="v2-delivery-main">
+        <div class="v2-delivery-title"><strong>${d.name}</strong>${deliveryStatusPill(d.status)}</div>
+        <small>${d.id} · 来自需求「${d.requirement}」</small>
+        <div class="v2-delivery-progress-text">${progress}</div>
+      </div>
+      <div class="v2-delivery-meta"><span>交付类型</span><strong>${d.type}</strong><small>${d.round}</small></div>
+      <div class="v2-delivery-meta"><span>${needsAction?'处理截止':'交付时间'}</span><strong>${needsAction?d.due:d.date.split(' ')[0]}</strong><small>更新 ${d.date}</small></div>
+      <div class="v2-delivery-result"><strong>${needsAction?'等待你的处理':d.result}</strong><small>${needsAction?'完成后结果会回到关联需求':'交付闭环已记录'}</small></div>
+      <button class="btn btn-sm ${needsAction?'btn-primary':''}">${needsAction?'去处理':'查看'}</button>
+    </article>`;
+  }
+
+  function deliverySongPool(d){
+    const pool=[...tracks,...similarPool];
+    return (d.songIds||[]).map(id=>pool.find(t=>t.id===id)).filter(Boolean);
+  }
+
+  function selectionDeliveryRow(track,index,d){
+    const set=v2.deliverySelections[d.id]||(v2.deliverySelections[d.id]=new Set());
+    const selected=set.has(track.id);
+    const tags=[track.genre.split(' · ')[0],track.mood[0],track.mood[1],`${track.bpm} BPM`].filter(Boolean);
+    return `<div class="v2-delivery-song ${selected?'selected':''}" data-v2-delivery-song="${track.id}">
+      <div class="v2-catalog-track-main">
+        <div class="v2-catalog-cover">${cover(track,index)}</div>
+        <div class="v2-catalog-copy">
+          <div class="v2-catalog-title-row"><strong>${track.title}</strong><span>${track.duration}</span></div>
+          <small>${track.artist} · ${track.id}</small>
+          <div class="v2-catalog-tags">${tags.map(x=>`<span>${x}</span>`).join('')}</div>
+        </div>
+      </div>
+      <div class="v2-wave-cell">${catalogWave(track,index)}<small>${track.genre} · ${track.vocal}</small></div>
+      <div class="v2-delivery-song-actions">
+        <button class="v2-track-action play-track" data-track="${track.id}" title="播放">${icon(state.playing===track.id?'pause':'play')}</button>
+        <button class="v2-select-delivery ${selected?'selected':''}" data-v2-delivery-select="${track.id}" data-delivery-id="${d.id}">${selected?icon('check'):''}<span>${selected?'已选择':'选择'}</span></button>
+      </div>
+    </div>`;
+  }
+
+  function readonlyDeliveryRow(track,index,d){
+    const tags=[track.genre.split(' · ')[0],track.mood[0],`${track.bpm} BPM`].filter(Boolean);
+    return `<div class="v2-delivery-song readonly">
+      <div class="v2-catalog-track-main"><div class="v2-catalog-cover">${cover(track,index)}</div><div class="v2-catalog-copy"><div class="v2-catalog-title-row"><strong>${track.title}</strong><span>${track.duration}</span></div><small>${track.artist} · ${track.id}</small><div class="v2-catalog-tags">${tags.map(x=>`<span>${x}</span>`).join('')}</div></div></div>
+      <div class="v2-wave-cell">${catalogWave(track,index)}<small>${track.genre} · ${track.vocal}</small></div>
+      <div class="v2-delivery-song-actions"><button class="v2-track-action play-track" data-track="${track.id}" title="播放">${icon(state.playing===track.id?'pause':'play')}</button><span class="v2-result-check">${icon('check')}${d.mode==='api'?'已上架':'已交付'}</span></div>
+    </div>`;
   }
 
   function deliveryDetailPage(){
-    return `<div class="v2-detail-head"><button class="v2-back" data-route="deliveries">← 返回交付记录</button><div class="v2-detail-title"><div><h1>9 月户外旅行增量</h1><p>DEL-20260916-028 · 关联需求：户外旅行音乐周更</p></div>${statusPill('已完成')}</div><div class="v2-detail-meta"><div class="v2-meta-block"><small>交付方式</small><strong>API 上架</strong></div><div class="v2-meta-block"><small>内容数量</small><strong>8 首</strong></div><div class="v2-meta-block"><small>交付时间</small><strong>2026-09-16 14:21</strong></div><div class="v2-meta-block"><small>结果</small><strong>已加入我的曲库</strong></div></div></div>
-      <div class="v2-detail-grid"><section class="v2-table-card"><div class="v2-table-head"><div class="v2-table-head-copy"><strong>本次交付内容</strong><small>本批内容已经正式进入你的客户曲库。</small></div><button class="btn btn-sm" data-route="my-catalog">查看我的曲库</button></div><div class="v2-table-wrap"><table class="v2-table"><thead><tr><th>歌曲</th><th>艺人</th><th>Track ID</th><th>结果</th></tr></thead><tbody>${tracks.slice(0,5).map(t=>`<tr><td class="v2-primary">${t.title}</td><td>${t.artist}</td><td>${t.id}</td><td>${statusPill('已上架')}</td></tr>`).join('')}</tbody></table></div></section><aside><div class="panel"><div class="panel-head"><h3>交付过程</h3></div><div class="panel-body"><div class="v2-timeline"><div class="v2-timeline-item"><strong>内容准备完成</strong><small>09-16 11:42</small></div><div class="v2-timeline-item"><strong>授权校验完成</strong><small>09-16 13:06 · 8 / 8 首通过</small></div><div class="v2-timeline-item"><strong>API 上架完成</strong><small>09-16 14:21 · 已同步到客户曲库</small></div></div></div></div></aside></div>`;
+    const d=deliveries.find(x=>x.id===v2.activeDeliveryId)||deliveries[0];
+    const req=requests.find(x=>x.id===d.requirementId);
+    const songs=deliverySongPool(d);
+    if(!v2.deliverySelections[d.id] && d.mode==='selection') v2.deliverySelections[d.id]=new Set(songs.slice(0,d.selected).map(x=>x.id));
+    const set=v2.deliverySelections[d.id]||new Set();
+    const isSelection=d.mode==='selection';
+    return `<div class="v2-library-breadcrumb"><button data-route="deliveries">交付记录</button><span>/</span><button data-v2-requirement="${d.requirementId}">${d.requirement}</button><span>/</span><strong>${d.name}</strong></div>
+      <section class="v2-delivery-detail-hero">
+        <div>
+          <div class="v2-detail-title-line"><h1>${d.name}</h1>${deliveryStatusPill(d.status)}</div>
+          <p>${d.id} · ${d.type} · ${d.round}</p>
+        </div>
+        <button class="btn" data-v2-requirement="${d.requirementId}">查看来源需求</button>
+      </section>
+
+      <div class="v2-delivery-detail-summary">
+        <div><span>内容数量</span><strong>${d.count} 首</strong><small>本次交付快照</small></div>
+        ${isSelection?`<div><span>已试听</span><strong>${d.listened} 首</strong><small>当前试听进度</small></div><div><span>已选择</span><strong id="v2DeliverySelectedCount">${set.size} 首</strong><small>可继续调整</small></div><div><span>处理截止</span><strong>${d.due}</strong><small>提交本轮结果</small></div>`
+        :`<div><span>交付方式</span><strong>${d.type}</strong><small>${d.mode==='api'?'自动同步':'正式文件'}</small></div><div><span>交付时间</span><strong>${d.date.split(' ')[0]}</strong><small>${d.date.split(' ')[1]||''}</small></div><div><span>结果</span><strong>${d.mode==='api'?'已上架':'已完成'}</strong><small>无需你处理</small></div>`}
+      </div>
+
+      ${isSelection
+        ?`<div class="v2-delivery-action-banner"><span>${icon('music')}</span><div><strong>请完成本轮试听和挑选</strong><p>这是需求「${d.requirement}」的${d.round}内容。选好后提交本轮结果，STARLINK 会根据你的选择继续处理需求。</p></div><span class="v2-banner-deadline">截止 ${d.due}</span></div>`
+        :`<div class="v2-delivery-result-banner"><span>${icon(d.mode==='api'?'code':'check')}</span><div><strong>${d.result}</strong><p>${d.mode==='api'?'这批歌曲已经自动同步到你的授权曲库，无需额外确认。':'正式交付已经完成，你可以查看本次交付内容。'}</p></div>${d.mode==='api'?'<button class="btn btn-sm" data-route="my-catalog">查看我的曲库</button>':'<button class="btn btn-sm" data-v2-download-delivery>获取交付文件</button>'}</div>`}
+
+      <section class="v2-workflow-panel v2-delivery-content-panel">
+        <div class="v2-panel-title"><div><h2>${isSelection?'本轮试听歌单':'本次交付内容'}</h2><p>${isSelection?'播放并选择你希望保留的歌曲；未提交前可以反复调整。':'本次交付已经形成固定内容快照。'}</p></div><span>${d.count} 首</span></div>
+        <div class="v2-delivery-song-head"><span>歌曲</span><span>波形 / 音乐信息</span><span>${isSelection?'我的选择':'结果'}</span></div>
+        <div class="v2-delivery-song-list">${songs.map((track,index)=>isSelection?selectionDeliveryRow(track,index,d):readonlyDeliveryRow(track,index,d)).join('')}</div>
+        ${isSelection?`<div class="v2-selection-submit">
+          <div><strong>已选择 <span id="v2DeliverySelectedCountBottom">${set.size}</span> 首</strong><small>提交后 STARLINK 会收到本轮选取结果</small></div>
+          <textarea id="v2DeliveryFeedback" placeholder="可选：补充本轮反馈，例如“方向对，再补几首更适合山野画面的”"></textarea>
+          <button class="btn btn-primary" data-v2-submit-delivery="${d.id}">提交本轮选择</button>
+        </div>`:''}
+      </section>
+
+      <section class="v2-workflow-panel v2-delivery-history">
+        <div class="v2-panel-title"><div><h2>交付记录</h2><p>本次交付的重要动作会在这里留痕。</p></div></div>
+        <div class="v2-customer-timeline horizontalish">
+          <div class="done"><i></i><div><strong>交付已创建</strong><small>${d.date}</small></div></div>
+          ${isSelection?`<div class="current"><i></i><div><strong>等待你提交选择</strong><small>当前已选择 ${set.size} 首</small></div></div>`:`<div class="done"><i></i><div><strong>${d.type}完成</strong><small>${d.result}</small></div></div>`}
+        </div>
+      </section>`;
+  }
+
+  function openDeliverySubmitConfirm(d,count,feedback){
+    document.getElementById('v2DeliverySubmitModal')?.remove();
+    const node=document.createElement('div');
+    node.className='v2-confirm-modal';node.id='v2DeliverySubmitModal';
+    node.innerHTML=`<div class="v2-confirm-backdrop"></div><div class="v2-confirm-dialog">
+      <span class="v2-confirm-icon">${icon('check')}</span>
+      <h3>提交本轮选择？</h3>
+      <p>你将提交「${d.name}」的本轮选取结果，共选择 <strong>${count} 首</strong>。提交后 STARLINK 会收到结果并继续处理关联需求。</p>
+      ${feedback?`<div class="v2-confirm-track"><small>本轮反馈</small><strong>${feedback}</strong></div>`:''}
+      <div class="v2-confirm-actions"><button class="btn" data-v2-cancel-delivery-submit>继续调整</button><button class="btn btn-primary" data-v2-confirm-delivery-submit="${d.id}">确认提交</button></div>
+    </div>`;
+    document.body.appendChild(node);
+  }
+
+  function openNewRequirementModal(){
+    document.getElementById('v2RequirementModal')?.remove();
+    const node=document.createElement('div');
+    node.className='v2-confirm-modal';node.id='v2RequirementModal';
+    node.innerHTML=`<div class="v2-confirm-backdrop"></div><div class="v2-requirement-modal">
+      <div class="v2-modal-head"><div><h2>发起内容需求</h2><p>描述清楚你要用在什么场景、希望是什么感觉，以及大概需要多少内容。</p></div><button data-v2-close-requirement>${icon('x')}</button></div>
+      <div class="v2-requirement-form">
+        <label><span>需求名称</span><input id="v2ReqTitle" placeholder="例如：10 月户外旅行内容" /></label>
+        <label class="full"><span>需求描述</span><textarea id="v2ReqBrief" placeholder="例如：用于户外旅行短视频，希望明亮、有推进感、国际化，不要太慢，纯音乐优先。"></textarea></label>
+        <label><span>目标数量</span><input id="v2ReqTarget" placeholder="例如：20 首" /></label>
+        <label><span>期望时间</span><input id="v2ReqDue" type="date" /></label>
+        <label class="full"><span>参考链接 / 补充说明 <em>选填</em></span><input id="v2ReqNote" placeholder="参考视频、歌曲链接，或其它说明" /></label>
+      </div>
+      <div class="v2-modal-actions"><button class="btn" data-v2-close-requirement>取消</button><button class="btn btn-primary" data-v2-submit-requirement>提交需求</button></div>
+    </div>`;
+    document.body.appendChild(node);
+  }
+
+  function submitNewRequirement(){
+    const title=document.getElementById('v2ReqTitle')?.value.trim();
+    const brief=document.getElementById('v2ReqBrief')?.value.trim();
+    if(!title||!brief){toast('请填写需求名称和需求描述');return}
+    const id=`REQ-20260918-${String(30+requests.length).padStart(3,'0')}`;
+    requests.unshift({id,title,project:'当前合作',brief,tags:['新需求'],target:document.getElementById('v2ReqTarget')?.value.trim()||'待确认',due:document.getElementById('v2ReqDue')?.value||'待确认',submitted:'今天',status:'待受理',stage:1,updated:'刚刚',deliveries:[],note:document.getElementById('v2ReqNote')?.value.trim()||''});
+    document.getElementById('v2RequirementModal')?.remove();
+    toast('内容需求已提交');
+    renderPage();
   }
 
   function managementPage(){
@@ -1135,6 +1449,57 @@
     if(e.target.closest('[data-v2-player-close]')){
       e.preventDefault();e.stopImmediatePropagation();closePreviewPlayer();return;
     }
+
+    const newRequirement=e.target.closest('[data-v2-new-requirement]');
+    if(newRequirement){e.preventDefault();e.stopPropagation();openNewRequirementModal();return}
+    if(e.target.closest('[data-v2-close-requirement]') || (e.target.closest('.v2-confirm-backdrop')&&e.target.closest('#v2RequirementModal'))){
+      e.preventDefault();e.stopPropagation();document.getElementById('v2RequirementModal')?.remove();return;
+    }
+    if(e.target.closest('[data-v2-submit-requirement]')){e.preventDefault();e.stopPropagation();submitNewRequirement();return}
+    const requirementLink=e.target.closest('[data-v2-requirement]');
+    if(requirementLink){
+      e.preventDefault();e.stopPropagation();v2.activeRequirementId=requirementLink.dataset.v2Requirement;routeTo('requirement-detail');return;
+    }
+    const deliveryLink=e.target.closest('[data-v2-delivery]');
+    if(deliveryLink){
+      e.preventDefault();e.stopPropagation();v2.activeDeliveryId=deliveryLink.dataset.v2Delivery;routeTo('delivery-detail');return;
+    }
+    const deliverySelect=e.target.closest('[data-v2-delivery-select]');
+    if(deliverySelect){
+      e.preventDefault();e.stopPropagation();
+      const deliveryId=deliverySelect.dataset.deliveryId,id=deliverySelect.dataset.v2DeliverySelect;
+      const set=v2.deliverySelections[deliveryId]||(v2.deliverySelections[deliveryId]=new Set());
+      set.has(id)?set.delete(id):set.add(id);
+      const row=deliverySelect.closest('.v2-delivery-song');
+      row?.classList.toggle('selected',set.has(id));
+      deliverySelect.classList.toggle('selected',set.has(id));
+      deliverySelect.innerHTML=`${set.has(id)?icon('check'):''}<span>${set.has(id)?'已选择':'选择'}</span>`;
+      const top=document.getElementById('v2DeliverySelectedCount');if(top) top.textContent=`${set.size} 首`;
+      const bottom=document.getElementById('v2DeliverySelectedCountBottom');if(bottom) bottom.textContent=set.size;
+      return;
+    }
+    const submitDelivery=e.target.closest('[data-v2-submit-delivery]');
+    if(submitDelivery){
+      e.preventDefault();e.stopPropagation();
+      const d=deliveries.find(x=>x.id===submitDelivery.dataset.v2SubmitDelivery);
+      const set=v2.deliverySelections[d.id]||new Set();
+      const feedback=document.getElementById('v2DeliveryFeedback')?.value.trim();
+      openDeliverySubmitConfirm(d,set.size,feedback);
+      return;
+    }
+    const confirmDelivery=e.target.closest('[data-v2-confirm-delivery-submit]');
+    if(confirmDelivery){
+      e.preventDefault();e.stopPropagation();
+      const d=deliveries.find(x=>x.id===confirmDelivery.dataset.v2ConfirmDeliverySubmit);
+      if(d){d.status='已提交';d.selected=(v2.deliverySelections[d.id]||new Set()).size;d.result=`已提交 ${d.selected} 首选择，等待 STARLINK 继续处理`}
+      document.getElementById('v2DeliverySubmitModal')?.remove();
+      toast('本轮选择已提交');
+      renderPage();
+      return;
+    }
+    if(e.target.closest('[data-v2-cancel-delivery-submit]')){document.getElementById('v2DeliverySubmitModal')?.remove();return}
+    if(e.target.closest('[data-v2-download-delivery]')){e.preventDefault();e.stopPropagation();toast('正在准备本次正式交付文件');return}
+    if(e.target.closest('[data-v2-add-requirement-note]')){e.preventDefault();e.stopPropagation();toast('补充说明入口已打开，可继续接入消息/备注能力');return}
 
     const select=e.target.closest('[data-v2-select]');
     if(select){
