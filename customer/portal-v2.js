@@ -259,8 +259,8 @@
         </div>
         <div class="v2-filter-meta-row">
           <div class="v2-active-filters" id="v2ActiveFilters">
-            <span class="v2-active-filter">Electronic <button data-v2-remove-filter="Electronic">${icon('x')}</button></span>
-            <span class="v2-active-filter">活力 <button data-v2-remove-filter="活力">${icon('x')}</button></span>
+            <span class="v2-active-filter" data-filter-value="Electronic">Electronic <button data-v2-remove-filter="Electronic">${icon('x')}</button></span>
+            <span class="v2-active-filter" data-filter-value="活力">活力 <button data-v2-remove-filter="活力">${icon('x')}</button></span>
           </div>
           <button class="v2-search-reset" data-v2-search-reset>清空筛选</button>
         </div>
@@ -634,6 +634,10 @@
       }else{
         box.style.width='300px';
       }
+      requestAnimationFrame(()=>{
+        const rect=box.getBoundingClientRect();
+        if(rect.right>window.innerWidth-12) box.style.left=`${Math.max(12,window.innerWidth-rect.width-12)}px`;
+      });
       return;
     }
     const searchFilterValue=e.target.closest('[data-v2-search-filter-value]');
