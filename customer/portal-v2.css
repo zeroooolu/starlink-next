@@ -1058,3 +1058,61 @@ body.v2-player-open .workspace{padding-bottom:132px}
   .v2-playlist-detail-copy p{grid-column:1/-1}
   .v2-playlist-recommend .v2-official-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
 }
+
+
+/* Discover secondary category navigation */
+.v2-subcategory-tabs{
+  display:flex;
+  gap:7px;
+  margin-top:16px;
+  padding:4px;
+  background:#fff;
+  border:1px solid var(--line);
+  border-radius:12px;
+  overflow-x:auto;
+}
+.v2-subcategory-tabs::-webkit-scrollbar{height:0}
+.v2-subcategory-tabs button{
+  min-width:max-content;
+  height:38px;
+  border:0;
+  border-radius:9px;
+  background:transparent;
+  color:#737c89;
+  padding:0 10px 0 11px;
+  display:inline-flex;
+  align-items:center;
+  gap:7px;
+  cursor:pointer;
+  font-size:8.5px;
+  transition:.14s;
+}
+.v2-subcategory-tabs button:hover{background:#f6f7f9;color:#424a56}
+.v2-subcategory-tabs button.active{
+  background:var(--v2-blue-soft);
+  color:#4f5bd7;
+  font-weight:700;
+}
+.v2-subcategory-tabs button small{
+  font-size:7px;
+  color:#a0a7b2;
+  font-weight:600;
+}
+.v2-subcategory-tabs button.active small{color:#7983e8}
+
+.v2-subcategory-head{margin-top:20px}
+.v2-subcategory-head>span{
+  font-size:8px;
+  color:#9aa1ac;
+  white-space:nowrap;
+}
+.v2-subcategory-card .v2-playlist-art{
+  aspect-ratio:1.18/1;
+}
+.v2-subcategory-card .v2-official-playlist-copy strong{font-size:10px}
+.v2-subcategory-card .v2-official-playlist-copy small{font-size:7.6px}
+
+@media(max-width:720px){
+  .v2-subcategory-tabs{margin-top:12px}
+  .v2-subcategory-head{align-items:flex-start}
+}
