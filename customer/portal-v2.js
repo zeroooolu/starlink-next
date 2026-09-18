@@ -6,6 +6,8 @@
     trackDetailMode: 'authorized',
     previewTrackId: null,
     previewPaused: false,
+    discoverCategoryKey: 'healing',
+    discoverPlaylistId: 'healing-city',
   };
 
   const requests = [
@@ -83,32 +85,107 @@
     {
       key:'healing',title:'疗愈音乐',count:99,
       description:'围绕放松、助眠、专注与身心疗愈整理的专业场景曲库。',
-      playlists:['乐音疗愈','白噪音疗愈','状态唤醒与专注','助眠与休憩','禅乐','关系修复']
+      playlists:[
+        {id:'healing-city',group:'氛围音景',title:'氛围音景｜城市环境模拟',count:60},
+        {id:'healing-rural',group:'氛围音景',title:'氛围音景｜乡野田园',count:51},
+        {id:'healing-lake',group:'氛围音景',title:'氛围音景｜湖泊岸堤',count:16},
+        {id:'healing-deepsea',group:'氛围音景',title:'氛围音景｜深海环境',count:10},
+        {id:'healing-forest',group:'氛围音景',title:'氛围音景｜森林音景',count:71},
+        {id:'healing-cat',group:'动物白噪音',title:'动物白噪音｜猫呼噜',count:5},
+        {id:'healing-cicada',group:'动物白噪音',title:'动物白噪音｜蝉声迎夏',count:154},
+        {id:'healing-frog',group:'动物白噪音',title:'动物白噪音｜蛙鸣幽涧',count:11},
+        {id:'healing-fire',group:'自然白噪音',title:'自然白噪音｜幽火静心',count:19}
+      ]
     },
     {
       key:'drama-music',title:'短剧配乐',count:83,
       description:'覆盖甜宠、古风、悬疑、都市与轻喜等剧情类型的短剧专属配乐。',
-      playlists:['逆袭重生','古装仙侠','女频情感','家庭治愈','奇异科幻','喜剧沙雕']
+      playlists:[
+        {id:'drama-memory',group:'女频情感',title:'回忆',count:83},
+        {id:'drama-coldwar',group:'女频情感',title:'情感冷战',count:81},
+        {id:'drama-cute',group:'女频情感',title:'美好可爱',count:142},
+        {id:'drama-firstmeet',group:'女频情感',title:'恋人初遇',count:70},
+        {id:'drama-accident',group:'女频情感',title:'遭遇意外',count:7},
+        {id:'drama-breakup',group:'女频情感',title:'分手',count:63},
+        {id:'drama-suspense',group:'逆袭重生',title:'错综悬疑',count:139},
+        {id:'drama-win',group:'逆袭重生',title:'胜利结局',count:78},
+        {id:'drama-awaken',group:'逆袭重生',title:'人物觉醒',count:136},
+        {id:'drama-guofeng',group:'古装仙侠',title:'优雅国风',count:66},
+        {id:'drama-future',group:'奇异科幻',title:'未来科幻',count:96},
+        {id:'drama-funny',group:'喜剧沙雕',title:'搞笑逗趣',count:100}
+      ]
     },
     {
       key:'drama-sfx',title:'短剧音效',count:277,
-      description:'从环境声、人声到转场与动作特效，覆盖剧情制作中的常用声音素材。',
-      playlists:['动物音效','城市环境音效','载具音效','人类音效','自然环境音效','武器音效']
+      description:'从自然环境、人声到转场、动作与特效，覆盖剧情制作中的常用声音素材。',
+      playlists:[
+        {id:'sfx-forest',group:'自然环境音效',title:'音效-森林环境',count:5},
+        {id:'sfx-suburb',group:'自然环境音效',title:'音效-郊外环境',count:32},
+        {id:'sfx-volcano',group:'自然灾害音效',title:'音效-火山喷发',count:74},
+        {id:'sfx-thunder',group:'天气音效',title:'音效-雷',count:965},
+        {id:'sfx-street',group:'城市环境音效',title:'音效-城市街头',count:147},
+        {id:'sfx-subway',group:'载具音效',title:'音效-地铁',count:464},
+        {id:'sfx-helicopter',group:'载具音效',title:'音效-直升机',count:810},
+        {id:'sfx-footsteps',group:'人类音效',title:'音效-脚步声',count:5426},
+        {id:'sfx-laugh',group:'人类音效',title:'音效-笑声',count:1218},
+        {id:'sfx-applause',group:'人类音效',title:'音效-掌声',count:1096},
+        {id:'sfx-whoosh',group:'转场音效',title:'嗖声 Whoosh',count:379},
+        {id:'sfx-sword',group:'武器音效',title:'音效-剑',count:1288}
+      ]
     },
     {
       key:'game',title:'游戏配乐',count:33,
-      description:'面向不同游戏类型与玩法节奏整理的可商用游戏音乐内容。',
-      playlists:['休闲卡牌类游戏','音乐节奏类游戏','建造生存类游戏','其他类型游戏配乐','体育竞技类游戏','模拟经营类游戏']
+      description:'面向不同游戏类型、世界观与玩法节奏整理的可商用游戏音乐。',
+      playlists:[
+        {id:'game-rhythm-pop',group:'音乐节奏类游戏',title:'节奏流行类',count:399},
+        {id:'game-light-electronic',group:'音乐节奏类游戏',title:'轻电子类',count:51},
+        {id:'game-strong-electronic',group:'音乐节奏类游戏',title:'强力电子类',count:184},
+        {id:'game-expedition',group:'建造生存类游戏',title:'远征开辟类',count:54},
+        {id:'game-space',group:'建造生存类游戏',title:'宇宙星球类',count:151},
+        {id:'game-fantasy',group:'建造生存类游戏',title:'奇幻冒险类',count:137},
+        {id:'game-city',group:'模拟经营类游戏',title:'城市建造类',count:50},
+        {id:'game-farm',group:'模拟经营类游戏',title:'农场建造类',count:65},
+        {id:'game-puzzle',group:'休闲卡牌类游戏',title:'解谜推理类',count:64},
+        {id:'game-racing',group:'体育竞技类游戏',title:'赛车类',count:24},
+        {id:'game-cyberpunk',group:'世界观',title:'赛博朋克',count:6},
+        {id:'game-loopable',group:'Loopable游戏配乐',title:'Loopable',count:6890}
+      ]
     },
     {
       key:'fitness',title:'运动健身',count:32,
-      description:'覆盖跑步、骑行、瑜伽、舞蹈与中老年健体等运动场景。',
-      playlists:['动感单车','跑步行走','冥想瑜伽','舞蹈健身','太极&气功','中老年健体']
+      description:'覆盖骑行、跑步、瑜伽、舞蹈与健体等运动场景的高适配度音乐。',
+      playlists:[
+        {id:'fitness-fast-ride',group:'动感单车',title:'速度骑行（踏频150以上）',count:67},
+        {id:'fitness-rhythm-ride',group:'动感单车',title:'节奏骑行（踏频110-150）',count:740},
+        {id:'fitness-climb',group:'动感单车',title:'爬坡骑行（踏频80-110）',count:108},
+        {id:'fitness-easy-ride',group:'动感单车',title:'舒缓骑行（踏频80-110）',count:254},
+        {id:'fitness-warmup',group:'动感单车',title:'热身阶段（80-110）',count:15},
+        {id:'fitness-recovery',group:'动感单车',title:'恢复阶段（踏频80-110）',count:28},
+        {id:'fitness-energy',group:'动感单车',title:'能量骑行（踏频110-150）',count:494},
+        {id:'fitness-run',group:'跑步行走',title:'跑步节奏训练',count:386},
+        {id:'fitness-walk',group:'跑步行走',title:'轻快行走',count:224},
+        {id:'fitness-yoga',group:'冥想瑜伽',title:'舒缓瑜伽',count:182},
+        {id:'fitness-dance',group:'舞蹈健身',title:'有氧舞蹈',count:312},
+        {id:'fitness-taichi',group:'太极&气功',title:'太极舒缓',count:96}
+      ]
     },
     {
       key:'scene',title:'场景配乐',count:17,
-      description:'围绕视频、节日、公播与企业内容制作整理的通用场景配乐。',
-      playlists:['有声书配乐','综艺配乐','节日音乐','企业宣传','长短视频配乐','运动健身']
+      description:'围绕综艺、有声书、节日、公播与企业内容制作整理的通用场景配乐。',
+      playlists:[
+        {id:'scene-regret',group:'综艺配乐',title:'悲伤童话｜成为遗憾的话，是不是会记得很久',count:678},
+        {id:'scene-romance',group:'综艺配乐',title:'烂漫氛围｜与你私奔于浪漫黄昏',count:1796},
+        {id:'scene-happy',group:'综艺配乐',title:'快乐节奏｜愉悦心情，连呼吸都是甜蜜',count:606},
+        {id:'scene-calm',group:'综艺配乐',title:'清浅流年｜日子平淡，好在我喜欢',count:261},
+        {id:'scene-xianxia',group:'有声书配乐',title:'仙侠剧里的神仙配乐',count:810},
+        {id:'scene-piano',group:'有声书配乐',title:'治愈钢琴｜心灵解压催眠曲',count:3234},
+        {id:'scene-nature',group:'有声书配乐',title:'自然纯音｜在音符与广袤森林之间',count:7319},
+        {id:'scene-halloween',group:'节日音乐',title:'万圣节｜拿去吓唬别的小朋友吧',count:1534},
+        {id:'scene-valentine',group:'节日音乐',title:'情人节｜如果没有月亮，你就是我的星光',count:608},
+        {id:'scene-christmas',group:'节日音乐',title:'圣诞节｜我想要的圣诞礼物就是你呀',count:355},
+        {id:'scene-corporate-light',group:'企业宣传',title:'企业宣传｜轻松活力的律动BGM',count:68},
+        {id:'scene-corporate-epic',group:'企业宣传',title:'企业宣传｜史诗大气的配乐BGM',count:73}
+      ]
     }
   ];
 
@@ -325,28 +402,39 @@
     </div>`;
   }
 
+  function findDiscoverCategory(key){
+    return officialPlaylistSections.find(section=>section.key===key)||officialPlaylistSections[0];
+  }
+
+  function findDiscoverPlaylist(id){
+    for(const section of officialPlaylistSections){
+      const playlist=section.playlists.find(item=>item.id===id);
+      if(playlist) return {section,playlist};
+    }
+    return {section:officialPlaylistSections[0],playlist:officialPlaylistSections[0].playlists[0]};
+  }
+
   function officialPlaylistCard(section,item,sectionIndex,itemIndex){
-    return `<article class="v2-official-playlist" data-v2-playlist-query="${section.title} ${item}">
+    return `<article class="v2-official-playlist" data-v2-playlist="${item.id}">
       ${playlistArt(sectionIndex,itemIndex)}
       <div class="v2-official-playlist-copy">
-        <strong>${item}</strong>
-        <small>${section.title} · 官方歌单</small>
+        <strong>${item.title}</strong>
+        <small>${item.group} · ${item.count.toLocaleString()} 首</small>
       </div>
       <span class="v2-playlist-open">${icon('arrow-up-right')}</span>
     </article>`;
   }
 
   function officialPlaylistSection(section,sectionIndex){
-    return `<section class="v2-official-section">
+    return `<section class="v2-official-section clean">
       <div class="v2-official-section-head">
-        <div class="v2-official-section-title">
-          <span class="v2-section-index">0${sectionIndex+1}</span>
+        <div class="v2-official-section-title simple">
           <div><h2>${section.title}</h2><p>${section.description}</p></div>
         </div>
-        <button class="v2-official-more" data-v2-playlist-query="${section.title}">查看全部 ${section.count} 个曲库 ${icon('arrow-up-right')}</button>
+        <button class="v2-official-more" data-v2-category="${section.key}">查看全部 ${section.count} 个曲库 ${icon('arrow-up-right')}</button>
       </div>
       <div class="v2-official-grid">
-        ${section.playlists.map((item,itemIndex)=>officialPlaylistCard(section,item,sectionIndex,itemIndex)).join('')}
+        ${section.playlists.slice(0,6).map((item,itemIndex)=>officialPlaylistCard(section,item,sectionIndex,itemIndex)).join('')}
       </div>
     </section>`;
   }
@@ -354,7 +442,7 @@
   function discoverV2Page(){
     return `${pageHead('分类浏览','浏览 STARLINK 官方整理的专业歌单与场景曲库。','')}
       <section class="v2-discover-hero">
-        <div class="v2-discover-feature" data-v2-playlist-query="运动 户外 高能量">
+        <div class="v2-discover-feature" data-v2-playlist="${officialPlaylistSections[4].playlists[0].id}">
           <div class="v2-discover-feature-copy">
             <span class="v2-discover-eyebrow">EDITOR'S PICK · 本周精选</span>
             <h2>运动与户外精选</h2>
@@ -378,11 +466,84 @@
       </section>
 
       <div class="v2-official-heading">
-        <div><span>OFFICIAL COLLECTIONS</span><h2>官方歌单</h2><p>按官网现有专业曲库分类浏览，点击任一歌单即可进入对应内容搜索。</p></div>
-        <button class="btn" data-route="catalog">${icon('search')}搜索全部音乐</button>
+        <div><span>OFFICIAL COLLECTIONS</span><h2>官方歌单</h2><p>按官方专业曲库分类浏览，进入分类后可查看该分类下的全部歌单。</p></div>
       </div>
 
       ${officialPlaylistSections.map(officialPlaylistSection).join('')}`;
+  }
+
+  function discoverCategoryPage(){
+    const section=findDiscoverCategory(v2.discoverCategoryKey);
+    const sectionIndex=officialPlaylistSections.indexOf(section);
+    return `<div class="v2-library-breadcrumb"><button data-route="discover">分类浏览</button><span>/</span><strong>${section.title}</strong></div>
+      <section class="v2-category-hero">
+        <div>
+          <span>OFFICIAL COLLECTION</span>
+          <h1>${section.title}</h1>
+          <p>${section.description}</p>
+        </div>
+        <div class="v2-category-count"><strong>${section.count}</strong><small>个官方曲库</small></div>
+      </section>
+      <div class="v2-category-list-head">
+        <div><h2>全部歌单</h2><p>官网同分类下的歌单内容，在这里以客户可访问曲库的形式统一浏览。</p></div>
+        <button class="btn" data-route="catalog">${icon('search')}搜索该分类</button>
+      </div>
+      <div class="v2-category-playlist-grid">
+        ${section.playlists.map((item,itemIndex)=>officialPlaylistCard(section,item,sectionIndex,itemIndex)).join('')}
+      </div>`;
+  }
+
+  function playlistDescription(section,playlist){
+    const map={
+      '音效-笑声':'欢笑的魔力，尽在这个音效歌单。收录不同场景与人群的笑声，用声音快速建立愉悦、温馨或俏皮的剧情氛围。',
+      '速度骑行（踏频150以上）':'面向高踏频骑行训练整理的高能量歌单，以稳定强拍和持续推进感帮助保持训练节奏。',
+      '回忆':'围绕回忆、情感回溯与人物内心变化整理的短剧配乐，适合回闪、旁白与情绪铺垫。'
+    };
+    return map[playlist.title]||`来自「${section.title} / ${playlist.group}」的官方歌单，围绕具体使用场景精选适配音乐，可直接试听并加入客户曲库。`;
+  }
+
+  function playlistTracksFor(id){
+    const pool=[...tracks,...similarPool];
+    const offset=id.split('').reduce((sum,ch)=>sum+ch.charCodeAt(0),0)%pool.length;
+    return Array.from({length:10},(_,index)=>pool[(offset+index)%pool.length]);
+  }
+
+  function playlistDetailPage(){
+    const {section,playlist}=findDiscoverPlaylist(v2.discoverPlaylistId);
+    const sectionIndex=officialPlaylistSections.indexOf(section);
+    const songs=playlistTracksFor(playlist.id);
+    const recommendations=section.playlists.filter(item=>item.id!==playlist.id).slice(0,6);
+    return `<div class="v2-library-breadcrumb">
+        <button data-route="discover">分类浏览</button><span>/</span>
+        <button data-v2-category="${section.key}">${section.title}</button><span>/</span>
+        <strong>${playlist.title}</strong>
+      </div>
+      <section class="v2-playlist-detail-hero">
+        <div class="v2-playlist-detail-art">${playlistArt(sectionIndex,section.playlists.indexOf(playlist))}</div>
+        <div class="v2-playlist-detail-copy">
+          <span>官方歌单 · ${playlist.group}</span>
+          <h1>${playlist.title}</h1>
+          <p>${playlistDescription(section,playlist)}</p>
+          <div><strong>${playlist.count.toLocaleString()}</strong> 首音乐</div>
+        </div>
+      </section>
+
+      <section class="v2-playlist-song-section">
+        <div class="v2-playlist-song-head">
+          <div><h2>歌曲列表</h2><p>展示歌单中的可访问音乐，操作与全曲库搜索保持一致。</p></div>
+          <span>共 ${playlist.count.toLocaleString()} 首</span>
+        </div>
+        <div class="v2-catalog-browser">
+          <div class="v2-catalog-list-head"><span>歌曲</span><span>波形 / 音乐信息</span><span>操作</span></div>
+          <div class="v2-catalog-track-list">${songs.map((track,index)=>catalogSearchTrackRow(track,index)).join('')}</div>
+          <button class="v2-load-more">加载更多歌曲</button>
+        </div>
+      </section>
+
+      <section class="v2-playlist-recommend">
+        <div class="v2-category-list-head"><div><h2>推荐歌单</h2><p>继续浏览「${section.title}」下的其他官方歌单。</p></div></div>
+        <div class="v2-official-grid">${recommendations.map((item,index)=>officialPlaylistCard(section,item,sectionIndex,index+2)).join('')}</div>
+      </section>`;
   }
 
   function myCatalogPage(){
@@ -545,6 +706,8 @@
   pages.home=homeV2;
   pages.catalog=catalogV2Page;
   pages.discover=discoverV2Page;
+  pages['discover-category']=discoverCategoryPage;
+  pages['playlist-detail']=playlistDetailPage;
   pages['my-catalog']=myCatalogPage;
   pages.requirements=requirementsPage;
   pages['requirement-detail']=requirementDetailPage;
@@ -714,10 +877,18 @@
       const count=document.getElementById('v2SelectedCount');if(count) count.textContent=v2.selectedTracks.size;
       return;
     }
-    const playlistQuery=e.target.closest('[data-v2-playlist-query]');
-    if(playlistQuery){
+    const categoryLink=e.target.closest('[data-v2-category]');
+    if(categoryLink){
       e.preventDefault();e.stopPropagation();
-      routeTo('catalog',{query:playlistQuery.dataset.v2PlaylistQuery});
+      v2.discoverCategoryKey=categoryLink.dataset.v2Category;
+      routeTo('discover-category');
+      return;
+    }
+    const playlistLink=e.target.closest('[data-v2-playlist]');
+    if(playlistLink){
+      e.preventDefault();e.stopPropagation();
+      v2.discoverPlaylistId=playlistLink.dataset.v2Playlist;
+      routeTo('playlist-detail');
       return;
     }
 
@@ -800,7 +971,7 @@
     const addSearch=e.target.closest('[data-v2-add-search]');
     if(addSearch){
       e.preventDefault();e.stopPropagation();
-      const track=tracks.find(t=>t.id===addSearch.dataset.v2AddSearch);
+      const track=tracks.find(t=>t.id===addSearch.dataset.v2AddSearch)||similarPool.find(t=>t.id===addSearch.dataset.v2AddSearch);
       if(track) openCatalogAddConfirm(track);
       return;
     }
@@ -808,7 +979,7 @@
     if(confirmSearch){
       e.preventDefault();e.stopPropagation();
       const id=confirmSearch.dataset.v2ConfirmSearch;
-      const track=tracks.find(t=>t.id===id);
+      const track=tracks.find(t=>t.id===id)||similarPool.find(t=>t.id===id);
       closeAuthorizationConfirm();
       document.querySelectorAll(`[data-v2-add-search="${id}"]`).forEach(btn=>{btn.disabled=true;btn.classList.add('done');btn.innerHTML=icon('check');btn.title='已加入曲库'});
       toast(`《${track?.title||'歌曲'}》已加入我的曲库`);
