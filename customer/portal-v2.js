@@ -346,7 +346,7 @@
         <div class="v2-catalog-track-main">
           <div class="v2-catalog-cover">${cover(track,index)}</div>
           <div class="v2-catalog-copy">
-            <div class="v2-catalog-title-row"><button class="v2-title-link" data-v2-detail="${track.id}">${track.title}</button><span>${track.duration}</span></div>
+            <div class="v2-catalog-title-row"><strong>${track.title}</strong><span>${track.duration}</span></div>
             <small>${track.artist} · ${track.id}</small>
             <div class="v2-catalog-tags">${tags.map(tag=>`<span>${tag}</span>`).join('')}</div>
           </div>
@@ -993,13 +993,14 @@
 
   function openCatalogAddConfirm(track){
     closeAuthorizationConfirm();
+    const fromAI=state.route==='ai';
     const node=document.createElement('div');
     node.className='v2-confirm-modal';
     node.id='v2ConfirmModal';
     node.innerHTML=`<div class="v2-confirm-backdrop"></div><div class="v2-confirm-dialog">
       <span class="v2-confirm-icon">${icon('plus')}</span>
-      <h3>加入曲库？</h3>
-      <p>确认将《${track.title}》加入当前客户的已授权曲库。加入后该歌曲会出现在“我的曲库”中。</p>
+      <h3>${fromAI?'加入授权？':'加入曲库？'}</h3>
+      <p>${fromAI?`确认将《${track.title}》加入当前客户授权曲库，确认后会同步进入“我的曲库”。`:`确认将《${track.title}》加入当前客户的已授权曲库。加入后该歌曲会出现在“我的曲库”中。`}</p>
       <div class="v2-confirm-track"><strong>${track.title}</strong><small>${track.artist} · ${track.id}</small></div>
       <div class="v2-confirm-actions"><button class="btn" data-v2-cancel-auth>取消</button><button class="btn btn-primary" data-v2-confirm-search="${track.id}">确认加入</button></div>
     </div>`;
