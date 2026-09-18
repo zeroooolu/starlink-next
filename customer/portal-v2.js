@@ -356,10 +356,9 @@
           <small><strong class="v2-ai-match">${track.match||'88%'} 匹配</strong> · ${track.genre} · ${track.bpm} BPM</small>
         </div>
         <div class="v2-catalog-actions">
-          <button class="v2-track-action play-track" data-track="${track.id}" title="${state.playing===track.id?'暂停':'试听'}">${icon(state.playing===track.id?'pause':'play')}</button>
-          <button class="v2-track-action v2-add-search" data-v2-add-search="${track.id}" title="加入曲库">${icon('plus')}</button>
+          <button class="v2-track-action play-track" data-track="${track.id}" title="${state.playing===track.id?'暂停':'播放'}">${icon(state.playing===track.id?'pause':'play')}</button>
+          <button class="v2-track-action v2-add-search" data-v2-add-search="${track.id}" title="加入授权">${icon('plus')}</button>
           <button class="v2-track-action" data-v2-similar="${track.id}" data-track-title="${track.title}" title="找相似">${icon('sparkles')}</button>
-          <button class="v2-track-action" data-v2-detail="${track.id}" title="歌曲详情">${icon('more-horizontal')}</button>
         </div>
       </div>
       <div class="v2-similar-slot" data-v2-similar-slot="${track.id}"></div>
