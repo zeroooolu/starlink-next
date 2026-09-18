@@ -231,6 +231,7 @@
     const filterValue=e.target.closest('[data-v2-filter-value]');
     if(filterValue){
       e.preventDefault();e.stopPropagation();
+      document.querySelectorAll('.dropdown').forEach(node=>node.remove());
       toast(`已选择：${filterValue.dataset.v2FilterValue}`);
       return;
     }
