@@ -1133,7 +1133,7 @@
       <div class="v2-wave-cell">${catalogWave(track,index)}<small>${track.genre} · ${track.vocal}</small></div>
       <div class="v2-delivery-song-actions">
         <button class="v2-track-action play-track" data-track="${track.id}" title="播放">${icon(state.playing===track.id?'pause':'play')}</button>
-        <button class="v2-select-delivery ${selected?'selected':''}" data-v2-delivery-select="${track.id}" data-delivery-id="${d.id}">${selected?icon('check'):''}<span>${selected?'已选择':'选择'}</span></button>
+        <button class="v2-select-delivery ${selected?'selected':''}" data-v2-delivery-select="${track.id}" data-delivery-id="${d.id}" ${d.status==='待我处理'?'':'disabled'}>${selected?icon('check'):''}<span>${selected?'已选择':d.status==='待我处理'?'选择':'未选择'}</span></button>
       </div>
     </div>`;
   }
@@ -1154,6 +1154,7 @@
     if(!v2.deliverySelections[d.id] && d.mode==='selection') v2.deliverySelections[d.id]=new Set(songs.slice(0,d.selected).map(x=>x.id));
     const set=v2.deliverySelections[d.id]||new Set();
     const isSelection=d.mode==='selection';
+    const canSelect=isSelection&&d.status==='待我处理';
     return `<div class="v2-library-breadcrumb"><button data-route="deliveries">交付记录</button><span>/</span><button data-v2-requirement="${d.requirementId}">${d.requirement}</button><span>/</span><strong>${d.name}</strong></div>
       <section class="v2-delivery-detail-hero">
         <div>
@@ -1169,15 +1170,17 @@
         :`<div><span>交付方式</span><strong>${d.type}</strong><small>${d.mode==='api'?'自动同步':'正式文件'}</small></div><div><span>交付时间</span><strong>${d.date.split(' ')[0]}</strong><small>${d.date.split(' ')[1]||''}</small></div><div><span>结果</span><strong>${d.mode==='api'?'已上架':'已完成'}</strong><small>无需你处理</small></div>`}
       </div>
 
-      ${isSelection
+      ${canSelect
         ?`<div class="v2-delivery-action-banner"><span>${icon('music')}</span><div><strong>请完成本轮试听和挑选</strong><p>这是需求「${d.requirement}」的${d.round}内容。选好后提交本轮结果，STARLINK 会根据你的选择继续处理需求。</p></div><span class="v2-banner-deadline">截止 ${d.due}</span></div>`
-        :`<div class="v2-delivery-result-banner"><span>${icon(d.mode==='api'?'code':'check')}</span><div><strong>${d.result}</strong><p>${d.mode==='api'?'这批歌曲已经自动同步到你的授权曲库，无需额外确认。':'正式交付已经完成，你可以查看本次交付内容。'}</p></div>${d.mode==='api'?'<button class="btn btn-sm" data-route="my-catalog">查看我的曲库</button>':'<button class="btn btn-sm" data-v2-download-delivery>获取交付文件</button>'}</div>`}
+        :isSelection
+          ?`<div class="v2-delivery-result-banner"><span>${icon('check')}</span><div><strong>本轮选择已提交</strong><p>你已经提交 ${set.size} 首选择，STARLINK 正在基于本轮结果继续处理关联需求。</p></div><button class="btn btn-sm" data-v2-requirement="${d.requirementId}">查看需求进度</button></div>`
+          :`<div class="v2-delivery-result-banner"><span>${icon(d.mode==='api'?'code':'check')}</span><div><strong>${d.result}</strong><p>${d.mode==='api'?'这批歌曲已经自动同步到你的授权曲库，无需额外确认。':'正式交付已经完成，你可以查看本次交付内容。'}</p></div>${d.mode==='api'?'<button class="btn btn-sm" data-route="my-catalog">查看我的曲库</button>':'<button class="btn btn-sm" data-v2-download-delivery>获取交付文件</button>'}</div>`}
 
       <section class="v2-workflow-panel v2-delivery-content-panel">
         <div class="v2-panel-title"><div><h2>${isSelection?'本轮试听歌单':'本次交付内容'}</h2><p>${isSelection?'播放并选择你希望保留的歌曲；未提交前可以反复调整。':'本次交付已经形成固定内容快照。'}</p></div><span>${d.count} 首</span></div>
         <div class="v2-delivery-song-head"><span>歌曲</span><span>波形 / 音乐信息</span><span>${isSelection?'我的选择':'结果'}</span></div>
         <div class="v2-delivery-song-list">${songs.map((track,index)=>isSelection?selectionDeliveryRow(track,index,d):readonlyDeliveryRow(track,index,d)).join('')}</div>
-        ${isSelection?`<div class="v2-selection-submit">
+        ${canSelect?`<div class="v2-selection-submit">
           <div><strong>已选择 <span id="v2DeliverySelectedCountBottom">${set.size}</span> 首</strong><small>提交后 STARLINK 会收到本轮选取结果</small></div>
           <textarea id="v2DeliveryFeedback" placeholder="可选：补充本轮反馈，例如“方向对，再补几首更适合山野画面的”"></textarea>
           <button class="btn btn-primary" data-v2-submit-delivery="${d.id}">提交本轮选择</button>
@@ -1491,13 +1494,19 @@
     if(confirmDelivery){
       e.preventDefault();e.stopPropagation();
       const d=deliveries.find(x=>x.id===confirmDelivery.dataset.v2ConfirmDeliverySubmit);
-      if(d){d.status='已提交';d.selected=(v2.deliverySelections[d.id]||new Set()).size;d.result=`已提交 ${d.selected} 首选择，等待 STARLINK 继续处理`}
+      if(d){
+        d.status='已提交';
+        d.selected=(v2.deliverySelections[d.id]||new Set()).size;
+        d.result=`已提交 ${d.selected} 首选择，等待 STARLINK 继续处理`;
+        const req=requests.find(r=>r.id===d.requirementId);
+        if(req){req.status='处理中';req.stage=3;req.updated='刚刚'}
+      }
       document.getElementById('v2DeliverySubmitModal')?.remove();
       toast('本轮选择已提交');
       renderPage();
       return;
     }
-    if(e.target.closest('[data-v2-cancel-delivery-submit]')){document.getElementById('v2DeliverySubmitModal')?.remove();return}
+    if(e.target.closest('[data-v2-cancel-delivery-submit]') || (e.target.closest('.v2-confirm-backdrop')&&e.target.closest('#v2DeliverySubmitModal'))){document.getElementById('v2DeliverySubmitModal')?.remove();return}
     if(e.target.closest('[data-v2-download-delivery]')){e.preventDefault();e.stopPropagation();toast('正在准备本次正式交付文件');return}
     if(e.target.closest('[data-v2-add-requirement-note]')){e.preventDefault();e.stopPropagation();toast('补充说明入口已打开，可继续接入消息/备注能力');return}
 
