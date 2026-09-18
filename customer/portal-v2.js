@@ -148,6 +148,78 @@
     </div>`;
   }
 
+  function catalogSearchTrackRow(track,index){
+    const tags=[track.genre.split(' · ')[0],track.mood[0],track.mood[1],track.vocal].filter(Boolean);
+    return `<div class="v2-catalog-track-wrap" data-v2-track-wrap="${track.id}">
+      <div class="v2-catalog-track v2-search-track" data-catalog-search="${(track.title+' '+track.artist+' '+track.id+' '+track.genre+' '+track.mood.join(' ')+' '+track.vocal).toLowerCase()}">
+        <div class="v2-catalog-track-main">
+          <div class="v2-catalog-cover">${cover(track,index)}</div>
+          <div class="v2-catalog-copy">
+            <div class="v2-catalog-title-row"><button class="v2-title-link" data-v2-detail="${track.id}">${track.title}</button><span>${track.duration}</span></div>
+            <small>${track.artist} · ${track.id}</small>
+            <div class="v2-catalog-tags">${tags.map(tag=>`<span>${tag}</span>`).join('')}</div>
+          </div>
+        </div>
+        <div class="v2-wave-cell">
+          ${catalogWave(track,index)}
+          <small>${track.genre} · ${track.bpm} BPM</small>
+        </div>
+        <div class="v2-catalog-actions">
+          <button class="v2-track-action play-track" data-track="${track.id}" title="${state.playing===track.id?'暂停':'试听'}">${icon(state.playing===track.id?'pause':'play')}</button>
+          <button class="v2-track-action v2-add-search" data-v2-add-search="${track.id}" title="加入曲库">${icon('plus')}</button>
+          <button class="v2-track-action" data-v2-similar="${track.id}" data-track-title="${track.title}" title="找相似">${icon('sparkles')}</button>
+          <button class="v2-track-action" data-v2-detail="${track.id}" title="歌曲详情">${icon('more-horizontal')}</button>
+        </div>
+      </div>
+      <div class="v2-similar-slot" data-v2-similar-slot="${track.id}"></div>
+    </div>`;
+  }
+
+  function catalogV2Page(){
+    const query=state.query||'';
+    const filters=[
+      ['风格',['Pop','Electronic','Hip-Hop','Rock','Classical']],
+      ['情绪',['活力','快乐','放松','高级','紧张']],
+      ['场景',['运动健身','广告品牌','户外旅行','影视氛围','游戏电竞']],
+      ['语言',['纯音乐','英文','中文','其他']],
+      ['人声',['纯音乐','女声','男声','合唱']],
+      ['BPM',['< 80','80–100','100–120','120–140','> 140']],
+      ['时长',['< 1 分钟','1–2 分钟','2–3 分钟','3–5 分钟','> 5 分钟']]
+    ];
+    return `${pageHead('全曲库搜索','搜索当前客户可发现的全部音乐内容。搜索结果已经符合当前客户的授权条件。',`<button class="btn btn-soft" data-route="ai">${icon('sparkles')}AI 找歌</button>`)}
+      <section class="v2-search-panel">
+        <div class="v2-search-main-row">
+          <div class="v2-search-main-input">${icon('search')}<input id="catalogSearchInput" value="${query}" autocomplete="off" placeholder="搜索歌曲、艺人、ISRC、Track ID、标签或场景描述" /><button class="v2-search-clear" id="clearCatalogSearch" title="清空">${icon('x')}</button></div>
+          <button class="btn btn-primary" id="catalogSearchBtn">搜索</button>
+        </div>
+        <div class="v2-search-filter-row">
+          ${filters.map(([label,items])=>`<button class="v2-search-filter-chip" data-v2-search-filter="${label}" data-filter-items="${items.join('|')}"><span>${label}</span>${icon('chevron-down')}</button>`).join('')}
+          <button class="v2-search-reset" data-v2-search-reset>清空筛选</button>
+        </div>
+        <div class="v2-active-filters" id="v2ActiveFilters">
+          <span class="v2-active-filter">Electronic <button data-v2-remove-filter="Electronic">${icon('x')}</button></span>
+          <span class="v2-active-filter">活力 <button data-v2-remove-filter="活力">${icon('x')}</button></span>
+        </div>
+      </section>
+
+      <section class="v2-search-results">
+        <div class="v2-search-results-head">
+          <div><strong>${query?`“${query}”`:'全部可发现音乐'}</strong><span>48,392 首结果</span></div>
+          <button class="v2-sort-button">推荐排序 ${icon('chevron-down')}</button>
+        </div>
+        <div class="v2-catalog-browser v2-search-browser">
+          <div class="v2-catalog-list-head">
+            <span>歌曲</span><span>波形 / 音乐信息</span><span>操作</span>
+          </div>
+          <div class="v2-catalog-track-list" id="catalogSearchTrackList">
+            ${tracks.map((track,index)=>catalogSearchTrackRow(track,index)).join('')}
+          </div>
+          <div class="v2-catalog-empty" id="catalogSearchEmpty" hidden>没有找到匹配的歌曲</div>
+          <button class="v2-load-more">加载更多搜索结果</button>
+        </div>
+      </section>`;
+  }
+
   function myCatalogPage(){
     const metaById=Object.fromEntries(customerCatalog.map(c=>[c[2],{source:c[3],date:c[4],status:c[7]}]));
     return `${pageHead('我的曲库','查看已经授权并可直接使用的音乐内容。','')}
@@ -304,6 +376,7 @@
   );
 
   pages.home=homeV2;
+  pages.catalog=catalogV2Page;
   pages['my-catalog']=myCatalogPage;
   pages.requirements=requirementsPage;
   pages['requirement-detail']=requirementDetailPage;
@@ -426,6 +499,21 @@
   }
   function closeAuthorizationConfirm(){document.getElementById('v2ConfirmModal')?.remove()}
 
+  function openCatalogAddConfirm(track){
+    closeAuthorizationConfirm();
+    const node=document.createElement('div');
+    node.className='v2-confirm-modal';
+    node.id='v2ConfirmModal';
+    node.innerHTML=`<div class="v2-confirm-backdrop"></div><div class="v2-confirm-dialog">
+      <span class="v2-confirm-icon">${icon('plus')}</span>
+      <h3>加入曲库？</h3>
+      <p>确认将《${track.title}》加入当前客户的已授权曲库。加入后该歌曲会出现在“我的曲库”中。</p>
+      <div class="v2-confirm-track"><strong>${track.title}</strong><small>${track.artist} · ${track.id}</small></div>
+      <div class="v2-confirm-actions"><button class="btn" data-v2-cancel-auth>取消</button><button class="btn btn-primary" data-v2-confirm-search="${track.id}">确认加入</button></div>
+    </div>`;
+    document.body.appendChild(node);
+  }
+
   document.addEventListener('click',e=>{
     const playButton=e.target.closest('.play-track[data-track]');
     if(playButton){
@@ -458,6 +546,53 @@
       const count=document.getElementById('v2SelectedCount');if(count) count.textContent=v2.selectedTracks.size;
       return;
     }
+    const searchFilter=e.target.closest('[data-v2-search-filter]');
+    if(searchFilter){
+      e.preventDefault();e.stopPropagation();
+      const items=(searchFilter.dataset.filterItems||'').split('|').filter(Boolean);
+      showDropdown(searchFilter,`<div class="dropdown-title">${searchFilter.dataset.v2SearchFilter}</div>${items.map(item=>`<button class="dropdown-item" data-v2-search-filter-value="${item}">${item}</button>`).join('')}`);
+      return;
+    }
+    const searchFilterValue=e.target.closest('[data-v2-search-filter-value]');
+    if(searchFilterValue){
+      e.preventDefault();e.stopPropagation();
+      const host=document.getElementById('v2ActiveFilters');
+      const value=searchFilterValue.dataset.v2SearchFilterValue;
+      if(host && ![...host.querySelectorAll('.v2-active-filter')].some(x=>x.textContent.trim().startsWith(value))){
+        host.insertAdjacentHTML('beforeend',`<span class="v2-active-filter">${value} <button data-v2-remove-filter="${value}">${icon('x')}</button></span>`);
+      }
+      document.querySelectorAll('.dropdown').forEach(node=>node.remove());
+      return;
+    }
+    const removeSearchFilter=e.target.closest('[data-v2-remove-filter]');
+    if(removeSearchFilter){
+      e.preventDefault();e.stopPropagation();
+      removeSearchFilter.closest('.v2-active-filter')?.remove();
+      return;
+    }
+    if(e.target.closest('[data-v2-search-reset]')){
+      e.preventDefault();e.stopPropagation();
+      const host=document.getElementById('v2ActiveFilters');if(host) host.innerHTML='';
+      return;
+    }
+    const addSearch=e.target.closest('[data-v2-add-search]');
+    if(addSearch){
+      e.preventDefault();e.stopPropagation();
+      const track=tracks.find(t=>t.id===addSearch.dataset.v2AddSearch);
+      if(track) openCatalogAddConfirm(track);
+      return;
+    }
+    const confirmSearch=e.target.closest('[data-v2-confirm-search]');
+    if(confirmSearch){
+      e.preventDefault();e.stopPropagation();
+      const id=confirmSearch.dataset.v2ConfirmSearch;
+      const track=tracks.find(t=>t.id===id);
+      closeAuthorizationConfirm();
+      document.querySelectorAll(`[data-v2-add-search="${id}"]`).forEach(btn=>{btn.disabled=true;btn.classList.add('done');btn.innerHTML=icon('check');btn.title='已加入曲库'});
+      toast(`《${track?.title||'歌曲'}》已加入我的曲库`);
+      return;
+    }
+
     const catalogFilter=e.target.closest('[data-v2-catalog-filter]');
     if(catalogFilter){
       e.preventDefault();e.stopPropagation();
@@ -575,7 +710,7 @@
   },true);
 
   document.addEventListener('input',e=>{
-    if(e.target?.id!=='myCatalogKeyword') return;
+    if(!['myCatalogKeyword','catalogSearchInput'].includes(e.target?.id)) return;
     const q=e.target.value.trim().toLowerCase();
     let visible=0;
     document.querySelectorAll('[data-catalog-search]').forEach(row=>{
@@ -583,7 +718,7 @@
       row.hidden=!show;
       if(show) visible++;
     });
-    const empty=document.getElementById('myCatalogEmpty');
+    const empty=document.getElementById(e.target.id==='catalogSearchInput'?'catalogSearchEmpty':'myCatalogEmpty');
     if(empty) empty.hidden=visible>0;
   });
 
