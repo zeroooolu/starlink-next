@@ -59,16 +59,77 @@
   function focus(iconName,title,sub,status,due){return `<div class="v2-focus-item" data-route="requirement-detail" style="cursor:pointer"><span class="v2-focus-icon">${icon(iconName)}</span><span class="v2-focus-main"><strong>${title}</strong><small>${sub}</small></span><span class="v2-focus-side"><strong>${status}</strong><small>${due}</small></span></div>`}
   function deliveryMini(title,sub,date){return `<div class="activity-item"><span class="activity-icon">${icon('download')}</span><span class="activity-copy"><strong>${title}</strong><small>${sub}</small></span><span class="activity-side">${date}</span></div>`}
 
-  function myCatalogPage(){
-    return `${pageHead('我的曲库','已经正式授权或交付给你的音乐内容；每首歌曲都可追溯来源和所属合作项目。',`<button class="btn" data-route="catalog">${icon('search')}搜索全曲库</button>`)}
-      <div class="v2-catalog-summary">
-        <div class="v2-catalog-main"><span>当前可用音乐</span><strong>182,381</strong><small>由首批曲库、API 增量、正式选曲与其他交付持续累积</small></div>
-        <div class="v2-summary-card"><span>近 30 天新增</span><strong>4,812</strong><small>来自 6 个交付批次</small></div>
-        <div class="v2-summary-card"><span>API 已上架</span><strong>176,204</strong><small>占当前曲库 96.6%</small></div>
-        <div class="v2-summary-card"><span>即将到期</span><strong>328</strong><small>30 天内需要关注</small></div>
+  function catalogWave(track,index=0){
+    const seed=track.id.split('').reduce((sum,ch)=>sum+ch.charCodeAt(0),index*17);
+    const bars=Array.from({length:36},(_,i)=>{
+      const h=24+((seed+i*19+(i%5)*11)%68);
+      return `<i style="--h:${h}%"></i>`;
+    }).join('');
+    return `<div class="v2-catalog-wave" aria-hidden="true">${bars}</div>`;
+  }
+
+  function myCatalogTrackRow(track,meta,index){
+    const favorite=state.favorites.has(track.id);
+    const tags=[track.genre.split(' · ')[0],track.mood[0],track.mood[1],`${track.bpm} BPM`].filter(Boolean);
+    return `<div class="v2-catalog-track" data-catalog-search="${(track.title+' '+track.artist+' '+track.id+' '+track.genre+' '+track.mood.join(' ')).toLowerCase()}">
+      <div class="v2-catalog-track-main">
+        <div class="v2-catalog-cover">${cover(track,index)}</div>
+        <div class="v2-catalog-copy">
+          <div class="v2-catalog-title-row"><strong>${track.title}</strong><span>${track.duration}</span></div>
+          <small>${track.artist} · ${track.id}</small>
+          <div class="v2-catalog-tags">${tags.map(tag=>`<span>${tag}</span>`).join('')}</div>
+        </div>
       </div>
-      <div class="v2-table-card"><div class="v2-table-head"><div class="v2-filter-row"><div class="v2-search">${icon('search')}<input placeholder="搜索歌曲、艺人、Track ID"/></div><button class="v2-filter">来源批次 ${icon('chevron-down')}</button><button class="v2-filter">所属项目 ${icon('chevron-down')}</button><button class="v2-filter">状态 ${icon('chevron-down')}</button></div><span class="result-meta">共 182,381 首</span></div>
-        <div class="v2-table-wrap"><table class="v2-table"><thead><tr><th>歌曲</th><th>来源</th><th>加入时间</th><th>所属项目</th><th>使用范围</th><th>状态</th></tr></thead><tbody>${customerCatalog.map(c=>`<tr><td><span class="v2-primary">${c[0]}</span><span class="v2-secondary">${c[1]} · ${c[2]}</span></td><td><span class="v2-primary">${c[3]}</span><span class="v2-secondary">可追溯交付批次</span></td><td>${c[4]}</td><td>${c[5]}</td><td>${c[6]}</td><td>${statusPill(c[7])}</td></tr>`).join('')}</tbody></table></div>
+      <div class="v2-wave-cell">
+        ${catalogWave(track,index)}
+        <small>${meta?.source||'首批 API 曲库'} · ${meta?.date||'2026-03-01'}</small>
+      </div>
+      <div class="v2-catalog-actions">
+        <button class="v2-track-action play-track" data-track="${track.id}" title="${state.playing===track.id?'暂停':'播放'}">${icon(state.playing===track.id?'pause':'play')}</button>
+        <button class="v2-track-action" data-v2-download="${track.id}" title="下载">${icon('download')}</button>
+        <button class="v2-track-action" data-v2-similar="${track.id}" data-track-title="${track.title}" title="找相似">${icon('sparkles')}</button>
+        <button class="v2-track-action favorite-track ${favorite?'active':''}" data-track="${track.id}" title="${favorite?'取消收藏':'收藏'}">${icon('heart')}</button>
+        <button class="v2-track-action" data-v2-more="${track.id}" data-track-title="${track.title}" title="更多">${icon('more-horizontal')}</button>
+      </div>
+    </div>`;
+  }
+
+  function myCatalogPage(){
+    const metaById=Object.fromEntries(customerCatalog.map(c=>[c[2],{source:c[3],date:c[4],status:c[7]}]));
+    return `${pageHead('我的曲库','查看已经授权并可直接使用的音乐内容。','')}
+      <div class="v2-catalog-overview">
+        <div class="v2-catalog-overview-card primary" data-route="catalog" role="button" tabindex="0">
+          <div><span>当前可用音乐</span><strong>182,381</strong><small>查看当前可访问的完整曲库</small></div>
+          <span class="v2-overview-arrow">${icon('arrow-up-right')}</span>
+        </div>
+        <div class="v2-catalog-overview-card">
+          <div><span>已授权</span><strong>176,204</strong><small>当前列表结果 · API 已上架</small></div>
+          <span class="v2-overview-icon">${icon('shield')}</span>
+        </div>
+        <div class="v2-catalog-overview-card">
+          <div><span>近 30 天新增</span><strong>4,812</strong><small>来自 6 个交付批次</small></div>
+          <span class="v2-overview-icon">${icon('plus')}</span>
+        </div>
+      </div>
+
+      <div class="v2-catalog-browser">
+        <div class="v2-catalog-toolbar">
+          <div class="v2-catalog-query">
+            <div class="v2-catalog-keyword">${icon('search')}<input id="myCatalogKeyword" autocomplete="off" placeholder="搜索歌曲、艺人、Track ID 或标签" /></div>
+            <button class="v2-catalog-filter" data-v2-catalog-filter="source">来源批次 ${icon('chevron-down')}</button>
+            <button class="v2-catalog-filter" data-v2-catalog-filter="date">加入时间 ${icon('chevron-down')}</button>
+          </div>
+          <div class="v2-catalog-count"><strong>176,204</strong> 首已授权</div>
+        </div>
+
+        <div class="v2-catalog-list-head">
+          <span>歌曲</span><span>波形 / 来源</span><span>操作</span>
+        </div>
+        <div class="v2-catalog-track-list" id="myCatalogTrackList">
+          ${tracks.slice(0,8).map((track,index)=>myCatalogTrackRow(track,metaById[track.id],index)).join('')}
+        </div>
+        <div class="v2-catalog-empty" id="myCatalogEmpty" hidden>没有找到匹配的已授权歌曲</div>
+        <button class="v2-load-more">加载更多已授权音乐</button>
       </div>`;
   }
 
@@ -157,6 +218,47 @@
       const count=document.getElementById('v2SelectedCount');if(count) count.textContent=v2.selectedTracks.size;
       return;
     }
+    const catalogFilter=e.target.closest('[data-v2-catalog-filter]');
+    if(catalogFilter){
+      e.preventDefault();e.stopPropagation();
+      const kind=catalogFilter.dataset.v2CatalogFilter;
+      const items=kind==='source'
+        ? ['全部来源批次','9 月户外旅行增量','无人机首发第一轮','经典内容盘活','首批 API 曲库']
+        : ['全部时间','近 7 天','近 30 天','近 90 天','更早'];
+      showDropdown(catalogFilter,`<div class="dropdown-title">${kind==='source'?'来源批次':'加入时间'}</div>${items.map((item,i)=>`<button class="dropdown-item ${i===0?'active':''}" data-v2-filter-value="${item}">${item}</button>`).join('')}`);
+      return;
+    }
+    const filterValue=e.target.closest('[data-v2-filter-value]');
+    if(filterValue){
+      e.preventDefault();e.stopPropagation();
+      toast(`已选择：${filterValue.dataset.v2FilterValue}`);
+      return;
+    }
+    const download=e.target.closest('[data-v2-download]');
+    if(download){
+      e.preventDefault();e.stopPropagation();
+      toast('已开始准备下载，可选择 MP3 / WAV');
+      return;
+    }
+    const similar=e.target.closest('[data-v2-similar]');
+    if(similar){
+      e.preventDefault();e.stopPropagation();
+      routeTo('catalog',{query:`相似于 ${similar.dataset.trackTitle}`});
+      return;
+    }
+    const more=e.target.closest('[data-v2-more]');
+    if(more){
+      e.preventDefault();e.stopPropagation();
+      showDropdown(more,`<div class="dropdown-title">${more.dataset.trackTitle}</div><button class="dropdown-item">查看歌曲详情</button><button class="dropdown-item" data-route="deliveries">查看交付来源</button><button class="dropdown-item" data-v2-copy-track="${more.dataset.v2More}">复制 Track ID</button>`);
+      return;
+    }
+    const copyTrack=e.target.closest('[data-v2-copy-track]');
+    if(copyTrack){
+      e.preventDefault();e.stopPropagation();
+      navigator.clipboard?.writeText(copyTrack.dataset.v2CopyTrack);
+      toast('Track ID 已复制');
+      return;
+    }
     const action=e.target.closest('[data-v2-action]')?.dataset.v2Action;
     if(action==='confirm-selection'){e.preventDefault();e.stopPropagation();toast(`已确认本轮选择，共 ${v2.selectedTracks.size} 首`);return}
     if(action==='show-cooperation'){
@@ -165,6 +267,19 @@
       const panel=document.getElementById('v2ManagePanel');if(panel) panel.innerHTML=cooperationPanel();
     }
   },true);
+
+  document.addEventListener('input',e=>{
+    if(e.target?.id!=='myCatalogKeyword') return;
+    const q=e.target.value.trim().toLowerCase();
+    let visible=0;
+    document.querySelectorAll('[data-catalog-search]').forEach(row=>{
+      const show=!q||row.dataset.catalogSearch.includes(q);
+      row.hidden=!show;
+      if(show) visible++;
+    });
+    const empty=document.getElementById('myCatalogEmpty');
+    if(empty) empty.hidden=visible>0;
+  });
 
   renderNav();
   renderPage();
