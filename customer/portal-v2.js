@@ -79,6 +79,39 @@
 
   const languageOptions=['中文','英文','日文','韩文','西班牙语','法语','德语','葡萄牙语','意大利语','俄语','阿拉伯语','泰语','越南语'];
 
+  const officialPlaylistSections = [
+    {
+      key:'healing',title:'疗愈音乐',count:99,
+      description:'围绕放松、助眠、专注与身心疗愈整理的专业场景曲库。',
+      playlists:['乐音疗愈','白噪音疗愈','状态唤醒与专注','助眠与休憩','禅乐','关系修复']
+    },
+    {
+      key:'drama-music',title:'短剧配乐',count:83,
+      description:'覆盖甜宠、古风、悬疑、都市与轻喜等剧情类型的短剧专属配乐。',
+      playlists:['逆袭重生','古装仙侠','女频情感','家庭治愈','奇异科幻','喜剧沙雕']
+    },
+    {
+      key:'drama-sfx',title:'短剧音效',count:277,
+      description:'从环境声、人声到转场与动作特效，覆盖剧情制作中的常用声音素材。',
+      playlists:['动物音效','城市环境音效','载具音效','人类音效','自然环境音效','武器音效']
+    },
+    {
+      key:'game',title:'游戏配乐',count:33,
+      description:'面向不同游戏类型与玩法节奏整理的可商用游戏音乐内容。',
+      playlists:['休闲卡牌类游戏','音乐节奏类游戏','建造生存类游戏','其他类型游戏配乐','体育竞技类游戏','模拟经营类游戏']
+    },
+    {
+      key:'fitness',title:'运动健身',count:32,
+      description:'覆盖跑步、骑行、瑜伽、舞蹈与中老年健体等运动场景。',
+      playlists:['动感单车','跑步行走','冥想瑜伽','舞蹈健身','太极&气功','中老年健体']
+    },
+    {
+      key:'scene',title:'场景配乐',count:17,
+      description:'围绕视频、节日、公播与企业内容制作整理的通用场景配乐。',
+      playlists:['有声书配乐','综艺配乐','节日音乐','企业宣传','长短视频配乐','运动健身']
+    }
+  ];
+
   function statusPill(status){
     const cls=status.includes('待')?'wait':status.includes('候选')?'blue':status.includes('完成')||status.includes('交付')||status.includes('使用')?'':'neutral';
     return `<span class="v2-pill ${cls}">${status}</span>`;
@@ -284,6 +317,74 @@
       </section>`;
   }
 
+  function playlistArt(sectionIndex,itemIndex){
+    const n=(sectionIndex*6+itemIndex)%8+1;
+    return `<div class="v2-playlist-art art-${n}">
+      <span class="v2-playlist-art-mark">${icon(itemIndex%3===0?'music':itemIndex%3===1?'sparkles':'headphones')}</span>
+      <span class="v2-playlist-art-wave"><i></i><i></i><i></i><i></i><i></i></span>
+    </div>`;
+  }
+
+  function officialPlaylistCard(section,item,sectionIndex,itemIndex){
+    return `<article class="v2-official-playlist" data-v2-playlist-query="${section.title} ${item}">
+      ${playlistArt(sectionIndex,itemIndex)}
+      <div class="v2-official-playlist-copy">
+        <strong>${item}</strong>
+        <small>${section.title} · 官方歌单</small>
+      </div>
+      <span class="v2-playlist-open">${icon('arrow-up-right')}</span>
+    </article>`;
+  }
+
+  function officialPlaylistSection(section,sectionIndex){
+    return `<section class="v2-official-section">
+      <div class="v2-official-section-head">
+        <div class="v2-official-section-title">
+          <span class="v2-section-index">0${sectionIndex+1}</span>
+          <div><h2>${section.title}</h2><p>${section.description}</p></div>
+        </div>
+        <button class="v2-official-more" data-v2-playlist-query="${section.title}">查看全部 ${section.count} 个曲库 ${icon('arrow-up-right')}</button>
+      </div>
+      <div class="v2-official-grid">
+        ${section.playlists.map((item,itemIndex)=>officialPlaylistCard(section,item,sectionIndex,itemIndex)).join('')}
+      </div>
+    </section>`;
+  }
+
+  function discoverV2Page(){
+    return `${pageHead('分类浏览','浏览 STARLINK 官方整理的专业歌单与场景曲库。','')}
+      <section class="v2-discover-hero">
+        <div class="v2-discover-feature" data-v2-playlist-query="运动 户外 高能量">
+          <div class="v2-discover-feature-copy">
+            <span class="v2-discover-eyebrow">EDITOR'S PICK · 本周精选</span>
+            <h2>运动与户外精选</h2>
+            <p>为跑步、训练、户外视频和运动产品整理的一组高能量音乐，覆盖明亮、激励与稳定节奏。</p>
+            <button class="btn">浏览精选歌单 ${icon('arrow-up-right')}</button>
+          </div>
+          <div class="v2-discover-feature-art"><span>STARLINK</span><strong>MOVE<br/>OUTSIDE</strong></div>
+        </div>
+        <div class="v2-discover-side">
+          <button class="v2-discover-mini new" data-route="catalog">
+            <span class="v2-mini-icon">${icon('music')}</span>
+            <span><small>本周新增</small><strong>2,143 首新音乐</strong><em>查看最近上新</em></span>
+            ${icon('arrow-up-right')}
+          </button>
+          <button class="v2-discover-mini ai" data-route="ai">
+            <span class="v2-mini-icon">${icon('sparkles')}</span>
+            <span><small>描述使用场景</small><strong>不知道怎么找？直接告诉 AI</strong><em>用一句话开始找歌</em></span>
+            ${icon('arrow-up-right')}
+          </button>
+        </div>
+      </section>
+
+      <div class="v2-official-heading">
+        <div><span>OFFICIAL COLLECTIONS</span><h2>官方歌单</h2><p>按官网现有专业曲库分类浏览，点击任一歌单即可进入对应内容搜索。</p></div>
+        <button class="btn" data-route="catalog">${icon('search')}搜索全部音乐</button>
+      </div>
+
+      ${officialPlaylistSections.map(officialPlaylistSection).join('')}`;
+  }
+
   function myCatalogPage(){
     const metaById=Object.fromEntries(customerCatalog.map(c=>[c[2],{source:c[3],date:c[4],status:c[7]}]));
     return `${pageHead('我的曲库','查看已经授权并可直接使用的音乐内容。','')}
@@ -443,6 +544,7 @@
 
   pages.home=homeV2;
   pages.catalog=catalogV2Page;
+  pages.discover=discoverV2Page;
   pages['my-catalog']=myCatalogPage;
   pages.requirements=requirementsPage;
   pages['requirement-detail']=requirementDetailPage;
@@ -612,6 +714,13 @@
       const count=document.getElementById('v2SelectedCount');if(count) count.textContent=v2.selectedTracks.size;
       return;
     }
+    const playlistQuery=e.target.closest('[data-v2-playlist-query]');
+    if(playlistQuery){
+      e.preventDefault();e.stopPropagation();
+      routeTo('catalog',{query:playlistQuery.dataset.v2PlaylistQuery});
+      return;
+    }
+
     const searchFilter=e.target.closest('[data-v2-search-filter]');
     if(searchFilter){
       e.preventDefault();e.stopPropagation();
