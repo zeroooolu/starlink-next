@@ -543,17 +543,19 @@
   function playlistDetailPage(){
     const {section,playlist}=findDiscoverPlaylist(v2.discoverPlaylistId);
     const sectionIndex=officialPlaylistSections.indexOf(section);
+    const subcategory=playlistSubcategory(section,playlist);
     const songs=playlistTracksFor(playlist.id);
-    const recommendations=section.playlists.filter(item=>item.id!==playlist.id).slice(0,6);
+    const recommendations=section.playlists.filter(item=>item.id!==playlist.id && playlistSubcategory(section,item)===subcategory).slice(0,6);
     return `<div class="v2-library-breadcrumb">
         <button data-route="discover">分类浏览</button><span>/</span>
-        <button data-v2-category="${section.key}">${section.title}</button><span>/</span>
+        <button data-v2-category="${section.key}" data-v2-subcategory="${subcategory}">${section.title}</button><span>/</span>
+        <button data-v2-category="${section.key}" data-v2-subcategory="${subcategory}">${subcategory}</button><span>/</span>
         <strong>${playlist.title}</strong>
       </div>
       <section class="v2-playlist-detail-hero">
         <div class="v2-playlist-detail-art">${playlistArt(sectionIndex,section.playlists.indexOf(playlist))}</div>
         <div class="v2-playlist-detail-copy">
-          <span>官方歌单 · ${playlist.group}</span>
+          <span>官方歌单 · ${section.title} / ${subcategory}</span>
           <h1>${playlist.title}</h1>
           <p>${playlistDescription(section,playlist)}</p>
           <div><strong>${playlist.count.toLocaleString()}</strong> 首音乐</div>
@@ -573,7 +575,7 @@
       </section>
 
       <section class="v2-playlist-recommend">
-        <div class="v2-category-list-head"><div><h2>推荐歌单</h2><p>继续浏览「${section.title}」下的其他官方歌单。</p></div></div>
+        <div class="v2-category-list-head"><div><h2>推荐歌单</h2><p>继续浏览「${subcategory}」下的其他官方歌单。</p></div></div>
         <div class="v2-official-grid">${recommendations.map((item,index)=>officialPlaylistCard(section,item,sectionIndex,index+2)).join('')}</div>
       </section>`;
   }
