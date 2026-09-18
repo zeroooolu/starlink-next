@@ -11,6 +11,9 @@
     discoverCategoryKey: 'healing',
     discoverSubcategory: '白噪音疗愈',
     discoverPlaylistId: 'healing-city',
+    aiStage: 'idle',
+    aiQuery: '',
+    aiSearchToken: 0,
   };
 
   const requests = [
@@ -365,52 +368,129 @@
     </div>`;
   }
 
+  function aiGuideContent(){
+    const examples=[
+      ['产品发布','适合新能源车发布会，科技感、未来感，不要太激烈，100–120 BPM，纯音乐'],
+      ['运动短视频','跑步短视频用，节奏明显、有能量，120 BPM 左右，不要太吵'],
+      ['品牌广告','高级、克制、有质感的品牌广告配乐，希望有钢琴和轻电子元素'],
+      ['疗愈空间','适合冥想和放松空间，慢速、柔和、纯音乐，避免明显鼓点']
+    ];
+    return `<div class="v2-ai-guide">
+      <div class="v2-ai-guide-icon">${icon('sparkles')}</div>
+      <h2>描述你想找的音乐</h2>
+      <p>不用记标签，像和音乐编辑沟通一样说清楚需求。描述得越具体，结果越准确。</p>
+      <div class="v2-ai-guide-dimensions">
+        <span><strong>场景</strong>发布会、短视频、运动、游戏…</span>
+        <span><strong>感觉</strong>高级、轻松、热血、治愈…</span>
+        <span><strong>节奏</strong>慢速、120 BPM、不要太激烈…</span>
+        <span><strong>声音</strong>纯音乐、女声、钢琴、电子…</span>
+      </div>
+      <div class="v2-ai-example-title">试试这样描述</div>
+      <div class="v2-ai-example-list">
+        ${examples.map(([label,text])=>`<button data-ai-prompt="${text}"><span>${label}</span><p>${text}</p>${icon('arrow-up-right')}</button>`).join('')}
+      </div>
+    </div>`;
+  }
+
+  function aiConversationContent(){
+    const loading=v2.aiStage==='searching';
+    return `<div class="v2-ai-conversation">
+      <div class="message">
+        <span class="message-avatar">KH</span>
+        <div class="message-bubble">${v2.aiQuery}</div>
+      </div>
+      <div class="message ai">
+        <span class="message-avatar">${icon('sparkles')}</span>
+        <div class="message-bubble">
+          ${loading
+            ? `正在理解你的描述并查找合适的音乐<span class="v2-thinking-dots"><i></i><i></i><i></i></span>`
+            : `找到了一批更接近你描述的结果。你可以继续补充要求，我会基于当前结果继续调整。<div class="query-logic"><span class="tag">场景 · 品牌/内容</span><span class="tag">情绪 · 未来/高级</span><span class="tag">节奏 · 中速</span><span class="tag">优先纯音乐</span></div>`}
+        </div>
+      </div>
+    </div>`;
+  }
+
+  function aiEmptyResults(){
+    return `<div class="v2-ai-empty-state">
+      <span class="v2-ai-empty-icon">${icon('search')}</span>
+      <h2>描述需求后开始找歌</h2>
+      <p>AI 会理解你的场景、情绪、节奏、人声和参考方向，再从当前可访问曲库中推荐结果。</p>
+      <div class="v2-ai-empty-hint"><span>${icon('shield')}</span>搜索范围自动遵循当前客户授权条件</div>
+    </div>`;
+  }
+
+  function aiSearchingResults(){
+    const steps=[
+      ['理解需求','识别使用场景、情绪和声音偏好'],
+      ['转换条件','映射到曲风、标签、BPM、人声等搜索条件'],
+      ['搜索曲库','从当前客户可访问内容中召回候选歌曲'],
+      ['匹配排序','结合语义与音乐特征重新排序结果']
+    ];
+    return `<div class="v2-ai-searching-state">
+      <div class="v2-ai-search-orbit"><span>${icon('sparkles')}</span><i></i><i></i></div>
+      <span class="v2-ai-search-kicker">CATALOG AI</span>
+      <h2>正在为你查找合适的音乐</h2>
+      <p>“${v2.aiQuery}”</p>
+      <div class="v2-ai-search-steps">
+        ${steps.map(([title,desc],index)=>`<div class="v2-ai-search-step" style="--delay:${index*180}ms"><span class="v2-ai-step-status">${index<2?icon('check'):'<i></i>'}</span><div><strong>${title}</strong><small>${desc}</small></div></div>`).join('')}
+      </div>
+      <div class="v2-ai-searching-note">通常很快即可完成，请保持当前页面</div>
+    </div>`;
+  }
+
+  function aiResultsContent(){
+    return `<div class="v2-ai-result-summary">
+        <span>${icon('sparkles')}</span>
+        <p>AI 已结合你的描述完成语义匹配，并从当前可访问曲库中筛出 <strong>32 首</strong> 推荐结果。</p>
+      </div>
+      <div class="v2-catalog-browser v2-ai-result-browser">
+        <div class="v2-catalog-list-head">
+          <span>歌曲</span><span>波形 / 匹配信息</span><span>操作</span>
+        </div>
+        <div class="v2-catalog-track-list">
+          ${tracks.slice(0,8).map((track,index)=>aiResultTrackRow(track,index)).join('')}
+        </div>
+        <button class="v2-load-more">加载更多推荐结果</button>
+      </div>`;
+  }
+
   function aiV2Page(){
-    return `${pageHead('AI 找歌','像和音乐编辑沟通一样描述需求，AI 会把自然语言转换成可解释的曲库搜索。','')}
-      <div class="v2-ai-layout">
+    const idle=v2.aiStage==='idle';
+    const searching=v2.aiStage==='searching';
+    return `${pageHead('AI 找歌','用自然语言描述需求，让 AI 从当前可访问曲库中帮你找到更合适的音乐。','')}
+      <div class="v2-ai-layout ${idle?'is-idle':''}">
         <section class="v2-ai-chat">
           <div class="v2-ai-chat-head">
-            <div><strong>新的找歌会话</strong><small>描述场景、情绪、节奏或参考方向</small></div>
+            <div><strong>${idle?'AI 找歌':'找歌会话'}</strong><small>${idle?'先描述你的使用场景和音乐感觉':'可以继续补充条件调整结果'}</small></div>
             <span class="ai-badge">${icon('sparkles')} Catalog AI</span>
           </div>
-          <div class="ai-thread v2-ai-thread" id="aiThread">
-            <div class="message"><span class="message-avatar">KH</span><div class="message-bubble">帮我找一批适合新能源车发布会的视频 BGM，要有科技感和未来感，但不要太激烈，100–120 BPM，纯音乐。</div></div>
-            <div class="message ai"><span class="message-avatar">${icon('sparkles')}</span><div class="message-bubble">已理解。优先搜索 Electronic / Ambient，控制能量在中等水平，并排除人声。<div class="query-logic"><span class="tag">场景 · 科技/广告</span><span class="tag">情绪 · 未来/高级</span><span class="tag">BPM · 100–120</span><span class="tag">纯音乐</span></div></div></div>
+          <div class="ai-thread v2-ai-thread ${idle?'is-guide':''}" id="aiThread">
+            ${idle?aiGuideContent():aiConversationContent()}
           </div>
-          <div class="ai-prompts v2-ai-prompts">
+          ${idle?'':`<div class="ai-prompts v2-ai-prompts">
             <button class="prompt-chip" data-ai-prompt="再轻一点，不要电子感那么强">再轻一点</button>
             <button class="prompt-chip" data-ai-prompt="只要纯音乐，适合 15 秒短视频">适合 15 秒视频</button>
-            <button class="prompt-chip" data-ai-prompt="找和第一首最接近的音乐">找相似音乐</button>
-          </div>
-          <div class="ai-compose v2-ai-compose">
-            <textarea id="aiInput" placeholder="继续描述需求，例如：更轻、更高级、加入钢琴元素……"></textarea>
+            <button class="prompt-chip" data-ai-prompt="节奏再明显一些，但不要更吵">加强节奏</button>
+          </div>`}
+          <div class="ai-compose v2-ai-compose ${idle?'is-primary':''}">
+            <textarea id="aiInput" placeholder="${idle?'例如：适合新能源车发布会，未来感、有科技感，100–120 BPM，纯音乐':'继续补充，例如：更轻一点、加入钢琴、只要纯音乐……'}"></textarea>
             <div class="compose-actions">
-              <div class="compose-left"><button class="icon-btn" title="添加参考音乐">${icon('paperclip')}</button><button class="icon-btn" title="搜索条件">${icon('sliders')}</button></div>
-              <button class="btn btn-primary" id="aiSend">发送 ${icon('send')}</button>
+              <div class="compose-left"><span class="v2-ai-input-tip">${idle?'可以直接描述，不需要填写筛选条件':'基于当前结果继续调整'}</span></div>
+              <button class="btn btn-primary" id="aiSend" ${searching?'disabled':''}>${searching?'查找中':'开始找歌'} ${searching?'<span class="v2-button-loader"></span>':icon('send')}</button>
             </div>
           </div>
         </section>
 
-        <section class="v2-ai-results">
+        <section class="v2-ai-results ${idle?'is-empty':''} ${searching?'is-searching':''}">
           <div class="v2-ai-results-head">
             <div>
-              <strong>推荐结果</strong>
-              <small>32 首 · 基于当前对话条件生成</small>
+              <strong>${searching?'正在查找':idle?'推荐结果':'推荐结果'}</strong>
+              <small>${searching?'正在分析你的描述':idle?'结果会显示在这里':'32 首 · 按匹配度排序'}</small>
             </div>
-            <button class="v2-sort-button">匹配度 ${icon('chevron-down')}</button>
+            ${v2.aiStage==='results'? `<button class="v2-sort-button">匹配度 ${icon('chevron-down')}</button>` : ''}
           </div>
-          <div class="v2-ai-result-summary">
-            <span>${icon('sparkles')}</span>
-            <p>已按 <strong>科技 / 未来感 / 100–120 BPM / 纯音乐</strong> 筛选，结果均在当前客户可搜索范围内。</p>
-          </div>
-          <div class="v2-catalog-browser v2-ai-result-browser">
-            <div class="v2-catalog-list-head">
-              <span>歌曲</span><span>波形 / 匹配信息</span><span>操作</span>
-            </div>
-            <div class="v2-catalog-track-list">
-              ${tracks.slice(0,8).map((track,index)=>aiResultTrackRow(track,index)).join('')}
-            </div>
-            <button class="v2-load-more">加载更多推荐结果</button>
+          <div class="v2-ai-results-body">
+            ${idle?aiEmptyResults():searching?aiSearchingResults():aiResultsContent()}
           </div>
         </section>
       </div>`;
@@ -883,6 +963,20 @@
     history.replaceState(null,'',`#/${state.route}`);
   }
 
+  function startAiSearch(value){
+    const query=(value||'').trim();
+    if(!query){toast('先描述一下你想找什么样的音乐');return}
+    v2.aiQuery=query;
+    v2.aiStage='searching';
+    const token=++v2.aiSearchToken;
+    renderPage();
+    setTimeout(()=>{
+      if(token!==v2.aiSearchToken) return;
+      v2.aiStage='results';
+      if(state.route==='ai') renderPage();
+    },1800);
+  }
+
   function previewTrackById(id){
     return tracks.find(t=>t.id===id)||similarPool.find(t=>t.id===id)||tracks[0];
   }
@@ -1008,6 +1102,20 @@
   }
 
   document.addEventListener('click',e=>{
+    const aiPrompt=e.target.closest('[data-ai-prompt]');
+    if(aiPrompt && state.route==='ai'){
+      e.preventDefault();e.stopImmediatePropagation();
+      const input=document.getElementById('aiInput');
+      if(input){input.value=aiPrompt.dataset.aiPrompt;input.focus()}
+      return;
+    }
+    const aiSend=e.target.closest('#aiSend');
+    if(aiSend && state.route==='ai'){
+      e.preventDefault();e.stopImmediatePropagation();
+      startAiSearch(document.getElementById('aiInput')?.value||'');
+      return;
+    }
+
     const playButton=e.target.closest('.play-track[data-track]');
     if(playButton){
       e.preventDefault();e.stopImmediatePropagation();
@@ -1285,6 +1393,13 @@
       const panel=document.getElementById('v2ManagePanel');if(panel) panel.innerHTML=cooperationPanel();
     }
   },true);
+
+  document.addEventListener('keydown',e=>{
+    if(state.route==='ai' && e.target?.id==='aiInput' && (e.metaKey||e.ctrlKey) && e.key==='Enter'){
+      e.preventDefault();
+      startAiSearch(e.target.value);
+    }
+  });
 
   document.addEventListener('input',e=>{
     if(e.target?.matches('[data-v2-filter-search]')){
