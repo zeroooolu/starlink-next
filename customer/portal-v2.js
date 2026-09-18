@@ -19,6 +19,9 @@
     deliverySelections: {
       'DLV-20260915-0176': new Set(['ST-310284','ST-284911','ST-401237','ST-229850','ST-376612','ST-194720'])
     },
+    developerSecretVisible: false,
+    agentConnections: new Set(['chatgpt','claude']),
+    agentStep: {},
   };
 
   const requests = [
@@ -1239,6 +1242,105 @@
     renderPage();
   }
 
+  const developerCredentials={
+    key:'slk_live_demo_insta360_01',
+    secret:'slk_secret_demo_••••••••••••9F2K',
+    rawSecret:'slk_secret_demo_insta360_9F2K'
+  };
+  const agentCatalog=[
+    {id:'chatgpt',name:'ChatGPT',mark:'G',desc:'在 ChatGPT 中连接 STARLINK，直接查询曲库、查找内容和处理业务信息。'},
+    {id:'claude',name:'Claude',mark:'C',desc:'通过 Claude 的 Connector / MCP 接入 STARLINK 曲库与业务能力。'},
+    {id:'codex',name:'Codex',mark:'CX',desc:'在开发工作流中调用 STARLINK，完成曲库查询、内容定位和数据读取。'},
+    {id:'cursor',name:'Cursor',mark:'CU',desc:'在 Cursor 中添加 STARLINK MCP，开发时直接查询音乐内容与元数据。'},
+    {id:'workbuddy',name:'WorkBuddy',mark:'W',desc:'将 STARLINK 作为企业 Agent 能力接入日常业务工作流。'}
+  ];
+  const STARLINK_MCP='https://mcp.starlink.example/mcp';
+
+  function agentStatus(id){
+    return v2.agentConnections.has(id)
+      ? '<span class="v2-agent-status connected"><i></i>已连接</span>'
+      : '<span class="v2-agent-status"><i></i>未连接</span>';
+  }
+
+  function developerV2Page(){
+    return `${pageHead('接入中心','使用 API 凭据或连接常用 AI Agent，让 STARLINK 能力进入你的产品和工作流。','')}
+      <section class="v2-access-credentials">
+        <div class="v2-access-section-head">
+          <div><span>API ACCESS</span><h2>API 凭据</h2><p>用于你的系统调用 STARLINK。请妥善保管 Secret，不要暴露在前端代码或公开仓库中。</p></div>
+        </div>
+        <div class="v2-credential-grid">
+          <div class="v2-credential-row">
+            <div><small>Key</small><code>${developerCredentials.key}</code></div>
+            <button class="v2-credential-action" data-v2-copy-credential="key">${icon('copy')}复制</button>
+          </div>
+          <div class="v2-credential-row">
+            <div><small>Secret</small><code id="v2DeveloperSecret">${v2.developerSecretVisible?developerCredentials.rawSecret:developerCredentials.secret}</code></div>
+            <div class="v2-credential-actions">
+              <button class="v2-credential-action" data-v2-toggle-secret>${icon(v2.developerSecretVisible?'lock':'eye')}${v2.developerSecretVisible?'隐藏':'显示'}</button>
+              <button class="v2-credential-action" data-v2-copy-credential="secret">${icon('copy')}复制</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="v2-agent-access-section">
+        <div class="v2-agent-access-head">
+          <div><span>AI AGENT</span><h2>连接 AI Agent</h2><p>连接后，在常用 AI 工具里直接使用 STARLINK。权限自动跟随当前客户账号，不需要为每个 Agent 单独配置业务权限。</p></div>
+        </div>
+        <div class="v2-agent-grid">
+          ${agentCatalog.map(agent=>`<article class="v2-agent-card">
+            <div class="v2-agent-card-top">
+              <span class="v2-agent-logo ${agent.id}">${agent.mark}</span>
+              ${agentStatus(agent.id)}
+            </div>
+            <h3>${agent.name}</h3>
+            <p>${agent.desc}</p>
+            <div class="v2-agent-flow-mini">
+              <span>1 打开 ${agent.name}</span><i></i><span>2 添加 STARLINK</span><i></i><span>3 完成授权</span>
+            </div>
+            <button class="btn ${v2.agentConnections.has(agent.id)?'':'btn-primary'}" data-v2-agent-connect="${agent.id}">
+              ${v2.agentConnections.has(agent.id)?'查看接入方式':'开始接入'} ${icon('arrow-up-right')}
+            </button>
+          </article>`).join('')}
+        </div>
+      </section>`;
+  }
+
+  function agentFlowModal(agentId,step=1){
+    const agent=agentCatalog.find(x=>x.id===agentId)||agentCatalog[0];
+    const connected=v2.agentConnections.has(agent.id);
+    const steps=[
+      {n:1,title:`打开 ${agent.name}`,desc:`进入 ${agent.name} 的 Connector / MCP / 外部工具设置。`},
+      {n:2,title:'添加 STARLINK',desc:'添加 STARLINK MCP 地址，Agent 会识别可用能力并发起连接。'},
+      {n:3,title:'授权并完成',desc:'使用当前 STARLINK 客户账号确认授权，完成后即可在 Agent 中直接调用。'}
+    ];
+    document.getElementById('v2AgentModal')?.remove();
+    const node=document.createElement('div');
+    node.className='v2-confirm-modal';node.id='v2AgentModal';
+    node.innerHTML=`<div class="v2-confirm-backdrop"></div><div class="v2-agent-modal">
+      <div class="v2-modal-head">
+        <div class="v2-agent-modal-title"><span class="v2-agent-logo ${agent.id}">${agent.mark}</span><div><h2>${connected?`${agent.name} 接入方式`:`连接 ${agent.name}`}</h2><p>按下面步骤将 STARLINK 接入 ${agent.name}。</p></div></div>
+        <button data-v2-close-agent>${icon('x')}</button>
+      </div>
+      <div class="v2-agent-modal-body">
+        <div class="v2-agent-steps">
+          ${steps.map(s=>`<div class="${step>s.n?'done':step===s.n?'active':''}"><span>${step>s.n?icon('check'):s.n}</span><div><strong>${s.title}</strong><small>${s.desc}</small></div></div>`).join('')}
+        </div>
+        <div class="v2-agent-connect-box">
+          <span>STARLINK MCP 地址</span>
+          <div><code>${STARLINK_MCP}</code><button data-v2-copy-mcp>${icon('copy')}复制</button></div>
+          <p>${agent.name} 支持 MCP / Connector 时，直接添加该地址即可；授权时使用当前 STARLINK 账号完成确认。</p>
+        </div>
+        ${step===3||connected?`<div class="v2-agent-ready"><span>${icon('check')}</span><div><strong>${agent.name} ${connected?'已连接':'可以完成连接'}</strong><small>连接后可在 Agent 中直接查询曲库、搜索歌曲和读取当前账号可访问的业务信息。</small></div></div>`:''}
+      </div>
+      <div class="v2-modal-actions">
+        <button class="btn" data-v2-close-agent>关闭</button>
+        ${connected?'':step<3?`<button class="btn btn-primary" data-v2-agent-next="${agent.id}" data-agent-step="${step+1}">下一步</button>`:`<button class="btn btn-primary" data-v2-agent-finish="${agent.id}">完成连接</button>`}
+      </div>
+    </div>`;
+    document.body.appendChild(node);
+  }
+
   function managementPage(){
     return `${pageHead('管理','管理你的账号与团队；合作信息仅作为只读参考。','')}
       <div class="v2-manage-layout"><aside class="v2-manage-nav"><button class="active">${icon('users')}账号与成员</button><button>${icon('lock')}安全设置</button><button class="weak" data-v2-action="show-cooperation">${icon('briefcase-business')}合作信息</button></aside><section class="v2-manage-panel" id="v2ManagePanel">
@@ -1272,6 +1374,7 @@
   pages.deliveries=deliveriesPage;
   pages['delivery-detail']=deliveryDetailPage;
   pages['track-detail']=trackDetailPage;
+  pages.developer=developerV2Page;
   pages.settings=managementPage;
 
   const oldMap={projects:'settings',playlists:'requirements',content:'my-catalog'};
@@ -1451,6 +1554,51 @@
     }
     if(e.target.closest('[data-v2-player-close]')){
       e.preventDefault();e.stopImmediatePropagation();closePreviewPlayer();return;
+    }
+
+    const copyCredential=e.target.closest('[data-v2-copy-credential]');
+    if(copyCredential){
+      e.preventDefault();e.stopPropagation();
+      const value=copyCredential.dataset.v2CopyCredential==='key'?developerCredentials.key:developerCredentials.rawSecret;
+      if(navigator.clipboard?.writeText) navigator.clipboard.writeText(value).catch(()=>{});
+      toast(copyCredential.dataset.v2CopyCredential==='key'?'Key 已复制':'Secret 已复制');
+      return;
+    }
+    if(e.target.closest('[data-v2-toggle-secret]')){
+      e.preventDefault();e.stopPropagation();
+      v2.developerSecretVisible=!v2.developerSecretVisible;
+      renderPage();
+      return;
+    }
+    const agentConnect=e.target.closest('[data-v2-agent-connect]');
+    if(agentConnect){
+      e.preventDefault();e.stopPropagation();
+      agentFlowModal(agentConnect.dataset.v2AgentConnect,1);
+      return;
+    }
+    const agentNext=e.target.closest('[data-v2-agent-next]');
+    if(agentNext){
+      e.preventDefault();e.stopPropagation();
+      agentFlowModal(agentNext.dataset.v2AgentNext,Number(agentNext.dataset.agentStep)||2);
+      return;
+    }
+    const agentFinish=e.target.closest('[data-v2-agent-finish]');
+    if(agentFinish){
+      e.preventDefault();e.stopPropagation();
+      v2.agentConnections.add(agentFinish.dataset.v2AgentFinish);
+      document.getElementById('v2AgentModal')?.remove();
+      toast('Agent 已连接 STARLINK');
+      renderPage();
+      return;
+    }
+    if(e.target.closest('[data-v2-copy-mcp]')){
+      e.preventDefault();e.stopPropagation();
+      if(navigator.clipboard?.writeText) navigator.clipboard.writeText(STARLINK_MCP).catch(()=>{});
+      toast('MCP 地址已复制');
+      return;
+    }
+    if(e.target.closest('[data-v2-close-agent]') || (e.target.closest('.v2-confirm-backdrop')&&e.target.closest('#v2AgentModal'))){
+      e.preventDefault();e.stopPropagation();document.getElementById('v2AgentModal')?.remove();return;
     }
 
     const newRequirement=e.target.closest('[data-v2-new-requirement]');
