@@ -339,6 +339,84 @@
     </div>`;
   }
 
+  function aiResultTrackRow(track,index){
+    const tags=[track.genre.split(' · ')[0],track.mood[0],track.mood[1],track.vocal].filter(Boolean);
+    return `<div class="v2-catalog-track-wrap" data-v2-track-wrap="${track.id}">
+      <div class="v2-catalog-track v2-search-track v2-ai-track-row">
+        <div class="v2-catalog-track-main">
+          <div class="v2-catalog-cover">${cover(track,index)}</div>
+          <div class="v2-catalog-copy">
+            <div class="v2-catalog-title-row"><button class="v2-title-link" data-v2-detail="${track.id}">${track.title}</button><span>${track.duration}</span></div>
+            <small>${track.artist} · ${track.id}</small>
+            <div class="v2-catalog-tags">${tags.map(tag=>`<span>${tag}</span>`).join('')}</div>
+          </div>
+        </div>
+        <div class="v2-wave-cell">
+          ${catalogWave(track,index)}
+          <small><strong class="v2-ai-match">${track.match||'88%'} 匹配</strong> · ${track.genre} · ${track.bpm} BPM</small>
+        </div>
+        <div class="v2-catalog-actions">
+          <button class="v2-track-action play-track" data-track="${track.id}" title="${state.playing===track.id?'暂停':'试听'}">${icon(state.playing===track.id?'pause':'play')}</button>
+          <button class="v2-track-action v2-add-search" data-v2-add-search="${track.id}" title="加入曲库">${icon('plus')}</button>
+          <button class="v2-track-action" data-v2-similar="${track.id}" data-track-title="${track.title}" title="找相似">${icon('sparkles')}</button>
+          <button class="v2-track-action" data-v2-detail="${track.id}" title="歌曲详情">${icon('more-horizontal')}</button>
+        </div>
+      </div>
+      <div class="v2-similar-slot" data-v2-similar-slot="${track.id}"></div>
+    </div>`;
+  }
+
+  function aiV2Page(){
+    return `${pageHead('AI 找歌','像和音乐编辑沟通一样描述需求，AI 会把自然语言转换成可解释的曲库搜索。','')}
+      <div class="v2-ai-layout">
+        <section class="v2-ai-chat">
+          <div class="v2-ai-chat-head">
+            <div><strong>新的找歌会话</strong><small>描述场景、情绪、节奏或参考方向</small></div>
+            <span class="ai-badge">${icon('sparkles')} Catalog AI</span>
+          </div>
+          <div class="ai-thread v2-ai-thread" id="aiThread">
+            <div class="message"><span class="message-avatar">KH</span><div class="message-bubble">帮我找一批适合新能源车发布会的视频 BGM，要有科技感和未来感，但不要太激烈，100–120 BPM，纯音乐。</div></div>
+            <div class="message ai"><span class="message-avatar">${icon('sparkles')}</span><div class="message-bubble">已理解。优先搜索 Electronic / Ambient，控制能量在中等水平，并排除人声。<div class="query-logic"><span class="tag">场景 · 科技/广告</span><span class="tag">情绪 · 未来/高级</span><span class="tag">BPM · 100–120</span><span class="tag">纯音乐</span></div></div></div>
+          </div>
+          <div class="ai-prompts v2-ai-prompts">
+            <button class="prompt-chip" data-ai-prompt="再轻一点，不要电子感那么强">再轻一点</button>
+            <button class="prompt-chip" data-ai-prompt="只要纯音乐，适合 15 秒短视频">适合 15 秒视频</button>
+            <button class="prompt-chip" data-ai-prompt="找和第一首最接近的音乐">找相似音乐</button>
+          </div>
+          <div class="ai-compose v2-ai-compose">
+            <textarea id="aiInput" placeholder="继续描述需求，例如：更轻、更高级、加入钢琴元素……"></textarea>
+            <div class="compose-actions">
+              <div class="compose-left"><button class="icon-btn" title="添加参考音乐">${icon('paperclip')}</button><button class="icon-btn" title="搜索条件">${icon('sliders')}</button></div>
+              <button class="btn btn-primary" id="aiSend">发送 ${icon('send')}</button>
+            </div>
+          </div>
+        </section>
+
+        <section class="v2-ai-results">
+          <div class="v2-ai-results-head">
+            <div>
+              <strong>推荐结果</strong>
+              <small>32 首 · 基于当前对话条件生成</small>
+            </div>
+            <button class="v2-sort-button">匹配度 ${icon('chevron-down')}</button>
+          </div>
+          <div class="v2-ai-result-summary">
+            <span>${icon('sparkles')}</span>
+            <p>已按 <strong>科技 / 未来感 / 100–120 BPM / 纯音乐</strong> 筛选，结果均在当前客户可搜索范围内。</p>
+          </div>
+          <div class="v2-catalog-browser v2-ai-result-browser">
+            <div class="v2-catalog-list-head">
+              <span>歌曲</span><span>波形 / 匹配信息</span><span>操作</span>
+            </div>
+            <div class="v2-catalog-track-list">
+              ${tracks.slice(0,8).map((track,index)=>aiResultTrackRow(track,index)).join('')}
+            </div>
+            <button class="v2-load-more">加载更多推荐结果</button>
+          </div>
+        </section>
+      </div>`;
+  }
+
   function searchFilterButton(label,kind='simple'){
     return `<button class="v2-search-filter-chip" data-v2-search-filter="${label}" data-filter-kind="${kind}"><span>${label}</span>${icon('chevron-down')}</button>`;
   }
@@ -787,6 +865,7 @@
 
   pages.home=homeV2;
   pages.catalog=catalogV2Page;
+  pages.ai=aiV2Page;
   pages.discover=discoverV2Page;
   pages['discover-category']=discoverCategoryPage;
   pages['discover-subcategory']=discoverSubcategoryPage;
@@ -1167,6 +1246,9 @@
       }else if(state.route==='catalog'){
         v2.trackDetailReturnRoute='catalog';
         v2.trackDetailReturnLabel='全曲库搜索';
+      }else if(state.route==='ai'){
+        v2.trackDetailReturnRoute='ai';
+        v2.trackDetailReturnLabel='AI 找歌';
       }else{
         v2.trackDetailReturnRoute='my-catalog';
         v2.trackDetailReturnLabel='我的曲库';
