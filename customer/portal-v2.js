@@ -55,6 +55,30 @@
     energy:['中高能量','124 BPM','稳定律动']
   };
 
+  const searchFilterTaxonomy = {
+    '风格':[
+      ['流行',['Pop','Dance Pop','Indie Pop','Synth Pop','K-Pop','J-Pop']],
+      ['电子',['Electronic','House','Techno','EDM','Ambient Electronic','Future Bass']],
+      ['摇滚',['Rock','Indie Rock','Alternative','Punk','Metal']],
+      ['嘻哈 / R&B',['Hip-Hop','Trap','R&B','Soul','Funk']],
+      ['原声 / 古典',['Acoustic','Folk','Classical','Orchestral','Jazz']]
+    ],
+    '情绪':[
+      ['正向',['快乐','明亮','积极','激励','活力','温暖']],
+      ['放松',['放松','平静','舒缓','梦幻','治愈']],
+      ['强烈',['紧张','热血','史诗','神秘','黑暗']],
+      ['质感',['高级','科技','时尚','浪漫','怀旧']]
+    ],
+    '场景':[
+      ['品牌营销',['广告品牌','产品发布','企业宣传','活动会展']],
+      ['内容创作',['短视频','Vlog','直播','播客','教程']],
+      ['生活方式',['运动健身','户外旅行','美食','时尚','儿童']],
+      ['娱乐媒体',['影视氛围','游戏电竞','综艺','预告片']]
+    ]
+  };
+
+  const languageOptions=['中文','英文','日文','韩文','西班牙语','法语','德语','葡萄牙语','意大利语','俄语','阿拉伯语','泰语','越南语'];
+
   function statusPill(status){
     const cls=status.includes('待')?'wait':status.includes('候选')?'blue':status.includes('完成')||status.includes('交付')||status.includes('使用')?'':'neutral';
     return `<span class="v2-pill ${cls}">${status}</span>`;
@@ -176,30 +200,69 @@
     </div>`;
   }
 
+  function searchFilterButton(label,kind='simple'){
+    return `<button class="v2-search-filter-chip" data-v2-search-filter="${label}" data-filter-kind="${kind}"><span>${label}</span>${icon('chevron-down')}</button>`;
+  }
+
+  function hierarchicalFilterHtml(label){
+    const groups=searchFilterTaxonomy[label]||[];
+    return `<div class="v2-filter-popover v2-filter-popover-large" data-filter-panel="${label}">
+      <div class="v2-filter-popover-head"><strong>${label}</strong><span>可多选</span></div>
+      <div class="v2-filter-search">${icon('search')}<input data-v2-filter-search="${label}" placeholder="搜索${label}标签" autocomplete="off" /></div>
+      <div class="v2-filter-groups">
+        ${groups.map(([group,items])=>`<section class="v2-filter-group" data-filter-group="${group}">
+          <label>${group}</label>
+          <div>${items.map(item=>`<button class="v2-filter-option" data-v2-search-filter-value="${item}" data-filter-parent="${label}"><span class="v2-filter-check"></span><span>${item}</span></button>`).join('')}</div>
+        </section>`).join('')}
+      </div>
+    </div>`;
+  }
+
+  function languageFilterHtml(){
+    return `<div class="v2-filter-popover v2-filter-popover-language" data-filter-panel="语言">
+      <div class="v2-filter-popover-head"><strong>语言</strong><span>可多选</span></div>
+      <div class="v2-filter-search">${icon('search')}<input data-v2-filter-search="语言" placeholder="搜索语言" autocomplete="off" /></div>
+      <div class="v2-language-options">
+        ${languageOptions.map(item=>`<button class="v2-filter-option" data-v2-search-filter-value="${item}" data-filter-parent="语言"><span class="v2-filter-check"></span><span>${item}</span></button>`).join('')}
+      </div>
+    </div>`;
+  }
+
+  function bpmFilterHtml(){
+    return `<div class="v2-filter-popover v2-filter-popover-range" data-filter-panel="BPM">
+      <div class="v2-filter-popover-head"><strong>BPM 区间</strong><span>40–220</span></div>
+      <div class="v2-bpm-range">
+        <label><span>最小 BPM</span><input id="v2BpmMin" type="number" min="40" max="220" value="80" /></label>
+        <span class="v2-range-sep">—</span>
+        <label><span>最大 BPM</span><input id="v2BpmMax" type="number" min="40" max="220" value="140" /></label>
+      </div>
+      <div class="v2-range-actions"><button class="btn btn-sm" data-v2-bpm-clear>清空</button><button class="btn btn-sm btn-primary" data-v2-bpm-apply>应用</button></div>
+    </div>`;
+  }
+
   function catalogV2Page(){
     const query=state.query||'';
-    const filters=[
-      ['风格',['Pop','Electronic','Hip-Hop','Rock','Classical']],
-      ['情绪',['活力','快乐','放松','高级','紧张']],
-      ['场景',['运动健身','广告品牌','户外旅行','影视氛围','游戏电竞']],
-      ['语言',['纯音乐','英文','中文','其他']],
-      ['人声',['纯音乐','女声','男声','合唱']],
-      ['BPM',['< 80','80–100','100–120','120–140','> 140']],
-      ['时长',['< 1 分钟','1–2 分钟','2–3 分钟','3–5 分钟','> 5 分钟']]
-    ];
     return `${pageHead('全曲库搜索','搜索当前客户可发现的全部音乐内容。搜索结果已经符合当前客户的授权条件。',`<button class="btn btn-soft" data-route="ai">${icon('sparkles')}AI 找歌</button>`)}
       <section class="v2-search-panel">
         <div class="v2-search-main-row">
           <div class="v2-search-main-input">${icon('search')}<input id="catalogSearchInput" value="${query}" autocomplete="off" placeholder="搜索歌曲、艺人、ISRC、Track ID、标签或场景描述" /><button class="v2-search-clear" id="clearCatalogSearch" title="清空">${icon('x')}</button></div>
           <button class="btn btn-primary" id="catalogSearchBtn">搜索</button>
         </div>
-        <div class="v2-search-filter-row">
-          ${filters.map(([label,items])=>`<button class="v2-search-filter-chip" data-v2-search-filter="${label}" data-filter-items="${items.join('|')}"><span>${label}</span>${icon('chevron-down')}</button>`).join('')}
-          <button class="v2-search-reset" data-v2-search-reset>清空筛选</button>
+        <div class="v2-search-filter-grid">
+          ${searchFilterButton('风格','hierarchical')}
+          ${searchFilterButton('情绪','hierarchical')}
+          ${searchFilterButton('场景','hierarchical')}
+          ${searchFilterButton('语言','language')}
+          ${searchFilterButton('人声','vocal')}
+          ${searchFilterButton('BPM','range')}
+          ${searchFilterButton('时长','duration')}
         </div>
-        <div class="v2-active-filters" id="v2ActiveFilters">
-          <span class="v2-active-filter">Electronic <button data-v2-remove-filter="Electronic">${icon('x')}</button></span>
-          <span class="v2-active-filter">活力 <button data-v2-remove-filter="活力">${icon('x')}</button></span>
+        <div class="v2-filter-meta-row">
+          <div class="v2-active-filters" id="v2ActiveFilters">
+            <span class="v2-active-filter">Electronic <button data-v2-remove-filter="Electronic">${icon('x')}</button></span>
+            <span class="v2-active-filter">活力 <button data-v2-remove-filter="活力">${icon('x')}</button></span>
+          </div>
+          <button class="v2-search-reset" data-v2-search-reset>清空筛选</button>
         </div>
       </section>
 
@@ -552,8 +615,25 @@
     const searchFilter=e.target.closest('[data-v2-search-filter]');
     if(searchFilter){
       e.preventDefault();e.stopPropagation();
-      const items=(searchFilter.dataset.filterItems||'').split('|').filter(Boolean);
-      showDropdown(searchFilter,`<div class="dropdown-title">${searchFilter.dataset.v2SearchFilter}</div>${items.map(item=>`<button class="dropdown-item" data-v2-search-filter-value="${item}">${item}</button>`).join('')}`);
+      const label=searchFilter.dataset.v2SearchFilter;
+      const kind=searchFilter.dataset.filterKind;
+      let html='';
+      if(kind==='hierarchical') html=hierarchicalFilterHtml(label);
+      else if(kind==='language') html=languageFilterHtml();
+      else if(kind==='range') html=bpmFilterHtml();
+      else {
+        const options=kind==='vocal'?['纯音乐','女声','男声','合唱','弱人声']:['< 1 分钟','1–2 分钟','2–3 分钟','3–5 分钟','> 5 分钟'];
+        html=`<div class="v2-filter-popover"><div class="v2-filter-popover-head"><strong>${label}</strong><span>可多选</span></div><div class="v2-language-options">${options.map(item=>`<button class="v2-filter-option" data-v2-search-filter-value="${item}" data-filter-parent="${label}"><span class="v2-filter-check"></span><span>${item}</span></button>`).join('')}</div></div>`;
+      }
+      const box=showDropdown(searchFilter,html);
+      box.classList.add('v2-search-dropdown');
+      if(['hierarchical','language'].includes(kind)){
+        box.style.width=kind==='hierarchical'?'560px':'330px';
+      }else if(kind==='range'){
+        box.style.width='340px';
+      }else{
+        box.style.width='300px';
+      }
       return;
     }
     const searchFilterValue=e.target.closest('[data-v2-search-filter-value]');
@@ -561,23 +641,49 @@
       e.preventDefault();e.stopPropagation();
       const host=document.getElementById('v2ActiveFilters');
       const value=searchFilterValue.dataset.v2SearchFilterValue;
-      if(host && ![...host.querySelectorAll('.v2-active-filter')].some(x=>x.textContent.trim().startsWith(value))){
-        host.insertAdjacentHTML('beforeend',`<span class="v2-active-filter">${value} <button data-v2-remove-filter="${value}">${icon('x')}</button></span>`);
+      const exists=host && [...host.querySelectorAll('.v2-active-filter')].some(x=>x.dataset.filterValue===value);
+      if(exists){
+        host.querySelector(`[data-filter-value="${value}"]`)?.remove();
+        searchFilterValue.classList.remove('selected');
+      }else{
+        host?.insertAdjacentHTML('beforeend',`<span class="v2-active-filter" data-filter-value="${value}">${value} <button data-v2-remove-filter="${value}">${icon('x')}</button></span>`);
+        searchFilterValue.classList.add('selected');
       }
-      document.querySelectorAll('.dropdown').forEach(node=>node.remove());
       return;
     }
     const removeSearchFilter=e.target.closest('[data-v2-remove-filter]');
     if(removeSearchFilter){
       e.preventDefault();e.stopPropagation();
+      const value=removeSearchFilter.dataset.v2RemoveFilter;
       removeSearchFilter.closest('.v2-active-filter')?.remove();
+      document.querySelectorAll(`[data-v2-search-filter-value="${value}"]`).forEach(btn=>btn.classList.remove('selected'));
       return;
     }
     if(e.target.closest('[data-v2-search-reset]')){
       e.preventDefault();e.stopPropagation();
       const host=document.getElementById('v2ActiveFilters');if(host) host.innerHTML='';
+      document.querySelectorAll('[data-v2-search-filter-value]').forEach(btn=>btn.classList.remove('selected'));
       return;
     }
+    if(e.target.closest('[data-v2-bpm-clear]')){
+      e.preventDefault();e.stopPropagation();
+      const min=document.getElementById('v2BpmMin'),max=document.getElementById('v2BpmMax');
+      if(min) min.value='';if(max) max.value='';
+      return;
+    }
+    if(e.target.closest('[data-v2-bpm-apply]')){
+      e.preventDefault();e.stopPropagation();
+      const min=document.getElementById('v2BpmMin')?.value;
+      const max=document.getElementById('v2BpmMax')?.value;
+      if(!min||!max){toast('请输入完整的 BPM 区间');return}
+      if(Number(min)>Number(max)){toast('最小 BPM 不能大于最大 BPM');return}
+      const host=document.getElementById('v2ActiveFilters');
+      host?.querySelector('[data-filter-type="bpm"]')?.remove();
+      host?.insertAdjacentHTML('beforeend',`<span class="v2-active-filter" data-filter-type="bpm" data-filter-value="BPM ${min}–${max}">BPM ${min}–${max} <button data-v2-remove-filter="BPM ${min}–${max}">${icon('x')}</button></span>`);
+      document.querySelectorAll('.dropdown').forEach(node=>node.remove());
+      return;
+    }
+
     const addSearch=e.target.closest('[data-v2-add-search]');
     if(addSearch){
       e.preventDefault();e.stopPropagation();
@@ -714,6 +820,17 @@
   },true);
 
   document.addEventListener('input',e=>{
+    if(e.target?.matches('[data-v2-filter-search]')){
+      const q=e.target.value.trim().toLowerCase();
+      const panel=e.target.closest('.v2-filter-popover');
+      panel?.querySelectorAll('.v2-filter-option').forEach(option=>{
+        option.hidden=!!q && !option.textContent.toLowerCase().includes(q);
+      });
+      panel?.querySelectorAll('.v2-filter-group').forEach(group=>{
+        group.hidden=[...group.querySelectorAll('.v2-filter-option')].every(option=>option.hidden);
+      });
+      return;
+    }
     if(!['myCatalogKeyword','catalogSearchInput'].includes(e.target?.id)) return;
     const q=e.target.value.trim().toLowerCase();
     let visible=0;
