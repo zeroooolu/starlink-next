@@ -1,0 +1,18 @@
+# STARLINK 星接
+
+> 看见音乐旗下企业音乐授权与开放服务平台。音乐、音效、歌词显示及曲库授权；MCP 是接入方式，不能代替授权。
+
+## 产品
+- [音乐内容 API](products/music-api.html): 将正版音乐、歌单及曲目信息接入自己的 App、平台或设备。
+- [音效内容 API](products/sound-effects.html): 为视频、游戏及创作工具提供商用音效素材。
+- [歌词显示授权 API](products/lyrics-api.html): 为播放器、车载系统及智能设备提供歌词数据和显示授权。
+- [曲库授权服务](products/catalog-license.html): 按业务需求采购、挑选和管理企业授权曲库。
+- [AI / MCP 音乐服务](products/ai-mcp.html): 让 AI Agent 检索正版音乐，获取曲目详情、试听及授权入口。
+
+## 其他
+- [曲库](catalog.html)
+- [解决方案](solutions.html)
+- [授权与合作](licensing.html)
+- [开发者](developers.html)
+- [API 文档](https://developer.kanjian.com/)
+- [MCP Beta 指南](https://developer.kanjian.com/doc-8875712)
